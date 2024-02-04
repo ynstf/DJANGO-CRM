@@ -1,0 +1,20 @@
+{% extends layout_path %}
+
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2>Welcome to the Dashboard!</h2>
+        
+        <!-- Display user information if available -->
+        {% if user.is_authenticated %}
+        <p>Hello, {{ user.employee.first_name }} {{ user.employee.last_name }}!</p>
+        <p>Email: {{ user.employee.email }}</p>
+        <p>Phone Number: {{ user.employee.phone_number }}</p>
+        <p>Position: {{ user.employee.position }}</p>
+        {% else %}
+        <p>You are not logged in.</p>
+        {% endif %}
+    </div>
+{% endblock %}
