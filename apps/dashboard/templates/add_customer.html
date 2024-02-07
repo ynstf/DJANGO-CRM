@@ -1,0 +1,101 @@
+<!-- add_customer.html -->
+{% extends layout_path %}
+
+
+{% block title %}Add Customer{% endblock %}
+
+
+{% block content %}
+    <h2>Add Customer</h2>
+    <form method="post" id="customerForm">
+        {% csrf_token %}
+        {{ customer_form.as_p }}
+
+        <!--<div id="addressSection" style="display: none;">
+            <h3>Address</h3>
+            {{ address_form.as_p }}
+        </div>
+
+        <div id="inquirySection" style="display: none;">
+            <h3>Inquiry</h3>
+            {{ inquiry_form.as_p }}
+            <button type="button" onclick="fillCurrentDate()">Fill Current Date</button>
+            <button type="button" onclick="fillCurrentTime()">Fill Current Time</button>
+
+        </div>-->
+        <!-- Address form section -->
+        <div class="address-form-section">
+            {{ address_form.as_p }}
+        </div>
+        
+        <!-- Inquiry form section -->
+        <div class="inquiry-form-section">
+            {{ inquiry_form.as_p }}
+            <button type="button" onclick="fillCurrentDate()">Fill Current Date</button>
+            <button type="button" onclick="fillCurrentTime()">Fill Current Time</button>
+
+        </div>
+
+        <!--<button type="button" onclick="showAddressSection()">Add Address</button>
+        <button type="button" onclick="showInquirySection()">Add Inquiry</button>-->
+
+        <!-- Button to add new address and inquiry sections -->
+        <button type="button" id="add-sections">Add Address and Inquiry</button>
+
+        <button type="submit">Submit</button>
+    </form>
+
+
+
+    <script>
+        // JavaScript to clone address and inquiry sections
+        document.getElementById('add-sections').addEventListener('click', function () {
+        var addressSection = document.querySelector('.address-form-section').cloneNode(true);
+        var inquirySection = document.querySelector('.inquiry-form-section').cloneNode(true);
+
+        // Clear input values in cloned sections
+        addressSection.querySelectorAll('input').forEach(function (input) {
+            input.value = '';
+        });
+
+        inquirySection.querySelectorAll('input').forEach(function (input) {
+            input.value = '';
+        });
+
+        // Append cloned sections to the form
+        document.querySelector('form').appendChild(addressSection);
+        document.querySelector('form').appendChild(inquirySection);
+        });
+
+
+
+
+        function fillCurrentDate() {
+        var today = new Date();
+        var dateField = document.getElementById('id_inquiry-date_inq');
+        if (dateField) {
+            var formattedDate = today.toISOString().split('T')[0];
+            dateField.value = formattedDate;
+            console.log(formattedDate)
+        }
+    }
+
+    function fillCurrentTime() {
+        var now = new Date();
+        var timeField = document.getElementById('id_inquiry-time_inq');
+        if (timeField) {
+            var formattedTime = now.toTimeString().split(' ')[0];
+            timeField.value = formattedTime;
+            console.log(formattedTime)
+        }
+    }
+
+        function showAddressSection() {
+            document.getElementById('addressSection').style.display = 'block';
+        }
+
+        function showInquirySection() {
+            document.getElementById('inquirySection').style.display = 'block';
+        }
+    </script>
+{% endblock %}

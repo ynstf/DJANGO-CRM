@@ -1,0 +1,14 @@
+<!-- add_customer.html -->
+{% extends layout_path %}
+
+
+{% block title %}Customer List{% endblock %}
+
+{% block content %}
+    <h2>Customer List</h2>
+    <ul>
+        {% for customer in customers %}
+        <li>{{ customer.first_name }} {{ customer.last_name }} - {{ customer.gender }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

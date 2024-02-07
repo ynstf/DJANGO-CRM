@@ -1,0 +1,45 @@
+i have the customer table have
+id
+first name
+last name
+gender (male or female)
+type (nasionality all contries)
+register (date and time of registration)
+language (of the customer all languages)
+source (the place who custemer come from possible to be (instagram ads, google ads, facebook ads) )
+TRN (a number for companies)
+phone number (possible to one customer have a lot of phone numbers)
+whatsapp
+landline
+email (possible to one customer have a lot of email)
+
+
+and i have the table of adress of customer
+id (of costemer)
+adress name
+type (house , company)
+emarait (names of emarait reogen)
+description location (text)
+location
+
+and each custemer can have one or more adresses
+
+and inqueries table
+id (of costemer)
+adress_num
+date inq (date)
+inq num
+services (plombi or electicity or ....)
+description
+
+and each custemer can have one or more inqueries
+
+and each inqueries corespand with such address
+
+now there is a possibility to an inquery to be a booking
+inq num
+booking num
+booking date
+description
+
+i want to impliment those 4 tables and make a view tho so i can entery a new custemer

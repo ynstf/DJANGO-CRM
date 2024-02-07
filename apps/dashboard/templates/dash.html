@@ -13,6 +13,11 @@
         <p>Email: {{ user.employee.email }}</p>
         <p>Phone Number: {{ user.employee.phone_number }}</p>
         <p>Position: {{ user.employee.position }}</p>
+
+        <!-- Add buttons to access add_customers and customer_list views -->
+        <a href="{% url 'add_customer' %}" class="btn btn-primary">Add Customers</a>
+        <a href="{% url 'customer_list' %}" class="btn btn-success">Customer List</a>
+
         {% else %}
         <p>You are not logged in.</p>
         {% endif %}
