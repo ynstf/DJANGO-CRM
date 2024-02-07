@@ -34,7 +34,7 @@ class Nationality(models.Model):
         return self.name
 
 class Customer(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     gender = models.CharField(max_length=6, choices=[('male', 'Male'), ('female', 'Female')])

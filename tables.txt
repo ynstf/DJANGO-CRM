@@ -43,3 +43,6 @@ booking date
 description
 
 i want to impliment those 4 tables and make a view tho so i can entery a new custemer
+
+
+docker run -p 8000:8000 yoness/crm

@@ -11,7 +11,7 @@
         {% csrf_token %}
         {{ customer_form.as_p }}
 
-        <!--<div id="addressSection" style="display: none;">
+        <div id="addressSection" style="display: none;">
             <h3>Address</h3>
             {{ address_form.as_p }}
         </div>
@@ -22,25 +22,9 @@
             <button type="button" onclick="fillCurrentDate()">Fill Current Date</button>
             <button type="button" onclick="fillCurrentTime()">Fill Current Time</button>
 
-        </div>-->
-        <!-- Address form section -->
-        <div class="address-form-section">
-            {{ address_form.as_p }}
         </div>
-        
-        <!-- Inquiry form section -->
-        <div class="inquiry-form-section">
-            {{ inquiry_form.as_p }}
-            <button type="button" onclick="fillCurrentDate()">Fill Current Date</button>
-            <button type="button" onclick="fillCurrentTime()">Fill Current Time</button>
-
-        </div>
-
-        <!--<button type="button" onclick="showAddressSection()">Add Address</button>
-        <button type="button" onclick="showInquirySection()">Add Inquiry</button>-->
-
-        <!-- Button to add new address and inquiry sections -->
-        <button type="button" id="add-sections">Add Address and Inquiry</button>
+        <button type="button" onclick="showAddressSection()">Add Address</button>
+        <button type="button" onclick="showInquirySection()">Add Inquiry</button>
 
         <button type="submit">Submit</button>
     </form>

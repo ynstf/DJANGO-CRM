@@ -13,6 +13,10 @@ class CustomerForm(forms.ModelForm):
     phone_numbers = forms.CharField(required=False)
     whats_apps = forms.CharField(required=False)
     emails = forms.CharField(required=False)
+    def __init__(self, *args, **kwargs):
+        super(CustomerForm, self).__init__(*args, **kwargs)
+        # Exclude the ForeignKey fields from the form
+        self.fields['employee'].widget = forms.HiddenInput()
 
 class AddressForm(forms.ModelForm):
     emirate = forms.ModelChoiceField(queryset=Emirate.objects.all(), required=False)
