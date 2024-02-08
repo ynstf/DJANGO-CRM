@@ -1,14 +1,48 @@
-<!-- add_customer.html -->
+<!-- customer_list.html -->
 {% extends layout_path %}
-
 
 {% block title %}Customer List{% endblock %}
 
 {% block content %}
     <h2>Customer List</h2>
-    <ul>
-        {% for customer in customers %}
-        <li>{{ customer.first_name }} {{ customer.last_name }} - {{ customer.gender }}</li>
-        {% endfor %}
-    </ul>
+
+    <!-- Display dynamic search form -->
+    <form method="get" action="{% url 'customer_list' %}" id="search-form">
+        <label for="id_name">Customer Name: </label>
+        <input type="text" id="id_name" name="name">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+    <br>
+
+    <!-- Table to display customer information -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Gender</th>
+                <th>Nationality</th>
+                <th>Registration Date</th>
+                <th>Language</th>
+                <th>Source</th>
+                <th>TRN</th>
+                <!-- Add other columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+                <tr>
+                    <td> <a href="{% url 'customer_info' customer.pk %}">{{ customer.first_name }}</a></td>
+                    <td>{{ customer.last_name }}</td>
+                    <td>{{ customer.gender }}</td>
+                    <td>{{ customer.nationality }}</td>
+                    <td>{{ customer.register }}</td>
+                    <td>{{ customer.language }}</td>
+                    <td>{{ customer.source }}</td>
+                    <td>{{ customer.trn }}</td>
+                    <!-- Add other columns as needed -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

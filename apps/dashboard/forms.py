@@ -3,6 +3,8 @@
 from django import forms
 from .models import Customer, Address, Inquiry, Booking, Emirate
 
+
+
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
