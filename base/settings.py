@@ -34,6 +34,15 @@ INSTALLED_APPS = [
     #apps
     "apps.authentication",
     "apps.dashboard",
+    "apps.layouts",
+    "apps.pages",
+    "apps.cards",
+    "apps.ui",
+    "apps.extended_ui",
+    "apps.icons",
+    "apps.forms",
+    "apps.form_layouts",
+    "apps.tables",
 ]
 
 MIDDLEWARE = [
@@ -146,3 +155,4 @@ THEME_VARIABLES = THEME_VARIABLES
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+LOGOUT_REDIRECT_URL = "login"

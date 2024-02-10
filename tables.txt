@@ -46,3 +46,21 @@ i want to impliment those 4 tables and make a view tho so i can entery a new cus
 
 
 docker run -p 8000:8000 yoness/crm
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="menu-item {% if '/tables/basic/' in request.path %}active{% endif %}">
+      <a href="{% url 'tables-basic' %}" class="menu-link">
+        <i class="menu-icon tf-icons mdi mdi-table"></i>
+        <div class="text-truncate" data-i18n="Tables">Tables</div>
+      </a>
+    </li>

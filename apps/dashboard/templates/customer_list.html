@@ -1,48 +1,109 @@
-<!-- customer_list.html -->
-{% extends layout_path %}
+{% extends 'layout/master.html' %}
 
 {% block title %}Customer List{% endblock %}
 
-{% block content %}
-    <h2>Customer List</h2>
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
 
-    <!-- Display dynamic search form -->
-    <form method="get" action="{% url 'customer_list' %}" id="search-form">
-        <label for="id_name">Customer Name: </label>
-        <input type="text" id="id_name" name="name">
-        <button class="btn btn-primary" type="submit">Search</button>
-    </form>
-    <br>
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
 
-    <!-- Table to display customer information -->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Gender</th>
-                <th>Nationality</th>
-                <th>Registration Date</th>
-                <th>Language</th>
-                <th>Source</th>
-                <th>TRN</th>
-                <!-- Add other columns as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for customer in customers %}
-                <tr>
-                    <td> <a href="{% url 'customer_info' customer.pk %}">{{ customer.first_name }}</a></td>
-                    <td>{{ customer.last_name }}</td>
-                    <td>{{ customer.gender }}</td>
-                    <td>{{ customer.nationality }}</td>
-                    <td>{{ customer.register }}</td>
-                    <td>{{ customer.language }}</td>
-                    <td>{{ customer.source }}</td>
-                    <td>{{ customer.trn }}</td>
-                    <!-- Add other columns as needed -->
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% endblock %}
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+            <br>
+            <center><h2>Customer List</h2></center>
+            <br>
+
+            <!-- Display dynamic search form -->
+            <form method="get" action="{% url 'customer_list' %}" id="search-form">
+                <label for="id_name">Customer Name: </label>
+                <input type="text" id="id_name" name="name">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
+            <br>
+        
+            <!-- Table to display customer information -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Gender</th>
+                        <th>Nationality</th>
+                        <th>Registration Date</th>
+                        <th>Language</th>
+                        <th>Source</th>
+                        <th>TRN</th>
+                        <!-- Add other columns as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                        <tr>
+                            <td> <a href="{% url 'customer_info' customer.pk %}">{{ customer.first_name }}</a></td>
+                            <td>{{ customer.last_name }}</td>
+                            <td>{{ customer.gender }}</td>
+                            <td>{{ customer.nationality }}</td>
+                            <td>{{ customer.register }}</td>
+                            <td>{{ customer.language }}</td>
+                            <td>{{ customer.source }}</td>
+                            <td>{{ customer.trn }}</td>
+                            <!-- Add other columns as needed -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

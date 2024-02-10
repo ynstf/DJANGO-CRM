@@ -7,17 +7,20 @@ from .forms import CustomerForm, AddressForm, InquiryForm
 from .models import Customer, Nationality
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from .models import Email,PhoneNumber,WhatsApp,Landline
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import TemplateView
 
 # Create your views here.
 
 def dashboard(request):
 
-    # Set the layout path even when authentication fails
-    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-    context = {'layout_path': layout_path}
 
+    context={
 
-    return render(request, "dash.html", context)
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'dashboard.html',context)
 
 '''
 def customer_list(request):
@@ -65,9 +68,10 @@ def customer_list(request):
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'layout_path': layout_path, 'customers': customers}
     
+
+    context = TemplateLayout.init(request, context)
     return render(request, 'customer_list.html', context)
 
-from .models import Email,PhoneNumber,WhatsApp,Landline
 
 @login_required(login_url='/')
 def add_customer(request):
@@ -138,12 +142,9 @@ def add_customer(request):
     context = {'layout_path': layout_path,
                 'customer_form': customer_form, 'address_form': address_form, 'inquiry_form': inquiry_form
                 }
-
+    
+    context = TemplateLayout.init(request, context)
     return render(request, 'add_customer.html', context)
-
-
-
-from django.shortcuts import render, get_object_or_404
 
 
 def customer_info(request, id):
@@ -158,5 +159,7 @@ def customer_info(request, id):
             'addresses': addresses,
             'inquiries': inquiries,
             }
-
+    context = TemplateLayout.init(request, context)
     return render(request, "customer_info.html", context)
+
+

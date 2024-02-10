@@ -1,60 +1,121 @@
-<!-- customer_info.html -->
-{% extends layout_path %}
+{% extends 'layout/master.html' %}
 
 {% block title %}Customer Information{% endblock %}
 
-{% block content %}
-    <h2>Customer Information</h2>
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
 
-    <h3>Customer Details</h3>
-    <p>First Name: {{ customer.first_name }}</p>
-    <p>Last Name: {{ customer.last_name }}</p>
-    <p>Gender: {{ customer.gender }}</p>
-    <p>Nationality: {{ customer.nationality }}</p>
-    <p>Language: {{ customer.language }}</p>
-    <p>Source: {{ customer.source }}</p>
-    <p>Trn: {{ customer.trn }}</p>
-    <!-- Add other customer details as needed -->
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
 
-    <h3>Contact Information</h3>
-    
-    {% for number in customer.landline_set.all %}
-    <p>Landlines: {{ number.number }}</p>
-    {% endfor %}
+    <!-- Layout page: Start -->
+    <div class="layout-page">
 
 
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
 
-    {% for number in customer.phonenumber_set.all %}
-        <p>Phone Numbers: {{ number.number }}</p>
-    {% endfor %}
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
 
+        <div class="container">
+            <br>
+            <center><h2>Customer Information</h2></center>
+            <br>
 
-    {% for whatsapp in customer.whatsapp_set.all %}
-        <p>WhatsApp Numbers: {{ whatsapp.number }}</p>
-    {% endfor %}
+            <h3>Customer Details</h3>
+            <p>First Name: {{ customer.first_name }}</p>
+            <p>Last Name: {{ customer.last_name }}</p>
+            <p>Gender: {{ customer.gender }}</p>
+            <p>Nationality: {{ customer.nationality }}</p>
+            <p>Language: {{ customer.language }}</p>
+            <p>Source: {{ customer.source }}</p>
+            <p>Trn: {{ customer.trn }}</p>
+            <!-- Add other customer details as needed -->
+        
+            <h3>Contact Information</h3>
+            
+            {% for number in customer.landline_set.all %}
+            <p>Landlines: {{ number.number }}</p>
+            {% endfor %}
+        
+        
+        
+            {% for number in customer.phonenumber_set.all %}
+                <p>Phone Numbers: {{ number.number }}</p>
+            {% endfor %}
+        
+        
+            {% for whatsapp in customer.whatsapp_set.all %}
+                <p>WhatsApp Numbers: {{ whatsapp.number }}</p>
+            {% endfor %}
+        
+        
+            {% for email in customer.email_set.all %}
+                <p>Emails: {{ email.email }}</p>
+            {% endfor %}
+        
+            <h3>Addresses</h3>
+            {% for address in addresses %}
+                <h4>Address: {{ address.address_name }}</h4>
+                <p>Type: {{ address.type }}</p>
+                <p>Emirate: {{ address.emirate }}</p>
+                <p>Description Location: {{ address.description_location }}</p>
+                <p>Location: {{ address.location }}</p>
+                <!-- Add other address details as needed -->
+            {% endfor %}
+        
+            <h3>Inquiries</h3>
+            {% for inquiry in inquiries %}
+                <p>Date Inq: {{ inquiry.date_inq }}</p>
+                <p>Time Inq: {{ inquiry.time_inq }}</p>
+                <p>Inq Num: {{ inquiry.inq_num }}</p>
+                <p>Services: {% for service in inquiry.services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <p>Description: {{ inquiry.description }}</p>
+                <!-- Add other inquiry details as needed -->
+            {% endfor %}
+        </div>
 
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
 
-    {% for email in customer.email_set.all %}
-        <p>Emails: {{ email.email }}</p>
-    {% endfor %}
+        </div>
+        <!-- / Content: End -->
 
-    <h3>Addresses</h3>
-    {% for address in addresses %}
-        <h4>Address: {{ address.address_name }}</h4>
-        <p>Type: {{ address.type }}</p>
-        <p>Emirate: {{ address.emirate }}</p>
-        <p>Description Location: {{ address.description_location }}</p>
-        <p>Location: {{ address.location }}</p>
-        <!-- Add other address details as needed -->
-    {% endfor %}
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
 
-    <h3>Inquiries</h3>
-    {% for inquiry in inquiries %}
-        <p>Date Inq: {{ inquiry.date_inq }}</p>
-        <p>Time Inq: {{ inquiry.time_inq }}</p>
-        <p>Inq Num: {{ inquiry.inq_num }}</p>
-        <p>Services: {% for service in inquiry.services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-        <p>Description: {{ inquiry.description }}</p>
-        <!-- Add other inquiry details as needed -->
-    {% endfor %}
-{% endblock %}
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

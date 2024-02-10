@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import AuthView
-
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path(
@@ -9,5 +9,8 @@ urlpatterns = [
         name="login",
 
     ),
+    
+    # Add the following line for logout
+    path('logout/', LogoutView.as_view(), name='logout'),
 
 ]
