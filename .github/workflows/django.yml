@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-
+    name: Build Django and Test
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
