@@ -33,11 +33,11 @@ class PhoneNumberAdmin(admin.ModelAdmin):
 
 @admin.register(WhatsApp)
 class WhatsAppAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'number')
+    list_display = ('customer', 'whatsapp')
 
 @admin.register(Landline)
 class LandlineAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'number')
+    list_display = ('customer', 'landline')
 
 @admin.register(Email)
 class EmailAdmin(admin.ModelAdmin):

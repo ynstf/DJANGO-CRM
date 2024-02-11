@@ -47,7 +47,7 @@
             <h3>Contact Information</h3>
             
             {% for number in customer.landline_set.all %}
-            <p>Landlines: {{ number.number }}</p>
+            <p>Landlines: {{ number.landline }}</p>
             {% endfor %}
         
         
@@ -57,8 +57,8 @@
             {% endfor %}
         
         
-            {% for whatsapp in customer.whatsapp_set.all %}
-                <p>WhatsApp Numbers: {{ whatsapp.number }}</p>
+            {% for whatsApp in customer.whatsapp_set.all %}
+                <p>WhatsApp Numbers: {{ whatsApp.whatsapp }}</p>
             {% endfor %}
         
         

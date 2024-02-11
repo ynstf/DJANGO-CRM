@@ -2,8 +2,13 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee
 from django.shortcuts import render, redirect
-from apps.dashboard.models import Address, Inquiry, PhoneNumber
-from .forms import CustomerForm, AddressForm, InquiryForm, PhoneNumberForm
+
+from apps.dashboard.models import Address, Inquiry
+from .forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
+
+from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp
+from .forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
+
 from .models import Customer, Nationality
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -78,11 +83,11 @@ def add_customer(request):
             phone = phone.save()
 
             # Save the whatsapp
-            whatsapp = WhatsApp(customer=customer,number=whatsapp_form)
+            whatsapp = WhatsApp(customer=customer,whatsapp=whatsapp_form)
             whatsapp = whatsapp.save()
 
             # Save the landline
-            landline = Landline(customer=customer,number=landline_form)
+            landline = Landline(customer=customer,landline=landline_form)
             landline = landline.save()
 
             # Populate address form fields
@@ -139,36 +144,127 @@ def customer_info(request, id):
     return render(request, "customer_info.html", context)
 
 
+def delete_number(request, id_number):
+    phone = get_object_or_404(PhoneNumber, id=id_number)
+    id = phone.customer.id
+    phone.delete()
+    return redirect('edit_customer', id=id)
+
+def delete_whatsApp(request, id_number):
+    whatsApp = get_object_or_404(WhatsApp, id=id_number)
+    id = whatsApp.customer.id
+    whatsApp.delete()
+    return redirect('edit_customer', id=id)
+
+def delete_email(request, id_mail):
+    mail = get_object_or_404(Email, id=id_mail)
+    id = mail.customer.id
+    mail.delete()
+    return redirect('edit_customer', id=id)
+
+def delete_landline(request, id_number):
+    landline = get_object_or_404(Landline, id=id_number)
+    id = landline.customer.id
+    landline.delete()
+    return redirect('edit_customer', id=id)
+
+
+
+
 def edit_customer(request, id):
     customer = get_object_or_404(Customer, id=id)
 
     if request.method == 'POST':
-        form = CustomerForm(request.POST, instance=customer)
+        form = CustomerFormEdit(request.POST, instance=customer)
 
+
+        #update number
         pre_numbers = PhoneNumber.objects.filter(customer=customer)
         pre_numbers.delete()
-
         numbers = request.POST.getlist("number")
         print(numbers)
-
         for number in numbers:
             new = PhoneNumber(customer = customer,
                                 number =number)
             new.save()
+        
+        #update whatsapp
+        pre_numbers = WhatsApp.objects.filter(customer=customer)
+        pre_numbers.delete()
+        numbers = request.POST.getlist("whatsapp")
+        print(numbers)
+        for number in numbers:
+            new = WhatsApp(customer = customer,
+                                whatsapp =number)
+            new.save()
+
+            
+        #update Landline
+        pre_numbers = Landline.objects.filter(customer=customer)
+        pre_numbers.delete()
+        numbers = request.POST.getlist("landline")
+        print(numbers)
+        for number in numbers:
+            new = Landline(customer = customer,
+                                landline =number)
+            new.save()
+
+        #update email
+        pre_numbers = Email.objects.filter(customer=customer)
+        pre_numbers.delete()
+        numbers = request.POST.getlist("email")
+        print(numbers)
+        for number in numbers:
+            new = Email(customer = customer,
+                                email =number)
+            new.save()
+
+
 
 
         if form.is_valid():
             form.save()
             return redirect('customer_info', id=id)
     else:
-        form = CustomerForm(instance=customer)
+        form = CustomerFormEdit(instance=customer)
 
         # show all phones in cases
         phone= PhoneNumber.objects.filter(customer=customer)
         phones = []
         for p in phone:
-            phones.append(PhoneNumberForm(instance=p))
+            phones.append({'form':PhoneNumberForm(instance=p),
+                            'number':p})
         print(phones)
+        
+        #EmailForm, 
+        # show all phones in cases
+        email= Email.objects.filter(customer=customer)
+        emails = []
+        for e in email:
+            emails.append({'form':EmailForm(instance=e),
+                            'mail':e})
+        print(emails)
+
+        #LandlineForm,
+        # show all phones in cases
+        landline= Landline.objects.filter(customer=customer)
+        landlines = []
+        for l in landline:
+            landlines.append({'form':LandlineForm(instance=l),
+                            'landline':l})
+        print(landlines)
+
+        #WhatsAppForm
+        # show all phones in cases
+        whatsApp= WhatsApp.objects.filter(customer=customer)
+        whatsApps = []
+        for w in whatsApp:
+            whatsApps.append({'form':WhatsAppForm(instance=w),
+                            'number':w})
+        print(whatsApps)
+
+        
+
 
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
@@ -176,7 +272,10 @@ def edit_customer(request, id):
         'layout_path': layout_path,
         'customer': customer,
         'form': form,
-        'phones':phones
+        'phones':phones,
+        'whatsApps':whatsApps,
+        'landlines':landlines,
+        'emails':emails,
     }
     context = TemplateLayout.init(request, context)
     return render(request, "edit_customer.html", context)

@@ -1,9 +1,8 @@
 # forms.py
 
 from django import forms
-from .models import Customer, Address, Inquiry, Booking, Emirate, PhoneNumber, WhatsApp, Landline, Email
-from django.forms import inlineformset_factory
-from .models import Customer, PhoneNumber, WhatsApp, Landline, Email, Address, Inquiry
+from .models import Customer, Address, Inquiry, Booking
+from .models import PhoneNumber, WhatsApp, Landline, Email, Address, Emirate
 
 class CustomerForm(forms.ModelForm):
     class Meta:
@@ -11,14 +10,24 @@ class CustomerForm(forms.ModelForm):
         fields = '__all__'
 
     # Explicitly include related fields
-    '''landlines = forms.CharField(required=False)
+    landlines = forms.CharField(required=False)
     phone_numbers = forms.CharField(required=False)
     whats_apps = forms.CharField(required=False)
-    emails = forms.CharField(required=False)'''
+    emails = forms.CharField(required=False)
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)
         # Exclude the ForeignKey fields from the form
         self.fields['employee'].widget = forms.HiddenInput()
+class CustomerFormEdit(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(CustomerFormEdit, self).__init__(*args, **kwargs)
+        # Exclude the ForeignKey fields from the form
+        self.fields['employee'].widget = forms.HiddenInput()
+
 
 class AddressForm(forms.ModelForm):
     emirate = forms.ModelChoiceField(queryset=Emirate.objects.all(), required=False)
@@ -55,6 +64,33 @@ class PhoneNumberForm(forms.ModelForm):
         fields = '__all__'
     def __init__(self, *args, **kwargs):
         super(PhoneNumberForm, self).__init__(*args, **kwargs)
+        # Exclude the ForeignKey fields from the form
+        self.fields['customer'].widget = forms.HiddenInput()
+
+class WhatsAppForm(forms.ModelForm):
+    class Meta:
+        model = WhatsApp
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        super(WhatsAppForm, self).__init__(*args, **kwargs)
+        # Exclude the ForeignKey fields from the form
+        self.fields['customer'].widget = forms.HiddenInput()
+
+class LandlineForm(forms.ModelForm):
+    class Meta:
+        model = Landline
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        super(LandlineForm, self).__init__(*args, **kwargs)
+        # Exclude the ForeignKey fields from the form
+        self.fields['customer'].widget = forms.HiddenInput()
+
+class EmailForm(forms.ModelForm):
+    class Meta:
+        model = Email
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        super(EmailForm, self).__init__(*args, **kwargs)
         # Exclude the ForeignKey fields from the form
         self.fields['customer'].widget = forms.HiddenInput()
 
