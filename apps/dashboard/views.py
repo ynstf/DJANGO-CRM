@@ -2,8 +2,8 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee
 from django.shortcuts import render, redirect
-from apps.dashboard.models import Address, Inquiry
-from .forms import CustomerForm, AddressForm, InquiryForm
+from apps.dashboard.models import Address, Inquiry, PhoneNumber
+from .forms import CustomerForm, AddressForm, InquiryForm, PhoneNumberForm
 from .models import Customer, Nationality
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -14,35 +14,11 @@ from django.views.generic import TemplateView
 # Create your views here.
 
 def dashboard(request):
-
-
     context={
-
     }
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
 
-'''
-def customer_list(request):
-    customers = Customer.objects.all()
-
-    # Handle search form submission
-    if request.method == 'GET':
-        # Get the name entered in the query parameter
-        name_query = request.GET.get('name')
-        
-        # Filter customers based on the entered name
-        if name_query:
-            customers = customers.filter(first_name__icontains=name_query)
-
-            return JsonResponse({'customers': customers})
-    
-    # Render the initial page with the full customer list
-    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-    context = {'layout_path': layout_path, 'customers': customers}
-    
-    return render(request, 'customer_list.html', context)
-'''
 
 def customer_list(request):
     customers = Customer.objects.all()
@@ -161,5 +137,49 @@ def customer_info(request, id):
             }
     context = TemplateLayout.init(request, context)
     return render(request, "customer_info.html", context)
+
+
+def edit_customer(request, id):
+    customer = get_object_or_404(Customer, id=id)
+
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance=customer)
+
+        pre_numbers = PhoneNumber.objects.filter(customer=customer)
+        pre_numbers.delete()
+
+        numbers = request.POST.getlist("number")
+        print(numbers)
+
+        for number in numbers:
+            new = PhoneNumber(customer = customer,
+                                number =number)
+            new.save()
+
+
+        if form.is_valid():
+            form.save()
+            return redirect('customer_info', id=id)
+    else:
+        form = CustomerForm(instance=customer)
+
+        # show all phones in cases
+        phone= PhoneNumber.objects.filter(customer=customer)
+        phones = []
+        for p in phone:
+            phones.append(PhoneNumberForm(instance=p))
+        print(phones)
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'layout_path': layout_path,
+        'customer': customer,
+        'form': form,
+        'phones':phones
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, "edit_customer.html", context)
+
 
 

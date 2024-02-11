@@ -1,9 +1,9 @@
 # forms.py
 
 from django import forms
-from .models import Customer, Address, Inquiry, Booking, Emirate
-
-
+from .models import Customer, Address, Inquiry, Booking, Emirate, PhoneNumber, WhatsApp, Landline, Email
+from django.forms import inlineformset_factory
+from .models import Customer, PhoneNumber, WhatsApp, Landline, Email, Address, Inquiry
 
 class CustomerForm(forms.ModelForm):
     class Meta:
@@ -11,10 +11,10 @@ class CustomerForm(forms.ModelForm):
         fields = '__all__'
 
     # Explicitly include related fields
-    landlines = forms.CharField(required=False)
+    '''landlines = forms.CharField(required=False)
     phone_numbers = forms.CharField(required=False)
     whats_apps = forms.CharField(required=False)
-    emails = forms.CharField(required=False)
+    emails = forms.CharField(required=False)'''
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)
         # Exclude the ForeignKey fields from the form
@@ -44,8 +44,18 @@ class InquiryForm(forms.ModelForm):
         self.fields['customer'].widget = forms.HiddenInput()
         self.fields['address'].widget = forms.HiddenInput()
 
-
 class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
         fields = '__all__'
+
+class PhoneNumberForm(forms.ModelForm):
+    class Meta:
+        model = PhoneNumber
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        super(PhoneNumberForm, self).__init__(*args, **kwargs)
+        # Exclude the ForeignKey fields from the form
+        self.fields['customer'].widget = forms.HiddenInput()
+
+

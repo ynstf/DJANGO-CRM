@@ -27,6 +27,8 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
+        <a style="text-align: right;" href="{% url 'edit_customer' customer.id %}" class="btn btn-primary">Edit Customer</a>
+        <br>
         <div class="container">
             <br>
             <center><h2>Customer Information</h2></center>
@@ -84,6 +86,9 @@
                 <!-- Add other inquiry details as needed -->
             {% endfor %}
         </div>
+
+
+<!-- ######################################################################### -->
 
         <!-- Content: Start -->
         {% if is_flex %}
