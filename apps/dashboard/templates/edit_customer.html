@@ -35,33 +35,51 @@
             <form method="post" action="{% url 'edit_customer' customer.id %}">
                 {% csrf_token %}
 
+                <h3>Customer Details</h3>
                 {{ form.as_p }}
+                <br><br>
 
+                <h3>Contacts</h3>
                 {% for phone in phones %}
                     {{ phone.form }}
                     <a href="{% url 'delete_number' phone.number.id %}"><button type="button" class="btn btn-danger">Delete</button></a>
                     <br><br>
                 {% endfor %}
-                
                 {% for whatsApp in whatsApps %}
                     {{ whatsApp.form }}
                     <a href="{% url 'delete_whatsApp' whatsApp.number.id %}"><button type="button" class="btn btn-danger">Delete</button></a>
                     <br><br>
                 {% endfor %}
-
                 {% for landline in landlines %}
                     {{ landline.form }}
                     <a href="{% url 'delete_landline' landline.landline.id %}"><button type="button" class="btn btn-danger">Delete</button></a>
                     <br><br>
                 {% endfor %}
-
                 {% for email in emails %}
                     {{ email.form }}
                     <a href="{% url 'delete_email' email.mail.id %}"><button type="button" class="btn btn-danger">Delete</button></a>
                     <br><br>
                 {% endfor %}
 
-                <br>
+
+                {% for address in addresses %}
+                    <h3>Address <a href="{% url 'delete_address' address.adrs.id %}"><button type="button" class="btn btn-danger">Delete this address</button></a> </h3>
+                    {{ address.form.as_p }}
+                    <br><br>
+                {% endfor %}
+                <br><br>
+
+
+
+                
+                {% for Inquiry in Inquiries %}
+                    <h3>Inquiry </h3>
+                    {{ Inquiry.form.as_p }}
+                    <br><br>
+                {% endfor %}
+                <br><br>
+
+
                 <button type="submit" class="btn btn-primary">Save Changes</button>
             </form>
             

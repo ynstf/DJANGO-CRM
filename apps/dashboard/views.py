@@ -3,10 +3,10 @@ from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee
 from django.shortcuts import render, redirect
 
-from apps.dashboard.models import Address, Inquiry
+from apps.dashboard.models import Address, Customer, Inquiry
 from .forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 
-from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp
+from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
 from .forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
 
 from .models import Customer, Nationality
@@ -168,15 +168,21 @@ def delete_landline(request, id_number):
     landline.delete()
     return redirect('edit_customer', id=id)
 
+def delete_address(request, id_address):
+    address = get_object_or_404(Address, id=id_address)
+    id = address.customer.id
+    address.delete()
+    return redirect('edit_customer', id=id)
+
 
 
 
 def edit_customer(request, id):
     customer = get_object_or_404(Customer, id=id)
-
+    
     if request.method == 'POST':
         form = CustomerFormEdit(request.POST, instance=customer)
-
+        
 
         #update number
         pre_numbers = PhoneNumber.objects.filter(customer=customer)
@@ -198,7 +204,6 @@ def edit_customer(request, id):
                                 whatsapp =number)
             new.save()
 
-            
         #update Landline
         pre_numbers = Landline.objects.filter(customer=customer)
         pre_numbers.delete()
@@ -221,6 +226,36 @@ def edit_customer(request, id):
 
 
 
+        #update address
+        address = Address.objects.filter(customer=customer)
+        address.delete()
+        address_names = request.POST.getlist("address_name")
+        types = request.POST.getlist("type")
+        emirates = request.POST.getlist("emirate")
+        description_locations = request.POST.getlist("description_location")
+        locations = request.POST.getlist("location")
+        for adrs in range(len(address_names)):
+            try:
+                print(emirates[adrs])
+                emirate = Emirate.objects.get(id=emirates[adrs])
+                print(emirate)
+                new_address = Address(customer = customer,
+                                        address_name = address_names[adrs],
+                                        type = types[adrs],
+                                        emirate = emirate, 
+                                        description_location = description_locations[adrs], 
+                                        location = locations[adrs])
+                new_address.save()
+
+            except:
+                new_address = Address(customer = customer,
+                                        address_name = address_names[adrs],
+                                        type = types[adrs],
+                                        description_location = description_locations[adrs], 
+                                        location = locations[adrs])
+                new_address.save()
+                print(2)
+        
 
         if form.is_valid():
             form.save()
@@ -263,7 +298,13 @@ def edit_customer(request, id):
                             'number':w})
         print(whatsApps)
 
-        
+        #Addressfomr
+        address = Address.objects.filter(customer=customer)
+        addresses = []
+        for a in address:
+            addresses.append({'form':AddressForm(instance=a),
+                            'adrs':a})
+        print(addresses)
 
 
 
@@ -276,6 +317,7 @@ def edit_customer(request, id):
         'whatsApps':whatsApps,
         'landlines':landlines,
         'emails':emails,
+        'addresses':addresses,
     }
     context = TemplateLayout.init(request, context)
     return render(request, "edit_customer.html", context)

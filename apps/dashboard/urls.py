@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import dashboard,add_customer,customer_list,customer_info,edit_customer,delete_number
-from .views import delete_number, delete_whatsApp, delete_landline, delete_email
+from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address
 
 
 urlpatterns = [
@@ -14,5 +14,8 @@ urlpatterns = [
     path('delete_whatsApp/<int:id_number>', delete_whatsApp, name='delete_whatsApp'),
     path('delete_landline/<int:id_number>', delete_landline, name='delete_landline'),
     path('delete_email/<int:id_mail>', delete_email, name='delete_email'),
+    path('delete_address/<int:id_address>', delete_address, name='delete_address'),
+
+    
 
 ]
