@@ -4,10 +4,10 @@ name: Deploy to Render
 on:
   workflow_call:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Build and Push Docker image to Docker Hub"]
-    types:
-    - completed
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   push_to_registry:

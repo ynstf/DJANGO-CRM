@@ -3,10 +3,7 @@ name: Build and Push Docker image to Docker Hub
 on:
   workflow_call:
   workflow_dispatch:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+
 
 
 jobs:
