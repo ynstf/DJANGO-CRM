@@ -39,15 +39,35 @@ def customer_list(request):
 
             # If it's an AJAX request, return a JSON response
             if request.headers.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-                # Extract customer data and convert it to a list of dictionaries
-                customer_data = [{customer} for customer in customers]
+
+                # show all detail
+                customer = []
+                for c in customers:
+                    customer.append({'info':c,
+                        'number':PhoneNumber.objects.filter(customer=c).first(),
+                        'email':Email.objects.filter(customer=c).first(),
+                        })
+                print(customer)
 
                 # Return a JSON response with the customer data
-                return JsonResponse({'customers': customer_data})
+                return JsonResponse({'customers':customer })
 
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-    context = {'layout_path': layout_path, 'customers': customers}
+
+    # show all phones in cases
+    customer = []
+    for c in customers:
+        customer.append({'info':c,
+                        'number':PhoneNumber.objects.filter(customer=c).first(),
+                        'email':Email.objects.filter(customer=c).first(),
+                        })
+    print(customer)
+
+    context = {'layout_path': layout_path,
+                'customers': customer,
+
+                }
     
 
     context = TemplateLayout.init(request, context)

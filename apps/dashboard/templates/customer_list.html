@@ -52,26 +52,33 @@
                         <th>Language</th>
                         <th>Source</th>
                         <th>TRN</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+
                         <!-- Add other columns as needed -->
                     </tr>
                 </thead>
                 <tbody>
                     {% for customer in customers %}
                         <tr>
-                            <td> <a href="{% url 'customer_info' customer.pk %}">{{ customer.first_name }}</a></td>
-                            <td>{{ customer.last_name }}</td>
-                            <td>{{ customer.gender }}</td>
-                            <td>{{ customer.nationality }}</td>
-                            <td>{{ customer.register }}</td>
-                            <td>{{ customer.language }}</td>
-                            <td>{{ customer.source }}</td>
-                            <td>{{ customer.trn }}</td>
+                            <td> <a href="{% url 'customer_info' customer.info.id %}">{{ customer.info.first_name }}</a></td>
+                            <td>{{ customer.info.last_name }}</td>
+                            <td>{{ customer.info.gender }}</td>
+                            <td>{{ customer.info.nationality }}</td>
+                            <td>{{ customer.info.register }}</td>
+                            <td>{{ customer.info.language }}</td>
+                            <td>{{ customer.info.source }}</td>
+                            <td>{{ customer.info.trn }}</td>
+                            <td>{{ customer.email.email }}</td>
+                            <td>{{ customer.number.number }}</td>
+
                             <!-- Add other columns as needed -->
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+<!-- ######################################################################### -->
 
         <!-- Content: Start -->
         {% if is_flex %}
