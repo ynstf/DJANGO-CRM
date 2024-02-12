@@ -24,7 +24,6 @@ def dashboard(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
 
-
 def customer_list(request):
     customers = Customer.objects.all()
     
@@ -36,7 +35,7 @@ def customer_list(request):
         trn_query = request.GET.get('trn')
         number_query = request.GET.get('number')
         language_query = request.GET.get('language')
-        
+
         # Filter customers based on the entered name
         if name_query:
             customers = customers.filter(first_name__icontains=name_query)
@@ -102,7 +101,6 @@ def customer_list(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'customer_list.html', context)
 
-
 @login_required(login_url='/')
 def add_customer(request):
     if request.method == 'POST':
@@ -110,11 +108,13 @@ def add_customer(request):
         address_form = AddressForm(request.POST, prefix='address')
         inquiry_form = InquiryForm(request.POST, prefix='inquiry')
 
-        phone_form = request.POST.get('customer-phone_numbers')
-        whatsapp_form = request.POST.get('customer-whats_apps')
-        landline_form = request.POST.get('customer-landlines')
-        email_form = request.POST.get('customer-emails')
-        print(email_form)
+        phone_form = request.POST.getlist('customer-phone_numbers')
+        whatsapp_form = request.POST.getlist('customer-whats_apps')
+        landline_form = request.POST.getlist('customer-landlines')
+        email_form = request.POST.getlist('customer-emails')
+
+
+        print(phone_form,whatsapp_form,landline_form,email_form)
 
         if customer_form.is_valid() and address_form.is_valid() and inquiry_form.is_valid():
 
@@ -123,21 +123,25 @@ def add_customer(request):
             customer.employee = Employee.objects.get(user=request.user)  # Set the employee
             customer.save()
 
-            # Save the email
-            email = Email(customer=customer,email=email_form)
-            email = email.save() 
+            # Save the emails
+            for e in email_form:
+                email = Email(customer=customer,email=e)
+                email = email.save() 
 
-            # Save the phone
-            phone = PhoneNumber(customer=customer,number=phone_form)
-            phone = phone.save()
+            # Save the phones
+            for p in phone_form:
+                phone = PhoneNumber(customer=customer,number=p)
+                phone = phone.save()
 
-            # Save the whatsapp
-            whatsapp = WhatsApp(customer=customer,whatsapp=whatsapp_form)
-            whatsapp = whatsapp.save()
+            # Save the whatsapps
+            for w in whatsapp_form:
+                whatsapp = WhatsApp(customer=customer,whatsapp=w)
+                whatsapp = whatsapp.save()
 
-            # Save the landline
-            landline = Landline(customer=customer,landline=landline_form)
-            landline = landline.save()
+            # Save the landlines
+            for l in landline_form:
+                landline = Landline(customer=customer,landline=l)
+                landline = landline.save()
 
             # Populate address form fields
             address_form.instance.customer = customer
@@ -170,12 +174,13 @@ def add_customer(request):
     # Set the layout path even when authentication fails
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'layout_path': layout_path,
-                'customer_form': customer_form, 'address_form': address_form, 'inquiry_form': inquiry_form
+                'customer_form': customer_form, 
+                'address_form': address_form, 
+                'inquiry_form': inquiry_form
                 }
     
     context = TemplateLayout.init(request, context)
     return render(request, 'add_customer.html', context)
-
 
 def customer_info(request, id):
     customer = get_object_or_404(Customer, id=id)
@@ -191,7 +196,6 @@ def customer_info(request, id):
             }
     context = TemplateLayout.init(request, context)
     return render(request, "customer_info.html", context)
-
 
 def delete_number(request, id_number):
     phone = get_object_or_404(PhoneNumber, id=id_number)
