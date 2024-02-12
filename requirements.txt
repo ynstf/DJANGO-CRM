@@ -12,3 +12,4 @@ python-dotenv==1.0.0
 whitenoise==6.5.0
 python-dotenv
 psycopg2-binary
+django-extensions
