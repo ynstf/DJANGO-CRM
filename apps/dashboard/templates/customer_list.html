@@ -28,22 +28,63 @@
     <div class="content-wrapper">
 
         <div class="container">
-            <br>
+
             <center><h2>Customer List</h2></center>
             <br>
 
-            <!-- Display dynamic search form -->
-            <form method="get" action="{% url 'customer_list' %}" id="search-form">
-                <label for="id_name">Customer Name: </label>
-                <input type="text" id="id_name" name="name">
-                <button class="btn btn-primary" type="submit">Search</button>
+
+            <!-- Display dynamic search form with language dropdown -->
+            <form method="get" action="{% url 'customer_list' %}" id="search-form" class="row g-3">
+
+
+                <div class="col-md-4">
+                    <label for="id_id">ID:</label>
+                    <input type="text" id="id_id" name="id" class="form-control" value="{{ id_query }}" placeholder="ID..." aria-label="ID">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_name">Name:</label>
+                    <input type="text" id="id_name" name="name" class="form-control" value="{{ name_query }}" placeholder="Name..." aria-label="Name">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_trn" >TRN :</label>
+                    <input type="text" id="id_trn" name="trn" class="form-control" value="{{ trn_query }}" placeholder="TRN..." aria-label="TRN">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_phone">Phone :</label>
+                    <input type="text" id="id_phone" name="number" class="form-control" value="{{ number_query }}" placeholder="Phone Number..." aria-label="Phone Number">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_language">Language:</label>
+                    <select id="id_language" name="language" class="form-control">
+                        {% if language_query %}
+                            <option value="" selected disabled>{{ language_query }}</option>
+                        {% else %}
+                            <option value="" selected disabled>Select Language...</option>
+                        {% endif %}
+                        
+                        {% for language in languages %}
+                            <option value="{{ language }}">{{ language }}</option>
+                        {% endfor %}
+                        <!-- <option value="arabic">Arabic</option>
+                        <option value="french">French</option>
+                        <option value="english">English</option> -->
+                    </select>
+                </div>
+                <div class="col-12 mt-3">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
             </form>
-            <br>
-        
+
             <!-- Table to display customer information -->
             <table class="table">
                 <thead>
                     <tr>
+
+                        <th>ID</th>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Gender</th>
@@ -61,6 +102,7 @@
                 <tbody>
                     {% for customer in customers %}
                         <tr>
+                            <td>{{ customer.info.id }}</td>
                             <td> <a href="{% url 'customer_info' customer.info.id %}">{{ customer.info.first_name }}</a></td>
                             <td>{{ customer.info.last_name }}</td>
                             <td>{{ customer.info.gender }}</td>

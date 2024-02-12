@@ -3,7 +3,7 @@ from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee
 from django.shortcuts import render, redirect
 
-from apps.dashboard.models import Address, Customer, Inquiry
+from apps.dashboard.models import Address, Customer, Inquiry, Language
 from .forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
@@ -27,45 +27,74 @@ def dashboard(request):
 
 def customer_list(request):
     customers = Customer.objects.all()
-
+    
     # Handle search form submission
     if request.method == 'GET':
         # Get the name entered in the query parameter
         name_query = request.GET.get('name')
+        id_query = request.GET.get('id')
+        trn_query = request.GET.get('trn')
+        number_query = request.GET.get('number')
+        language_query = request.GET.get('language')
         
         # Filter customers based on the entered name
         if name_query:
             customers = customers.filter(first_name__icontains=name_query)
+        
+        if id_query:
+            customers = customers.filter(id=id_query)
 
-            # If it's an AJAX request, return a JSON response
-            if request.headers.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        if trn_query:
+            customers = customers.filter(trn__icontains=trn_query)
 
-                # show all detail
-                customer = []
-                for c in customers:
-                    customer.append({'info':c,
-                        'number':PhoneNumber.objects.filter(customer=c).first(),
-                        'email':Email.objects.filter(customer=c).first(),
-                        })
-                print(customer)
+        if language_query:
+            id = Language.objects.get(name=language_query)
+            customers = customers.filter(language=id)
 
-                # Return a JSON response with the customer data
-                return JsonResponse({'customers':customer })
+
+        if number_query:
+            phones = PhoneNumber.objects.all()
+            phones = phones.filter(number__icontains=number_query)
+            customers = [phone.customer for phone in phones ]
+
+
+        # If it's an AJAX request, return a JSON response
+        if request.headers.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            # show all detail
+            customer = []
+            for c in customers:
+                customer.append({'info':c,
+                    'number':PhoneNumber.objects.filter(customer=c).first(),
+                    'email':Email.objects.filter(customer=c).first(),
+                    })
+
+            # Return a JSON response with the customer data
+            return JsonResponse({'customers':customer })
 
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
 
-    # show all phones in cases
+    # show all infos
     customer = []
     for c in customers:
         customer.append({'info':c,
                         'number':PhoneNumber.objects.filter(customer=c).first(),
                         'email':Email.objects.filter(customer=c).first(),
                         })
-    print(customer)
+
+    # all language
+    languages = Language.objects.all()
 
     context = {'layout_path': layout_path,
                 'customers': customer,
+
+                'name_query':name_query if name_query!=None else '' ,
+                'id_query':id_query if id_query!=None else '' ,
+                'trn_query':trn_query if trn_query!=None else '' ,
+                'number_query':number_query if number_query!=None else '' ,
+                'language_query':language_query if language_query!=None else '' ,
+
+                'languages':languages ,
 
                 }
     
