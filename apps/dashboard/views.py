@@ -3,7 +3,7 @@ from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee
 from django.shortcuts import render, redirect
 
-from apps.dashboard.models import Address, Customer, Inquiry, Language
+from apps.dashboard.models import Address, Customer, Inquiry, Language, Service, Source
 from .forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
@@ -104,59 +104,142 @@ def customer_list(request):
 @login_required(login_url='/')
 def add_customer(request):
     if request.method == 'POST':
+        #customer fields
         customer_form = CustomerForm(request.POST, prefix='customer')
-        address_form = AddressForm(request.POST, prefix='address')
-        inquiry_form = InquiryForm(request.POST, prefix='inquiry')
 
+        #address_form = AddressForm(request.POST, prefix='address')
+        #inquiry_form = InquiryForm(request.POST, prefix='inquiry')
+        #address fields
+        """first_name = request.POST.get('customer-first_name')
+        last_name = request.POST.get('customer-last_name')
+        gender = request.POST.get('customer-gender')
+        nationality = request.POST.get('customer-nationality')
+        language = request.POST.get('customer-language')
+        source = request.POST.get('customer-source')
+        trn = request.POST.get('customer-trn')"""
+        
+        #contact fields
         phone_form = request.POST.getlist('customer-phone_numbers')
         whatsapp_form = request.POST.getlist('customer-whats_apps')
         landline_form = request.POST.getlist('customer-landlines')
         email_form = request.POST.getlist('customer-emails')
 
+        #address fields
+        adress_name = request.POST.getlist('address-address_name')
+        adress_type = request.POST.getlist('address-type')
+        emarate = request.POST.getlist('address-emirate')
+        adress_desc = request.POST.getlist('address-description_location')
+        location = request.POST.getlist('address-location')
 
+        print(adress_name,adress_type,emarate,adress_desc,location)
         print(phone_form,whatsapp_form,landline_form,email_form)
 
-        if customer_form.is_valid() and address_form.is_valid() and inquiry_form.is_valid():
 
-            # Save the customer
-            customer = customer_form.save(commit=False)  # Don't save yet, so we can set the employee
-            customer.employee = Employee.objects.get(user=request.user)  # Set the employee
-            customer.save()
 
-            # Save the emails
-            for e in email_form:
-                email = Email(customer=customer,email=e)
-                email = email.save() 
+        # Save the customer
+        customer = customer_form.save(commit=False)
+        customer.employee = Employee.objects.get(user=request.user)
+        customer.save()
 
-            # Save the phones
-            for p in phone_form:
-                phone = PhoneNumber(customer=customer,number=p)
-                phone = phone.save()
+        """nat = Nationality.objects.get(id=nationality)
+        lang= Language.objects.get(id=language)
+        src = Source.objects.get(id=source)
+        customer = Customer(
+            employee = Employee.objects.get(user=request.user),
+            first_name = first_name,
+            last_name = last_name,
+            gender = gender,
+            nationality = nat,
+            language = lang,
+            source = src,
+            trn = trn
+        )
+        customer.save()"""
 
-            # Save the whatsapps
-            for w in whatsapp_form:
-                whatsapp = WhatsApp(customer=customer,whatsapp=w)
-                whatsapp = whatsapp.save()
 
-            # Save the landlines
-            for l in landline_form:
-                landline = Landline(customer=customer,landline=l)
-                landline = landline.save()
 
-            # Populate address form fields
-            address_form.instance.customer = customer
+        # Save the emails
+        for e in email_form:
+            email = Email(customer=customer,email=e)
+            email = email.save() 
 
-            # Save the address
-            address = address_form.save()
+        # Save the phones
+        for p in phone_form:
+            phone = PhoneNumber(customer=customer,number=p)
+            phone = phone.save()
 
-            # Populate inquiry form fields
-            inquiry_form.instance.customer = customer
-            inquiry_form.instance.address = address
+        # Save the whatsapps
+        for w in whatsapp_form:
+            whatsapp = WhatsApp(customer=customer,whatsapp=w)
+            whatsapp = whatsapp.save()
 
-            # Save the inquiry
-            inquiry_form.save()
+        # Save the landlines
+        for l in landline_form:
+            landline = Landline(customer=customer,landline=l)
+            landline = landline.save()
 
-            return redirect('customer_list')  # Redirect to the customer list page
+        
+        # Iterate through the data and create Address instances
+        for i in range(len(adress_name)):
+            print(i)
+            if emarate[i] and adress_type[i] :
+                address = Address(
+                    customer=customer,
+                    address_name=adress_name[i],
+                    type=adress_type[i],
+                    emirate=Emirate.objects.get(id=emarate[i]),  # Replace with the actual Emirate retrieval
+                    description_location=adress_desc[i],
+                    location=location[i],
+                )
+                address.save()
+            else:
+                if emarate[i]=="" and adress_type[i]=="" :
+                    address = Address(
+                    customer=customer,
+                    address_name=adress_name[i],
+                    description_location=adress_desc[i],
+                    location=location[i],
+                )
+                    address.save()
+                
+                else:
+                    if emarate[i]=="":
+                        address = Address(
+                            customer=customer,
+                            address_name=adress_name[i],
+                            type=adress_type[i],
+                            description_location=adress_desc[i],
+                            location=location[i],
+                        )
+                        address.save()
+
+                    if adress_type[i]=="" :
+                        address = Address(
+                            customer=customer,
+                            address_name=adress_name[i],
+                            emirate=Emirate.objects.get(id=emarate[i]),  # Replace with the actual Emirate retrieval
+                            description_location=adress_desc[i],
+                            location=location[i],
+                        )
+                        address.save()
+            
+
+
+
+
+        """# Populate address form fields
+        address_form.instance.customer = customer
+        # Save the address
+        address = address_form.save()
+
+        # Populate inquiry form fields
+        inquiry_form.instance.customer = customer
+        inquiry_form.instance.address = address
+
+        # Save the inquiry
+        inquiry_form.save()"""
+
+        return redirect('customer_list')  # Redirect to the customer list page
     else:
         # Creating instances of forms with prefixes
         customer_form = CustomerForm(prefix='customer')
@@ -171,16 +254,43 @@ def add_customer(request):
 
         # Similarly, set default values for other fields as needed
             
+    # selection fields
+    Sources = Source.objects.all()
+
+    Genders = [{'gender':"Male",'id':'male'},
+                {'gender':"Female",'id':'female'}]
+    
+    
+    Nationalities = Nationality.objects.all()
+
+    Services = Service.objects.all()
+
+    Languages = Language.objects.all()
+
+    types = [{'type':"House",'id':'house'},
+                {'type':"Company",'id':'company'}]
+
+    Emirates = Emirate.objects.all()
+
     # Set the layout path even when authentication fails
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'layout_path': layout_path,
                 'customer_form': customer_form, 
-                'address_form': address_form, 
-                'inquiry_form': inquiry_form
+
+                'Sources':Sources,
+                'Genders':Genders,
+                'Nationalities':Nationalities,
+                'Services':Services,
+                'Languages':Languages,
+                'Emirates':Emirates,
+                'types':types,
+
                 }
     
     context = TemplateLayout.init(request, context)
     return render(request, 'add_customer.html', context)
+
+
 
 def customer_info(request, id):
     customer = get_object_or_404(Customer, id=id)

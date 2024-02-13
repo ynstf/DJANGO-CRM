@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import dashboard,add_customer,customer_list,customer_info,edit_customer,delete_number
 from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address
-
+from .views import get_all_address_types,get_all_address_Emirates
 
 urlpatterns = [
     path("dashboard/",dashboard,name="dashboard",),
@@ -15,6 +15,7 @@ urlpatterns = [
     path('delete_landline/<int:id_number>', delete_landline, name='delete_landline'),
     path('delete_email/<int:id_mail>', delete_email, name='delete_email'),
     path('delete_address/<int:id_address>', delete_address, name='delete_address'),
+
 
     
 
