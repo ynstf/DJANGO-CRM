@@ -344,9 +344,6 @@
                         
                         <br>
 
-
-
-                        
                     </div>
 
                     <div id="newaddressSection" class="address-form" >
@@ -366,7 +363,9 @@
                 <!-- JavaScript code to add new address forms dynamically -->
                 <script>
                     var addressCounter = 2; // Counter to give unique IDs to new address forms
-
+                    var br = document.createElement('br');
+                    
+                    
                     function addNewAddress() {
                         // Clone the existing address form
                         var clonedForm = document.querySelector('.address-form').cloneNode(true);
@@ -383,9 +382,23 @@
                             }
                         });
 
+                        // Add a delete button
+                        var deleteButton = document.createElement('button');
+                        deleteButton.type = 'button';
+                        deleteButton.className = 'btn btn-danger btn-sm';
+                        deleteButton.textContent = 'Remove Address';
+                        deleteButton.onclick = function () {
+                            clonedForm.remove();
+                        };
+                        clonedForm.appendChild(br);
+
+                        clonedForm.appendChild(deleteButton);
+
+                        clonedForm.appendChild(br);
+
                         // Append the cloned form to the container
                         document.getElementById('newaddressSection').appendChild(clonedForm);
-
+                        
                         // Increment the counter for the next form
                         addressCounter++;
                     }
