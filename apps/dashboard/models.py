@@ -43,6 +43,7 @@ class Customer(models.Model):
     language = models.ForeignKey(Language, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Language model
     source = models.ForeignKey(Source, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Source model
     trn = models.CharField(max_length=50, blank=True, null=True)
+    
     # Add other fields as needed
     def __str__(self):
         return f'{self.first_name} - {self.last_name}'

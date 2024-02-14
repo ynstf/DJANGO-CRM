@@ -35,6 +35,12 @@ def customer_list(request):
         trn_query = request.GET.get('trn')
         number_query = request.GET.get('number')
         language_query = request.GET.get('language')
+        nationality_query = request.GET.get('nationality')
+        source_query = request.GET.get('source')
+        date_query = request.GET.get('date')
+        add_name_query = request.GET.get('add_name')
+
+        #email = request.GET.get('email')
 
         # Filter customers based on the entered name
         if name_query:
@@ -46,9 +52,25 @@ def customer_list(request):
         if trn_query:
             customers = customers.filter(trn__icontains=trn_query)
 
+        if date_query:
+            customers = customers.filter(register__icontains=date_query)
+
+        if add_name_query:
+            customers = customers.filter(address__address_name__icontains=add_name_query)
+
         if language_query:
             id = Language.objects.get(name=language_query)
             customers = customers.filter(language=id)
+
+        if nationality_query:
+            id = Nationality.objects.get(name=nationality_query)
+            customers = customers.filter(nationality=id)
+
+        if source_query:
+            id = Source.objects.get(name=source_query)
+            customers = customers.filter(source=id)
+
+
 
 
         if number_query:
@@ -83,6 +105,8 @@ def customer_list(request):
 
     # all language
     languages = Language.objects.all()
+    nationality = Nationality.objects.all()
+    sources = Source.objects.all()
 
     context = {'layout_path': layout_path,
                 'customers': customer,
@@ -92,8 +116,14 @@ def customer_list(request):
                 'trn_query':trn_query if trn_query!=None else '' ,
                 'number_query':number_query if number_query!=None else '' ,
                 'language_query':language_query if language_query!=None else '' ,
+                'nationality_query':nationality_query if nationality_query!=None else '' ,
+                'source_query':source_query if source_query!=None else '' ,
+                'date_query':date_query if date_query!=None else '' ,
+                'add_name_query':add_name_query if add_name_query!=None else '',
 
                 'languages':languages ,
+                'nationality':nationality,
+                'sources':sources,
 
                 }
     
@@ -106,17 +136,6 @@ def add_customer(request):
     if request.method == 'POST':
         #customer fields
         customer_form = CustomerForm(request.POST, prefix='customer')
-
-        #address_form = AddressForm(request.POST, prefix='address')
-        #inquiry_form = InquiryForm(request.POST, prefix='inquiry')
-        #address fields
-        """first_name = request.POST.get('customer-first_name')
-        last_name = request.POST.get('customer-last_name')
-        gender = request.POST.get('customer-gender')
-        nationality = request.POST.get('customer-nationality')
-        language = request.POST.get('customer-language')
-        source = request.POST.get('customer-source')
-        trn = request.POST.get('customer-trn')"""
         
         #contact fields
         phone_form = request.POST.getlist('customer-phone_numbers')
@@ -131,32 +150,12 @@ def add_customer(request):
         adress_desc = request.POST.getlist('address-description_location')
         location = request.POST.getlist('address-location')
 
-        print(adress_name,adress_type,emarate,adress_desc,location)
-        print(phone_form,whatsapp_form,landline_form,email_form)
-
 
 
         # Save the customer
         customer = customer_form.save(commit=False)
         customer.employee = Employee.objects.get(user=request.user)
         customer.save()
-
-        """nat = Nationality.objects.get(id=nationality)
-        lang= Language.objects.get(id=language)
-        src = Source.objects.get(id=source)
-        customer = Customer(
-            employee = Employee.objects.get(user=request.user),
-            first_name = first_name,
-            last_name = last_name,
-            gender = gender,
-            nationality = nat,
-            language = lang,
-            source = src,
-            trn = trn
-        )
-        customer.save()"""
-
-
 
         # Save the emails
         for e in email_form:
@@ -178,10 +177,8 @@ def add_customer(request):
             landline = Landline(customer=customer,landline=l)
             landline = landline.save()
 
-        
         # Iterate through the data and create Address instances
         for i in range(len(adress_name)):
-            print(i)
             if emarate[i] and adress_type[i] :
                 address = Address(
                     customer=customer,
@@ -225,25 +222,10 @@ def add_customer(request):
             
 
 
-
-
-        """# Populate address form fields
-        address_form.instance.customer = customer
-        # Save the address
-        address = address_form.save()
-
-        # Populate inquiry form fields
-        inquiry_form.instance.customer = customer
-        inquiry_form.instance.address = address
-
-        # Save the inquiry
-        inquiry_form.save()"""
-
         return redirect('customer_list')  # Redirect to the customer list page
     else:
         # Creating instances of forms with prefixes
         customer_form = CustomerForm(prefix='customer')
-        address_form = AddressForm(prefix='address')
         inquiry_form = InquiryForm(prefix='inquiry')
 
         # You can set default values for some fields if needed
@@ -259,7 +241,6 @@ def add_customer(request):
 
     Genders = [{'gender':"Male",'id':'male'},
                 {'gender':"Female",'id':'female'}]
-    
     
     Nationalities = Nationality.objects.all()
 
@@ -289,7 +270,6 @@ def add_customer(request):
     
     context = TemplateLayout.init(request, context)
     return render(request, 'add_customer.html', context)
-
 
 
 def customer_info(request, id):
@@ -484,6 +464,3 @@ def edit_customer(request, id):
     }
     context = TemplateLayout.init(request, context)
     return render(request, "edit_customer.html", context)
-
-
-
