@@ -102,7 +102,7 @@
                     <!-- add Phone Number forms -->
                     <div class="col-md-4">
                         <label for="id_customer-whats_apps" > Phone Number : </label>
-                        <input type="text" id="id_customer-phone_numbers" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers">
+                        <input type="text" id="id_customer-phone_numbers" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
                     </div>
                     <div id="additional-phone-numbers"></div>
                     <button type="button" class="btn btn-secondary btn-sm" onclick="addNewPhoneNumber()">Add New Phone Number</button>
@@ -300,7 +300,7 @@
                     
                     <br><br>
                 </div>
-<!-- ######################################################################### -->
+<!-- -->
 
 
                 <br>
@@ -348,6 +348,8 @@
 
                     <div id="newaddressSection" class="address-form" >
                     </div>
+
+                    
                         
                     <!-- Add new address button -->
                     <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewAddress()">Add New Address</button>
@@ -355,11 +357,6 @@
                     <br>
                 </div>
 
-                
-                    
-                
-
-                
                 <!-- JavaScript code to add new address forms dynamically -->
                 <script>
                     var addressCounter = 2; // Counter to give unique IDs to new address forms
@@ -404,8 +401,129 @@
                     }
                 </script>
 
+<!-- ################ inquery ###########################-->
+                
+                <div class="container">
+                    <br>
+                    <div >
+                        <div id="inqSection" class="inq-form" >
+                            <h3>Inquiry</h3>
+                            <!--{{ address_form.as_p }}-->
 
+                            <div class="col-md-4">
+                                <label for="inq-adr"> This Inquiry Addressed in : </label>
+                                <input type="text" id="inq-adr" name="inq_address" class="form-control" placeholder="Inquiry About..." aria-label="Inquiry About">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="id_inquiry-date_inq"> Date Inquiry : </label>
+                                <input type="text" id="id_inquiry-date_inq" name="inquiry-date_inq" class="form-control" placeholder="Date Inquiry..." aria-label="Date Inquiry">
+                                <button class="btn btn" type="button" onclick="fillCurrentDate()">Fill Current Date</button>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="id_inquiry-time_inq"> Time Inquiry : </label>
+                                <input type="text" id="id_inquiry-time_inq" name="inquiry-time_inq" class="form-control" placeholder="Time Inquiry..." aria-label="Time Inquiry">
+                                <button class="btn btn" type="button" onclick="fillCurrentTime()">Fill Current Time</button>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="id_inquiry-inq_num"> Inquiry Number : </label>
+                                <input type="text" id="id_inquiry-inq_num" name="inquiry-inq_num" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="id_inquiry-services"> Services : </label>
+                                <select id="id_inquiry-services" name="inquiry-services" class="form-control">
+                                        <option value="" selected>Select Services...</option>
+                                        {% for srv in Services %}
+                                            <option value="{{ srv.id }}">{{ srv }}</option>
+                                        {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="id_inquiry-description"> Description : </label>
+                                <textarea id="id_inquiry-description" name="inquiry-description" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number"></textarea>
+                            </div>
+                            
+                            <br>
+
+                        </div>
+
+                        <div id="newinqSection" class="inq-form" ></div>
+                            
+                        <!-- Add new address button -->
+                        <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewInq()">Add New Inquiry</button>
+
+                        <br>
+                    </div>
+                </div> 
+                <!-- JavaScript code to add new address forms dynamically -->
+                <script>
+                    var inqCounter = 2; // Counter to give unique IDs to new address forms
+                    var br = document.createElement('br');
+
+                    function fillCurrentDate() {
+                        var today = new Date();
+                        var dateField = document.getElementById('id_inquiry-date_inq');
+                        if (dateField) {
+                            var formattedDate = today.toISOString().split('T')[0];
+                            dateField.value = formattedDate;
+                            console.log(formattedDate)
+                        }
+                    }
         
+                    function fillCurrentTime() {
+                        var now = new Date();
+                        var timeField = document.getElementById('id_inquiry-time_inq');
+                        if (timeField) {
+                            var formattedTime = now.toTimeString().split(' ')[0];
+                            timeField.value = formattedTime;
+                            console.log(formattedTime)
+                        }
+                    }
+
+                    
+                    
+                    
+                    function addNewInq() {
+                        // Clone the existing address form
+                        var clonedForm1 = document.querySelector('.inq-form').cloneNode(true);
+
+                        // Update IDs and clear values
+                        clonedForm1.querySelectorAll('[id], [name]').forEach(function (element) {
+                            element.id = element.id;
+                            element.name = element.name ;
+
+
+                            // Clear input values
+                            if (element.tagName.toLowerCase() === 'input' || element.tagName.toLowerCase() === 'textarea' || element.tagName.toLowerCase() === 'select' || element.tagName.toLowerCase() === 'option') {
+                                element.value = '';
+                            }
+                        });
+
+                        // Add a delete button
+                        var deleteButton = document.createElement('button');
+                        deleteButton.type = 'button';
+                        deleteButton.className = 'btn btn-danger btn-sm';
+                        deleteButton.textContent = 'Remove Inquiry';
+                        deleteButton.onclick = function () {
+                            clonedForm1.remove();
+                        };
+                        clonedForm1.appendChild(br);
+
+                        clonedForm1.appendChild(deleteButton);
+
+                        clonedForm1.appendChild(br);
+
+                        // Append the cloned form to the container
+                        document.getElementById('newinqSection').appendChild(clonedForm1);
+                        
+                        // Increment the counter for the next form
+                        inqCounter++;
+                    }
+                </script>
 
 
 
@@ -432,15 +550,9 @@
 
 
                 
-                <!--<div id="inquirySection" style="display: none;">
-                    <h3>Inquiry</h3>
-                    {{ inquiry_form.as_p }}
-                    <button class="btn btn" type="button" onclick="fillCurrentDate()">Fill Current Date</button>
-                    <button class="btn btn" type="button" onclick="fillCurrentTime()">Fill Current Time</button>
-                </div>
-                <button class="btn btn-primary" type="button" onclick="showAddressSection()">Add Address</button>-->
-        
-                <button class="btn btn-success" type="submit">Submit</button>
+
+                <br><br>
+                <button class="btn btn-success" type="submit">Add Customer</button>
             </form>
             <!--<button class="btn btn-primary" type="button" onclick="showInquirySection()">Add Inquiry</button>-->
 
@@ -463,25 +575,7 @@
                 document.querySelector('form').appendChild(addressSection);
                 document.querySelector('form').appendChild(inquirySection);
                 });
-                function fillCurrentDate() {
-                var today = new Date();
-                var dateField = document.getElementById('id_inquiry-date_inq');
-                if (dateField) {
-                    var formattedDate = today.toISOString().split('T')[0];
-                    dateField.value = formattedDate;
-                    console.log(formattedDate)
-                }
-            }
-        
-            function fillCurrentTime() {
-                var now = new Date();
-                var timeField = document.getElementById('id_inquiry-time_inq');
-                if (timeField) {
-                    var formattedTime = now.toTimeString().split(' ')[0];
-                    timeField.value = formattedTime;
-                    console.log(formattedTime)
-                }
-            }
+                
         
                 function showAddressSection() {
                     document.getElementById('addressSection').style.display = 'block';

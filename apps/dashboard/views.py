@@ -18,12 +18,14 @@ from django.views.generic import TemplateView
 
 # Create your views here.
 
+@login_required(login_url='/')
 def dashboard(request):
     context={
     }
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
 
+@login_required(login_url='/')
 def customer_list(request):
     customers = Customer.objects.all()
     
@@ -150,7 +152,29 @@ def add_customer(request):
         adress_desc = request.POST.getlist('address-description_location')
         location = request.POST.getlist('address-location')
 
+        #inquiry fields
+        inq_address = request.POST.getlist('inq_address')
+        inq_date = request.POST.getlist('inquiry-date_inq')
+        inq_time = request.POST.getlist('inquiry-time_inq')
+        inq_number = request.POST.getlist('inquiry-inq_num')
+        inq_service = request.POST.getlist('inquiry-services')
+        inq_desc = request.POST.getlist('inquiry-description')
 
+
+        # Assuming addressCounter is the total number of address forms submitted
+        inqCounter = int(request.POST.get('inqCounter', 0))
+
+        for i in range(1, inqCounter + 1):
+
+            #inquiry fields
+            inq_address = request.POST.getlist('inq_address-{i}')
+            inq_date = request.POST.getlist('inquiry-date_inq-{i}')
+            inq_time = request.POST.getlist('inquiry-time_inq-{i}')
+            inq_number = request.POST.getlist('inquiry-inq_num-{i}')
+            inq_service = request.POST.getlist('inquiry-services-{i}')
+            inq_desc = request.POST.getlist('inquiry-description-{i}')
+
+            print(inqCounter,inq_address,inq_date,inq_time,inq_number,inq_service,inq_desc)
 
         # Save the customer
         customer = customer_form.save(commit=False)
@@ -257,6 +281,7 @@ def add_customer(request):
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'layout_path': layout_path,
                 'customer_form': customer_form, 
+                'inquiry_form':inquiry_form,
 
                 'Sources':Sources,
                 'Genders':Genders,
@@ -271,7 +296,7 @@ def add_customer(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'add_customer.html', context)
 
-
+@login_required(login_url='/')
 def customer_info(request, id):
     customer = get_object_or_404(Customer, id=id)
     addresses = Address.objects.filter(customer=customer)
@@ -319,7 +344,7 @@ def delete_address(request, id_address):
 
 
 
-
+@login_required(login_url='/')
 def edit_customer(request, id):
     customer = get_object_or_404(Customer, id=id)
     
