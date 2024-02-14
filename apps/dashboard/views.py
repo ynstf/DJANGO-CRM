@@ -160,21 +160,7 @@ def add_customer(request):
         inq_service = request.POST.getlist('inquiry-services')
         inq_desc = request.POST.getlist('inquiry-description')
 
-
-        # Assuming addressCounter is the total number of address forms submitted
-        inqCounter = int(request.POST.get('inqCounter', 0))
-
-        for i in range(1, inqCounter + 1):
-
-            #inquiry fields
-            inq_address = request.POST.getlist('inq_address-{i}')
-            inq_date = request.POST.getlist('inquiry-date_inq-{i}')
-            inq_time = request.POST.getlist('inquiry-time_inq-{i}')
-            inq_number = request.POST.getlist('inquiry-inq_num-{i}')
-            inq_service = request.POST.getlist('inquiry-services-{i}')
-            inq_desc = request.POST.getlist('inquiry-description-{i}')
-
-            print(inqCounter,inq_address,inq_date,inq_time,inq_number,inq_service,inq_desc)
+        #print(inq_address,inq_date,inq_time,inq_number,inq_service,inq_desc)
 
         # Save the customer
         customer = customer_form.save(commit=False)
@@ -202,6 +188,8 @@ def add_customer(request):
             landline = landline.save()
 
         # Iterate through the data and create Address instances
+        
+        addresses = []
         for i in range(len(adress_name)):
             if emarate[i] and adress_type[i] :
                 address = Address(
@@ -213,6 +201,7 @@ def add_customer(request):
                     location=location[i],
                 )
                 address.save()
+                addresses.append(address)
             else:
                 if emarate[i]=="" and adress_type[i]=="" :
                     address = Address(
@@ -220,9 +209,9 @@ def add_customer(request):
                     address_name=adress_name[i],
                     description_location=adress_desc[i],
                     location=location[i],
-                )
+                    )
                     address.save()
-                
+                    addresses.append(address)
                 else:
                     if emarate[i]=="":
                         address = Address(
@@ -233,6 +222,7 @@ def add_customer(request):
                             location=location[i],
                         )
                         address.save()
+                        addresses.append(address)
 
                     if adress_type[i]=="" :
                         address = Address(
@@ -243,7 +233,81 @@ def add_customer(request):
                             location=location[i],
                         )
                         address.save()
-            
+                        addresses.append(address)
+        
+        
+        #print(inq_address,inq_date,inq_time,inq_number,inq_service,inq_desc)
+
+        """for i in range(len(inq_address)):
+            for j in range(len(adress_name)):
+                print(inq_address[i],adress_name[j])
+                if inq_address[i]==adress_name[j]:
+                    inquiries = Inquiry(customer = customer,
+                                        address = addresses[j],
+                                        date_inq = inq_date[i],
+                                        time_inq = inq_time[i],
+                                        inq_num = inq_number[i],
+                                        services = inq_service[i],
+                                        description = inq_desc[i]
+                                        )
+                    inquiries.save()
+        """
+
+        for i in range(len(inq_address)):
+            for j in range(len(adress_name)):
+                print(inq_address[i], adress_name[j])
+                if inq_address[i] == adress_name[j]:
+                    address = addresses[j]
+                    services_set = Service.objects.filter(id=inq_service[i])
+                    if inq_date[i] and inq_time[i]:
+                        inquiry = Inquiry(
+                            customer=customer,
+                            address=address,
+                            date_inq=inq_date[i],
+                            time_inq=inq_time[i],
+                            inq_num=inq_number[i],
+                            description=inq_desc[i]
+                        )
+                        inquiry.save()
+                        inquiry.services.set(services_set)
+                    else :
+                        if inq_date[i]=="" and inq_time[i]=="":
+                            inquiry = Inquiry(
+                            customer=customer,
+                            address=address,
+                            inq_num=inq_number[i],
+                            description=inq_desc[i]
+                            )
+                            inquiry.save()
+                            inquiry.services.set(services_set)
+
+                        else:
+                            if inq_date[i]=="":
+                                inquiry = Inquiry(
+                                    customer=customer,
+                                    address=address,
+                                    time_inq=inq_time[i],
+                                    inq_num=inq_number[i],
+                                    description=inq_desc[i]
+                                )
+                                inquiry.save()
+                                inquiry.services.set(services_set)
+
+                            if inq_time[i]=="":
+                                inquiry = Inquiry(
+                                    customer=customer,
+                                    address=address,
+                                    date_inq=inq_date[i],
+                                    inq_num=inq_number[i],
+                                    description=inq_desc[i]
+                                )
+                                inquiry.save()
+                                inquiry.services.set(services_set)
+
+
+
+
+
 
 
         return redirect('customer_list')  # Redirect to the customer list page

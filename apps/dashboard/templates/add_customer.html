@@ -355,7 +355,7 @@
                     <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewAddress()">Add New Address</button>
 
                     <br>
-                </div>
+                
 
                 <!-- JavaScript code to add new address forms dynamically -->
                 <script>
@@ -403,62 +403,66 @@
 
 <!-- ################ inquery ###########################-->
                 
-                <div class="container">
+
                     <br>
-                    <div >
-                        <div id="inqSection" class="inq-form" >
-                            <h3>Inquiry</h3>
-                            <!--{{ address_form.as_p }}-->
+                
+                <div id="inqSection" class="inq-form" >
+                    <h3>Inquiry</h3>
+                    <!--{{ address_form.as_p }}-->
 
-                            <div class="col-md-4">
-                                <label for="inq-adr"> This Inquiry Addressed in : </label>
-                                <input type="text" id="inq-adr" name="inq_address" class="form-control" placeholder="Inquiry About..." aria-label="Inquiry About">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="id_inquiry-date_inq"> Date Inquiry : </label>
-                                <input type="text" id="id_inquiry-date_inq" name="inquiry-date_inq" class="form-control" placeholder="Date Inquiry..." aria-label="Date Inquiry">
-                                <button class="btn btn" type="button" onclick="fillCurrentDate()">Fill Current Date</button>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="id_inquiry-time_inq"> Time Inquiry : </label>
-                                <input type="text" id="id_inquiry-time_inq" name="inquiry-time_inq" class="form-control" placeholder="Time Inquiry..." aria-label="Time Inquiry">
-                                <button class="btn btn" type="button" onclick="fillCurrentTime()">Fill Current Time</button>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="id_inquiry-inq_num"> Inquiry Number : </label>
-                                <input type="text" id="id_inquiry-inq_num" name="inquiry-inq_num" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="id_inquiry-services"> Services : </label>
-                                <select id="id_inquiry-services" name="inquiry-services" class="form-control">
-                                        <option value="" selected>Select Services...</option>
-                                        {% for srv in Services %}
-                                            <option value="{{ srv.id }}">{{ srv }}</option>
-                                        {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="id_inquiry-description"> Description : </label>
-                                <textarea id="id_inquiry-description" name="inquiry-description" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number"></textarea>
-                            </div>
-                            
-                            <br>
-
-                        </div>
-
-                        <div id="newinqSection" class="inq-form" ></div>
-                            
-                        <!-- Add new address button -->
-                        <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewInq()">Add New Inquiry</button>
-
-                        <br>
+                    <div class="col-md-4">
+                        <label for="inq-adr"> This Inquiry Addressed in : </label>
+                        <input type="text" id="inq-adr" name="inq_address" class="form-control" placeholder="Inquiry About..." aria-label="Inquiry About">
                     </div>
-                </div> 
+
+                    <div class="col-md-4">
+                        <label for="id_inquiry-date_inq"> Date Inquiry : </label>
+                        <input type="text" id="id_inquiry-date_inq" name="inquiry-date_inq" class="form-control" placeholder="Date Inquiry..." aria-label="Date Inquiry">
+                        <button class="btn btn" type="button" onclick="fillCurrentDate()">Fill Current Date</button>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="id_inquiry-time_inq"> Time Inquiry : </label>
+                        <input type="text" id="id_inquiry-time_inq" name="inquiry-time_inq" class="form-control" placeholder="Time Inquiry..." aria-label="Time Inquiry">
+                        <button class="btn btn" type="button" onclick="fillCurrentTime()">Fill Current Time</button>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="id_inquiry-inq_num"> Inquiry Number : </label>
+                        <input type="text" id="id_inquiry-inq_num" name="inquiry-inq_num" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="id_inquiry-services"> Services : </label>
+                        <select id="id_inquiry-services" name="inquiry-services" class="form-control">
+                                
+                                {% for srv in Services %}
+                                    {% if srv.name == "Others" %}
+                                        <option value="{{ srv.id }}" selected>{{ srv }}</option>
+                                    {% else %}
+                                        <option value="{{ srv.id }}">{{ srv }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="id_inquiry-description"> Description : </label>
+                        <textarea id="id_inquiry-description" name="inquiry-description" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number"></textarea>
+                    </div>
+                    
+                    <br>
+
+                </div>
+
+                <div id="newinqSection" class="inq-form" ></div>
+                        
+                <!-- Add new address button -->
+                <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewInq()">Add New Inquiry</button>
+
+                    <br>
+                </div>
+
                 <!-- JavaScript code to add new address forms dynamically -->
                 <script>
                     var inqCounter = 2; // Counter to give unique IDs to new address forms
@@ -502,6 +506,7 @@
                                 element.value = '';
                             }
                         });
+
 
                         // Add a delete button
                         var deleteButton = document.createElement('button');
