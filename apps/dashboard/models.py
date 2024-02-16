@@ -41,7 +41,6 @@ class Customer(models.Model):
     nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Nationality model
     register = models.DateTimeField(auto_now_add=True)
     language = models.ForeignKey(Language, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Language model
-    source = models.ForeignKey(Source, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Source model
     trn = models.CharField(max_length=50, blank=True, null=True)
     
     # Add other fields as needed
@@ -91,9 +90,9 @@ class Inquiry(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, blank=True, null=True)
     date_inq = models.DateField(blank=True, null=True)
-    time_inq = models.TimeField(blank=True, null=True)
     inq_num = models.CharField(max_length=50, blank=True, null=True)
     services = models.ManyToManyField(Service, blank=True, null=True)
+    source = models.ForeignKey(Source, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Source model
     description = models.TextField(blank=True, null=True)
     # Add other fields as needed
     def __str__(self):

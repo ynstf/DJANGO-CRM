@@ -40,7 +40,6 @@
             <p>Gender: {{ customer.gender }}</p>
             <p>Nationality: {{ customer.nationality }}</p>
             <p>Language: {{ customer.language }}</p>
-            <p>Source: {{ customer.source }}</p>
             <p>Trn: {{ customer.trn }}</p>
             <!-- Add other customer details as needed -->
         
@@ -81,6 +80,7 @@
                 <p>Date Inq: {{ inquiry.date_inq }}</p>
                 <p>Time Inq: {{ inquiry.time_inq }}</p>
                 <p>Inq Num: {{ inquiry.inq_num }}</p>
+                <p>Source: {{ inquiry.source }}</p>
                 <p>Services: {% for service in inquiry.services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <p>Description: {{ inquiry.description }}</p>
                 <!-- Add other inquiry details as needed -->

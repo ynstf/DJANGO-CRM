@@ -99,7 +99,10 @@ def customer_list(request):
             search_fields.append({'name':'source',
                                 'value':source_query})
             id = Source.objects.get(name=source_query)
-            customers = customers.filter(source=id)
+            #customers = customers.filter(source=id)
+
+            customers = customers.filter(inquiry__source=id)
+            
 
 
 
@@ -189,7 +192,8 @@ def add_customer(request):
         #inquiry fields
         inq_address = request.POST.getlist('inq_address')
         inq_date = request.POST.getlist('inquiry-date_inq')
-        inq_time = request.POST.getlist('inquiry-time_inq')
+        #inq_time = request.POST.getlist('inquiry-time_inq')
+        inq_source = request.POST.getlist('customer-source')
         inq_number = request.POST.getlist('inquiry-inq_num')
         inq_service = request.POST.getlist('inquiry-services')
         inq_desc = request.POST.getlist('inquiry-description')
@@ -293,50 +297,29 @@ def add_customer(request):
                 if inq_address[i] == adress_name[j]:
                     address = addresses[j]
                     services_set = Service.objects.filter(id=inq_service[i])
-                    if inq_date[i] and inq_time[i]:
+                    inq_source = Source.objects.get(id=inq_source[i])
+
+                    if inq_date[i]:
                         inquiry = Inquiry(
                             customer=customer,
                             address=address,
                             date_inq=inq_date[i],
-                            time_inq=inq_time[i],
+                            source = inq_source,
                             inq_num=inq_number[i],
                             description=inq_desc[i]
                         )
                         inquiry.save()
                         inquiry.services.set(services_set)
                     else :
-                        if inq_date[i]=="" and inq_time[i]=="":
-                            inquiry = Inquiry(
-                            customer=customer,
-                            address=address,
-                            inq_num=inq_number[i],
-                            description=inq_desc[i]
-                            )
-                            inquiry.save()
-                            inquiry.services.set(services_set)
-
-                        else:
-                            if inq_date[i]=="":
-                                inquiry = Inquiry(
-                                    customer=customer,
-                                    address=address,
-                                    time_inq=inq_time[i],
-                                    inq_num=inq_number[i],
-                                    description=inq_desc[i]
-                                )
-                                inquiry.save()
-                                inquiry.services.set(services_set)
-
-                            if inq_time[i]=="":
-                                inquiry = Inquiry(
-                                    customer=customer,
-                                    address=address,
-                                    date_inq=inq_date[i],
-                                    inq_num=inq_number[i],
-                                    description=inq_desc[i]
-                                )
-                                inquiry.save()
-                                inquiry.services.set(services_set)
+                        inquiry = Inquiry(
+                        customer=customer,
+                        address=address,
+                        source = inq_source,
+                        inq_num=inq_number[i],
+                        description=inq_desc[i]
+                        )
+                        inquiry.save()
+                        inquiry.services.set(services_set)
 
 
 

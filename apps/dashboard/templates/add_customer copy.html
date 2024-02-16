@@ -82,6 +82,15 @@
                         </select>
                     </div>
 
+                    <div class="col-md-4">
+                        <label for="id_customer-source">Source :</label>
+                        <select id="id_customer-source" name="customer-source" class="form-control">
+                                <option value="" selected disabled>Select Source...</option>
+                                {% for Source in Sources %}
+                                    <option value="{{ Source.id }}">{{ Source }}</option>
+                                {% endfor %}
+                        </select>
+                    </div>
 
                     <div class="col-md-4">
                         <label for="id_customer-trn" > TRN : </label>
@@ -412,21 +421,15 @@
                         <button class="btn btn" type="button" onclick="fillCurrentDate()">Fill Current Date</button>
                     </div>
 
-
+                    <div class="col-md-4">
+                        <label for="id_inquiry-time_inq"> Time Inquiry : </label>
+                        <input type="time" id="id_inquiry-time_inq" name="inquiry-time_inq" class="form-control" placeholder="Time Inquiry..." aria-label="Time Inquiry">
+                        <button class="btn btn" type="button" onclick="fillCurrentTime()">Fill Current Time</button>
+                    </div>
 
                     <div class="col-md-4">
                         <label for="id_inquiry-inq_num"> Inquiry Number : </label>
                         <input type="text" id="id_inquiry-inq_num" name="inquiry-inq_num" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="id_customer-source">Source :</label>
-                        <select id="id_customer-source" name="customer-source" class="form-control">
-                                <option value="" selected disabled>Select Source...</option>
-                                {% for Source in Sources %}
-                                    <option value="{{ Source.id }}">{{ Source }}</option>
-                                {% endfor %}
-                        </select>
                     </div>
 
                     <div class="col-md-4">
