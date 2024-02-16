@@ -33,108 +33,235 @@
             <br>
 
 
-            <!-- Display dynamic search form with language dropdown -->
-            <form method="get" action="{% url 'customer_list' %}" id="search-form" class="row g-3">
+            <!-- Container for search rows -->
+            <div id="search-container">
+                <!-- Original search row -->
+                <div class="search-row">
+                    <!-- Display dynamic search form with language dropdown -->
+                    <form method="get" action="{% url 'customer_list' %}" >
+
+                        <div class="mysearsh row g-3">
+                            <div class="col-md-3">
+                                <label for="search_field">Search By:</label>
+                                <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
+                                    <option value="id" {% if search_field == 'id' %}selected{% endif %} selected>ID</option>
+                                    <option value="name" {% if search_field == 'name' %}selected{% endif %}>Name</option>
+                                    <option value="trn" {% if search_field == 'trn' %}selected{% endif %}>TRN</option>
+                                    <option value="number" {% if search_field == 'number' %}selected{% endif %}>Phone Number</option>
+                                    <option value="date" {% if search_field == 'date' %}selected{% endif %}>Register Date</option>
+                                    <option value="add_name" {% if search_field == 'add_name' %}selected{% endif %}>Address Name</option>
+                                    <option value="language" {% if search_field == 'language' %}selected{% endif %}>Language</option>
+                                    <option value="nationality" {% if search_field == 'nationality' %}selected{% endif %}>Nationality</option>
+                                    <option value="source" {% if search_field == 'source' %}selected{% endif %}>Source</option>
+                                </select>
+                            </div>
+
+                            
+                            <div id="myinput" class="col-md-6">
+                                <label for="search_value">Search Value:</label>
+                                <input type="text" name="id" class="form-control" value="{{ search_value }}" placeholder="Enter search value..." aria-label="Search Value">
+                            </div>
+                        </div>
+
+                        <div id="mycontainer"> </div>
 
 
-                <div class="col-md-2">
-                    <label for="id_id">ID:</label>
-                    <input type="text" id="id_id" name="id" class="form-control" value="{{ id_query }}" placeholder="ID..." aria-label="ID">
+                        <div >
+                            <br>
+                            <button class="btn btn-secondary" type="button" onclick="addSearchRow()" onchange="addSearchRow(this)">Add Another Search</button>
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+
+                    </form>
                 </div>
+            </div>
 
-                <div class="col-md-2">
-                    <label for="id_name">Name:</label>
-                    <input type="text" id="id_name" name="name" class="form-control" value="{{ name_query }}" placeholder="Name..." aria-label="Name">
-                </div>
+            <!-- Button to add another search row -->
+            
 
-                <div class="col-md-2">
-                    <label for="id_trn" >TRN :</label>
-                    <input type="text" id="id_trn" name="trn" class="form-control" value="{{ trn_query }}" placeholder="TRN..." aria-label="TRN">
-                </div>
+            <script>
+                function updatePlaceholder(select) {
+                    var searchField = select.value;
+                    var searchValue = select.parentElement.nextElementSibling.querySelector('.form-control');
+            
+                    // Define the placeholders for each search field
+                    var placeholders = {
+                        'id': 'Enter ID...',
+                        'name': 'Enter Name...',
+                        'trn': 'Enter TRN...',
+                        'number': 'Enter Phone Number...',
+                        'date': 'Enter Register Date...',
+                        'add_name': 'Enter Address Name...',
+                        'language': 'Select Language...',
+                        'nationality': 'Select Nationality...',
+                        'source': 'Enter Source...'
+                    };
+                    var names = {
+                        'id': 'id',
+                        'name': 'name',
+                        'trn': 'trn',
+                        'number': 'number',
+                        'date': 'date',
+                        'add_name': 'add_name',
+                        'language': 'language',
+                        'nationality': 'nationality',
+                        'source': 'source'
+                    };
+            
+                    // Set the placeholder based on the selected search field
+                    searchValue.placeholder = placeholders[searchField];
+                    searchValue.name = names[searchField];
+            
+                    // Change the input type to 'date' for the 'date' field
+                    if (searchField === 'date') {
+                        searchValue.type = 'date';
+                    }
+            
+                    // Fetch data for the 'language' field using AJAX
+                    else if (searchField === 'language') {
+                        var searchContainer = select.parentElement.nextElementSibling;
+                        $.get("{% url 'get_languages' %}", function (data) {
+                            // Assuming data is an array of language options
+                            var options = '<option value="" selected>Select Language...</option>';
+                            data["data"].forEach(function (language) {
+                                options += '<option value="' + language + '">' + language + '</option>';
+                            });
+            
+                            var selection = document.createElement('select');
+                            selection.name = "language";
+                            selection.className = 'form-control';
+                            selection.innerHTML = options;
+            
+                            // Replace the existing input with the new select element
+                            searchContainer.querySelector('.form-control').replaceWith(selection);
+                        });
+                    }
+            
+                    // Fetch data for the 'nationality' field using AJAX
+                    else if (searchField === 'nationality') {
+                        var searchContainer = select.parentElement.nextElementSibling;
+                        $.get("{% url 'get_nationalities' %}", function (data) {
+                            // Assuming data is an array of nationality options
+                            var options = '<option value="" selected>Select nationality...</option>';
+                            data["data"].forEach(function (nationality) {
+                                options += '<option value="' + nationality + '">' + nationality + '</option>';
+                            });
+            
+                            var selection = document.createElement('select');
+                            selection.name = "nationality";
+                            selection.className = 'form-control';
+                            selection.innerHTML = options;
+            
+                            // Replace the existing input with the new select element
+                            searchContainer.querySelector('.form-control').replaceWith(selection);
+                        });
+                    }
 
-                <div class="col-md-2">
-                    <label for="id_phone">Phone :</label>
-                    <input type="text" id="id_phone" name="number" class="form-control" value="{{ number_query }}" placeholder="Phone Number..." aria-label="Phone Number">
-                </div>
+                    // Fetch data for the 'source' field using AJAX
+                    else if (searchField === 'source') {
+                        var searchContainer = select.parentElement.nextElementSibling;
+                        $.get("{% url 'get_sources' %}", function (data) {
+                            // Assuming data is an array of source options
+                            var options = '<option value="" selected>Select source...</option>';
+                            data["data"].forEach(function (source) {
+                                options += '<option value="' + source + '">' + source + '</option>';
+                            });
+            
+                            var selection = document.createElement('select');
+                            selection.name = "source";
+                            selection.className = 'form-control';
+                            selection.innerHTML = options;
+            
+                            // Replace the existing input with the new select element
+                            searchContainer.querySelector('.form-control').replaceWith(selection);
+                        });
+                    }
 
-                <div class="col-md-2">
-                    <label for="id_date">Register date :</label>
-                    <input type="date" id="id_date" name="date" class="form-control" value="{{ date_query }}" >
-                    
-                </div>
+                    else {
+                        console.log("wara else");
+                        var label = document.createElement('label');
+                        label.htmlFor = 'search_field';
+                        label.textContent = 'Search By:';
 
-                <div class="col-md-2">
-                    <label for="id_addr_name">address name :</label>
-                    <input type="text" id="id_addr_name" name="add_name" class="form-control" value="{{ add_name_query }}" placeholder="Address Name..." aria-label="Address Name" >
-                    
-                </div>
+                        var input = document.createElement('input');
+                        input.id = 'search_field';
+                        input.className = 'form-control';
+                        input.setAttribute('onchange', 'updatePlaceholder(this)');
+                        input.placeholder = placeholders[searchField];
+                        input.name = names[searchField];
 
+                        var searchField = select.value;
+                        var searchValue = select.parentElement.nextElementSibling.querySelector('.form-control');
 
+                        var newRow = document.createElement('div');
+                        newRow.className = 'mysearsh row g-3';
+                        newRow.appendChild(label);
+                        newRow.appendChild(input);
 
-                <!--<div class="col-md-2">
-                    <label for="id_email">Email :</label>
-                    <input type="text" id="id_email" name="email" class="form-control" value="{{ email_query }}" placeholder="Email..." aria-label="Email">
-                </div>-->
-
-                <div class="col-md-2">
-                    <label for="id_language">Language:</label>
-                    <select id="id_language" name="language" class="form-control">
-                        {% if language_query %}
-                            <option value="{{ language_query }}" selected >{{ language_query }}</option>
-                        {% else %}
-                            <option value="" selected >Select Language...</option>
-                        {% endif %}
+                        // Append the new row inside the search container
+                        select.parentElement.nextElementSibling.querySelector('.form-control').replaceWith(input);
                         
-                        {% for language in languages %}
-                            <option value="{{ language }}">{{ language }}</option>
-                        {% endfor %}
-                        <!-- <option value="arabic">Arabic</option>
-                        <option value="french">French</option>
-                        <option value="english">English</option> -->
-                    </select>
-                </div>
+                        }
+                }
+            
+                function addSearchRow() {
+                    // Create a new search row
+                    var newRow = document.createElement('div');
+                    newRow.className = 'mysearsh row g-3';
+            
+                    var col1 = document.createElement('div');
+                    col1.className = 'col-md-3';
+            
+                    var label = document.createElement('label');
+                    label.htmlFor = 'search_field';
+                    label.textContent = 'Search By:';
+            
+                    var select = document.createElement('select');
+                    select.id = 'search_field';
+                    select.name = 'search_field';
+                    select.className = 'form-control';
+                    select.setAttribute('onchange', 'updatePlaceholder(this)');
+            
+                    // Add options to the select element
+                    var options = ['id', 'name', 'trn', 'number', 'date', 'add_name', 'language', 'nationality', 'source'];
+                    options.forEach(function (option) {
+                        var opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option.charAt(0).toUpperCase() + option.slice(1).replace('_', ' ');
+                        select.appendChild(opt);
+                    });
+            
+                    col1.appendChild(label);
+                    col1.appendChild(select);
+            
+                    var col2 = document.createElement('div');
+                    col2.id = 'myinput';
+                    col2.className = 'col-md-6';
+            
+                    label = document.createElement('label');
+                    label.htmlFor = 'search_value';
+                    label.textContent = 'Search Value:';
+            
+                    var input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = 'search_value';
+                    input.className = 'form-control';
+                    input.placeholder = 'Enter search value...';
+                    input.setAttribute('aria-label', 'Search Value');
+            
+                    col2.appendChild(label);
+                    col2.appendChild(input);
+            
+                    newRow.appendChild(col1);
+                    newRow.appendChild(col2);
+            
+                    // Append the new row inside the search container
+                    document.getElementById('mycontainer').appendChild(newRow);
+                }
+            </script>
 
-                <div class="col-md-2">
-                    <label for="id_nat">Nationality:</label>
-                    <select id="id_nat" name="nationality" class="form-control">
-                        {% if nationality_query %}
-                            <option value="{{ nationality_query }}" selected >{{ nationality_query }}</option>
-                        {% else %}
-                            <option value="" selected >Select Nationality...</option>
-                        {% endif %}
-                        
-                        {% for nat in nationality %}
-                            <option value="{{ nat }}">{{ nat }}</option>
-                        {% endfor %}
-                        <!-- <option value="arabic">Arabic</option>
-                        <option value="french">French</option>
-                        <option value="english">English</option> -->
-                    </select>
-                </div>
+            
 
-                <div class="col-md-2">
-                    <label for="id_source">Source :</label>
-                    <select id="id_source" name="source" class="form-control">
-                        {% if source_query %}
-                            <option value="{{ source_query }}" selected >{{ source_query }}</option>
-                        {% else %}
-                            <option value="" selected >Select Source...</option>
-                        {% endif %}
-                        
-                        {% for src in sources %}
-                            <option value="{{ src }}">{{ src }}</option>
-                        {% endfor %}
-                        <!-- <option value="arabic">Arabic</option>
-                        <option value="french">French</option>
-                        <option value="english">English</option> -->
-                    </select>
-                </div>
-
-
-                <div class="col-12 mt-3">
-                    <button class="btn btn-primary" type="submit">Search</button>
-                </div>
-            </form>
 
             <!-- Table to display customer information -->
             <table class="table">

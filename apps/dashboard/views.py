@@ -18,6 +18,19 @@ from django.views.generic import TemplateView
 
 # Create your views here.
 
+def get_languages(request):
+    languages = [l.name for l in Language.objects.all()]
+    return JsonResponse({'data':languages})
+
+
+def get_nationalities(request):
+    nationalities = [n.name for n in Nationality.objects.all()]
+    return JsonResponse({'data':nationalities})
+
+def get_sources(request):
+    sources = [s.name for s in Source.objects.all()]
+    return JsonResponse({'data':sources})
+
 @login_required(login_url='/')
 def dashboard(request):
     context={
