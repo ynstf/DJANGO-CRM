@@ -56,32 +56,48 @@ def customer_list(request):
         add_name_query = request.GET.get('add_name')
 
         #email = request.GET.get('email')
-
+        search_fields = []
         # Filter customers based on the entered name
         if name_query:
+            search_fields.append({'name':'name',
+                                'value':name_query})
             customers = customers.filter(first_name__icontains=name_query)
         
         if id_query:
+            search_fields.append({'name':'id',
+                                'value':id_query})
             customers = customers.filter(id=id_query)
 
         if trn_query:
+            search_fields.append({'name':'trn',
+                                'value':trn_query})
             customers = customers.filter(trn__icontains=trn_query)
 
         if date_query:
+            search_fields.append({'name':'date',
+                                'value':date_query})
             customers = customers.filter(register__icontains=date_query)
 
         if add_name_query:
+            search_fields.append({'name':'add_name',
+                                'value':add_name_query})
             customers = customers.filter(address__address_name__icontains=add_name_query)
 
         if language_query:
+            search_fields.append({'name':'language',
+                                'value':language_query})
             id = Language.objects.get(name=language_query)
             customers = customers.filter(language=id)
 
         if nationality_query:
+            search_fields.append({'name':'nationality',
+                                'value':nationality_query})
             id = Nationality.objects.get(name=nationality_query)
             customers = customers.filter(nationality=id)
 
         if source_query:
+            search_fields.append({'name':'source',
+                                'value':source_query})
             id = Source.objects.get(name=source_query)
             customers = customers.filter(source=id)
 
@@ -89,6 +105,8 @@ def customer_list(request):
 
 
         if number_query:
+            search_fields.append({'name':'number',
+                                'value':number_query})
             phones = PhoneNumber.objects.all()
             phones = phones.filter(number__icontains=number_query)
             customers = [phone.customer for phone in phones ]
@@ -123,6 +141,7 @@ def customer_list(request):
     nationality = Nationality.objects.all()
     sources = Source.objects.all()
 
+
     context = {'layout_path': layout_path,
                 'customers': customer,
 
@@ -139,6 +158,8 @@ def customer_list(request):
                 'languages':languages ,
                 'nationality':nationality,
                 'sources':sources,
+
+                'search_fields':search_fields,
 
                 }
     

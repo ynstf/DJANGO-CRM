@@ -41,6 +41,29 @@
                     <form method="get" action="{% url 'customer_list' %}" >
 
                         <div class="mysearsh row g-3">
+
+                            {% for search_field in search_fields%}
+                                <div class="col-md-3">
+                                    <label for="search_field">Search By:</label>
+                                    <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
+                                        <option value="id" {% if search_field.name == 'id' %}selected{% endif %} selected>ID</option>
+                                        <option value="name" {% if search_field.name == 'name' %}selected{% endif %}>Name</option>
+                                        <option value="trn" {% if search_field.name == 'trn' %}selected{% endif %}>TRN</option>
+                                        <option value="number" {% if search_field.name == 'number' %}selected{% endif %}>Phone Number</option>
+                                        <option value="date" {% if search_field.name == 'date' %}selected{% endif %}>Register Date</option>
+                                        <option value="add_name" {% if search_field.name == 'add_name' %}selected{% endif %}>Address Name</option>
+                                        <option value="language" {% if search_field.name == 'language' %}selected{% endif %}>Language</option>
+                                        <option value="nationality" {% if search_field.name == 'nationality' %}selected{% endif %}>Nationality</option>
+                                        <option value="source" {% if search_field.name == 'source' %}selected{% endif %}>Source</option>
+                                    </select>
+                                </div>
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_value">Search Value:</label>
+                                    <input type="text" name="{{ search_field.name }}" class="form-control" value="{{ search_field.value }}" placeholder='{{ search_field.name }} ....' aria-label="Search Value">
+                                </div>
+                                <br>
+                            {% endfor %}
+
                             <div class="col-md-3">
                                 <label for="search_field">Search By:</label>
                                 <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
