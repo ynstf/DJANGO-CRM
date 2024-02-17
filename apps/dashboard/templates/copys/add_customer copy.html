@@ -82,15 +82,6 @@
                         </select>
                     </div>
 
-                    <div class="col-md-4">
-                        <label for="id_customer-source">Source :</label>
-                        <select id="id_customer-source" name="customer-source" class="form-control">
-                                <option value="" selected disabled>Select Source...</option>
-                                {% for Source in Sources %}
-                                    <option value="{{ Source.id }}">{{ Source }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
 
                     <div class="col-md-4">
                         <label for="id_customer-trn" > TRN : </label>
@@ -349,8 +340,6 @@
                     <div id="newaddressSection" class="address-form" >
                     </div>
 
-                    
-                        
                     <!-- Add new address button -->
                     <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewAddress()">Add New Address</button>
 
@@ -363,7 +352,7 @@
                     var br = document.createElement('br');
                     
                     
-                    function addNewAddress() {
+                    /*function addNewAddress() {
                         // Clone the existing address form
                         var clonedForm = document.querySelector('.address-form').cloneNode(true);
 
@@ -399,6 +388,65 @@
                         // Increment the counter for the next form
                         addressCounter++;
                     }
+                    */
+                    
+                    function addNewAddress() {
+                        // Create a new div for the address section
+                        var newAddressSection = document.createElement('div');
+                        newAddressSection.className = 'address-form';
+
+                        // Append the HTML for the address section
+                        newAddressSection.innerHTML = `
+                            <h3>Address</h3>
+                            <div class="col-md-4">
+                                <label for="id_address-address_name"> Address Name :</label>
+                                <input type="text" name="address-address_name" class="form-control" placeholder="Address name..." aria-label="Address name">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_address-type"> Type :</label>
+                                <select name="address-type" class="form-control">
+                                    <option value="" selected>Select Type...</option>
+                                    {% for Type in types %}
+                                        <option value="{{ Type.id }}">{{ Type.type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_address-emirate">  Emirate :</label>
+                                <select name="address-emirate" class="form-control">
+                                    <option value="" selected>Select Emirate...</option>
+                                    {% for Emirate in Emirates %}
+                                        <option value="{{ Emirate.id }}">{{ Emirate }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_address-description_location"> Description location : </label>
+                                <textarea name="address-description_location" class="form-control" placeholder="Description location..." aria-label="Description location"></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_address-location"> Location :</label>
+                                <input type="text" name="address-location" class="form-control" placeholder="Location..." aria-label="Location">
+                                <input type="hidden" name="address-customer" id="id_address-customer">
+                            </div>
+                            <br>
+                        `;
+
+                        // Add a delete button
+                        var deleteButton = document.createElement('button');
+                        deleteButton.type = 'button';
+                        deleteButton.className = 'btn btn-danger btn-sm';
+                        deleteButton.textContent = 'Remove Address';
+                        deleteButton.onclick = function () {
+                            newAddressSection.remove();
+                        };
+
+                        newAddressSection.appendChild(deleteButton);
+
+                        // Append the new address section to the container
+                        document.getElementById('newaddressSection').appendChild(newAddressSection);
+                    }
+
                 </script>
 
 <!-- ################ inquery ###########################-->
@@ -422,14 +470,18 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label for="id_inquiry-time_inq"> Time Inquiry : </label>
-                        <input type="time" id="id_inquiry-time_inq" name="inquiry-time_inq" class="form-control" placeholder="Time Inquiry..." aria-label="Time Inquiry">
-                        <button class="btn btn" type="button" onclick="fillCurrentTime()">Fill Current Time</button>
+                        <label for="id_inquiry-inq_num"> Inquiry Number : </label>
+                        <input type="text" id="id_inquiry-inq_num" name="inquiry-inq_num" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number">
                     </div>
 
                     <div class="col-md-4">
-                        <label for="id_inquiry-inq_num"> Inquiry Number : </label>
-                        <input type="text" id="id_inquiry-inq_num" name="inquiry-inq_num" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number">
+                        <label for="id_customer-source">Source :</label>
+                        <select id="id_customer-source" name="customer-source" class="form-control">
+                                <option value="" selected disabled>Select Source...</option>
+                                {% for Source in Sources %}
+                                    <option value="{{ Source.id }}">{{ Source }}</option>
+                                {% endfor %}
+                        </select>
                     </div>
 
                     <div class="col-md-4">
@@ -457,7 +509,7 @@
 
                 <div id="newinqSection" class="inq-form" ></div>
                         
-                <!-- Add new address button -->
+                <!-- Add new inq button -->
                 <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewInq()">Add New Inquiry</button>
 
                     <br>
@@ -477,21 +529,8 @@
                             console.log(formattedDate)
                         }
                     }
-        
-                    function fillCurrentTime() {
-                        var now = new Date();
-                        var timeField = document.getElementById('id_inquiry-time_inq');
-                        if (timeField) {
-                            var formattedTime = now.toTimeString().split(' ')[0];
-                            timeField.value = formattedTime;
-                            console.log(formattedTime)
-                        }
-                    }
-
                     
-                    
-                    
-                    function addNewInq() {
+                    /*function addNewInq() {
                         // Clone the existing address form
                         var clonedForm1 = document.querySelector('.inq-form').cloneNode(true);
 
@@ -528,6 +567,71 @@
                         // Increment the counter for the next form
                         inqCounter++;
                     }
+                    */
+                
+                    function addNewInq() {
+                        // Create a new div for the inquiry section
+                        var newInqSection = document.createElement('div');
+                        newInqSection.className = 'inq-form';
+
+                        // Append the HTML for the inquiry section
+                        newInqSection.innerHTML = `
+                            <h3>Inquiry</h3>
+                            <div class="col-md-4">
+                                <label for="inq-adr"> This Inquiry Addressed in : </label>
+                                <input type="text" name="inq_address" class="form-control" placeholder="Inquiry About..." aria-label="Inquiry About">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_inquiry-date_inq"> Date Inquiry : </label>
+                                <input type="date" name="inquiry-date_inq" class="form-control" placeholder="Date Inquiry..." aria-label="Date Inquiry">
+                                <button class="btn btn" type="button" onclick="fillCurrentDate()">Fill Current Date</button>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_inquiry-inq_num"> Inquiry Number : </label>
+                                <input type="text" name="inquiry-inq_num" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_customer-source">Source :</label>
+                                <select name="customer-source" class="form-control">
+                                    <option value="" selected disabled>Select Source...</option>
+                                    {% for Source in Sources %}
+                                        <option value="{{ Source.id }}">{{ Source }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_inquiry-services"> Services : </label>
+                                <select name="inquiry-services" class="form-control">
+                                    {% for srv in Services %}
+                                        {% if srv.name == "Others" %}
+                                            <option value="{{ srv.id }}" selected>{{ srv }}</option>
+                                        {% else %}
+                                            <option value="{{ srv.id }}">{{ srv }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_inquiry-description"> Description : </label>
+                                <textarea name="inquiry-description" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number"></textarea>
+                            </div>
+                            <br>
+                        `;
+                        // Add a delete button
+                        var deleteButton = document.createElement('button');
+                        deleteButton.type = 'button';
+                        deleteButton.className = 'btn btn-danger btn-sm';
+                        deleteButton.textContent = 'Remove Inquiry';
+                        deleteButton.onclick = function () {
+                            newInqSection.remove();
+                        };
+
+                        newInqSection.appendChild(deleteButton);
+
+                        // Append the new inquiry section to the container
+                        document.getElementById('newinqSection').appendChild(newInqSection);
+                    }
+
                 </script>
 
 

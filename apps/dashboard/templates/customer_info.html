@@ -42,28 +42,25 @@
             <p>Language: {{ customer.language }}</p>
             <p>Trn: {{ customer.trn }}</p>
             <!-- Add other customer details as needed -->
+
+            <hr>
         
             <h3>Contact Information</h3>
             
             {% for number in customer.landline_set.all %}
             <p>Landlines: {{ number.landline }}</p>
             {% endfor %}
-        
-        
-        
             {% for number in customer.phonenumber_set.all %}
                 <p>Phone Numbers: {{ number.number }}</p>
             {% endfor %}
-        
-        
             {% for whatsApp in customer.whatsapp_set.all %}
                 <p>WhatsApp Numbers: {{ whatsApp.whatsapp }}</p>
             {% endfor %}
-        
-        
             {% for email in customer.email_set.all %}
                 <p>Emails: {{ email.email }}</p>
             {% endfor %}
+
+            <hr>
         
             <h3>Addresses</h3>
             {% for address in addresses %}
@@ -73,16 +70,20 @@
                 <p>Description Location: {{ address.description_location }}</p>
                 <p>Location: {{ address.location }}</p>
                 <!-- Add other address details as needed -->
+                <br>
             {% endfor %}
+            <hr>
         
             <h3>Inquiries</h3>
             {% for inquiry in inquiries %}
+
+                <h4>inquiry address in: {{ inquiry.address.address_name }}</h4>
                 <p>Date Inq: {{ inquiry.date_inq }}</p>
-                <p>Time Inq: {{ inquiry.time_inq }}</p>
                 <p>Inq Num: {{ inquiry.inq_num }}</p>
                 <p>Source: {{ inquiry.source }}</p>
                 <p>Services: {% for service in inquiry.services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <p>Description: {{ inquiry.description }}</p>
+                <br>
                 <!-- Add other inquiry details as needed -->
             {% endfor %}
         </div>
