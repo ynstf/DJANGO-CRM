@@ -207,6 +207,8 @@ def add_customer(request):
 
         print(inq_date,inq_number,inq_source,inq_service,inq_desc)
 
+
+
         # Save the customer
         customer = customer_form.save(commit=False)
         customer.employee = Employee.objects.get(user=request.user)
@@ -279,7 +281,56 @@ def add_customer(request):
                         )
                         address.save()
                         addresses.append(address)
+        
+        
+        #print(inq_address,inq_date,inq_time,inq_number,inq_service,inq_desc)
 
+        """for i in range(len(inq_address)):
+            for j in range(len(adress_name)):
+                print(inq_address[i],adress_name[j])
+                if inq_address[i]==adress_name[j]:
+                    inquiries = Inquiry(customer = customer,
+                                        address = addresses[j],
+                                        date_inq = inq_date[i],
+                                        time_inq = inq_time[i],
+                                        inq_num = inq_number[i],
+                                        services = inq_service[i],
+                                        description = inq_desc[i]
+                                        )
+                    inquiries.save()
+        """
+
+        """
+        for i in range(len(inq_address)):
+            for j in range(len(adress_name)):
+                print(inq_address[i], adress_name[j])
+                if inq_address[i] == adress_name[j]:
+                    address = addresses[j]
+                    services_set = Service.objects.filter(id=inq_service[i])
+                    inq_source = Source.objects.get(id=inq_source[i])
+
+                    if inq_date[i]:
+                        inquiry = Inquiry(
+                            customer=customer,
+                            address=address,
+                            date_inq=inq_date[i],
+                            source = inq_source,
+                            inq_num=inq_number[i],
+                            description=inq_desc[i]
+                        )
+                        inquiry.save()
+                        inquiry.services.set(services_set)
+                    else :
+                        inquiry = Inquiry(
+                        customer=customer,
+                        address=address,
+                        source = inq_source,
+                        inq_num=inq_number[i],
+                        description=inq_desc[i]
+                        )
+                        inquiry.save()
+                        inquiry.services.set(services_set)
+        """
 
         q=0
         s = json.loads(inq_counters)
@@ -289,17 +340,15 @@ def add_customer(request):
                 address = addresses[i-1]
                 services_set = Service.objects.filter(id=inq_service[q])
                 print(inq_source[q])
-                current_inq_source_id = inq_source[q]
-                current_inq_source = Source.objects.get(id=current_inq_source_id)
-                print(current_inq_source)
+                inq_source = Source.objects.get(id=inq_source[q])
                 print(inq_source)
 
-                if inq_date[q]:
+                if inq_date[i]:
                     inquiry = Inquiry(
                         customer=customer,
                         address=address,
                         date_inq=inq_date[q],
-                        source = current_inq_source,
+                        source = inq_source,
                         inq_num=inq_number[q],
                         description=inq_desc[q]
                     )
@@ -309,7 +358,7 @@ def add_customer(request):
                     inquiry = Inquiry(
                     customer=customer,
                     address=address,
-                    source = current_inq_source,
+                    source = inq_source,
                     inq_num=inq_number[q],
                     description=inq_desc[q]
                     )
