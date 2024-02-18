@@ -596,14 +596,17 @@ def edit_customer(request, id):
                     print(adress_name[i-1])
                     address = addresses[i-1]
                     services_set = Service.objects.filter(id=inq_service[q])
-                    print(inq_source[q])
-                    inq_source = Source.objects.get(id=inq_source[q])
+                    
+                    inq_src = Source.objects.get(id=inq_source[q])
+
+                    print(inq_src)
+
                     if inq_date[q]:
                         inquiry = Inquiry(
                             customer=customer,
                             address=address,
                             date_inq=inq_date[q],
-                            source = inq_source,
+                            source = inq_src,
                             inq_num=inq_number[q],
                             description=inq_desc[q]
                         )
