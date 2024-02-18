@@ -369,7 +369,7 @@
                                         <div class="col-md-4">
                                             <label for="id_customer-source">Source :</label>
                                             <select name="customer-source" class="form-control">
-                                                <option value="{{ inquiry.source }}" selected disabled>{{ inquiry.source }}</option>
+                                                <option value="{{ inquiry.source.id }}" selected>{{ inquiry.source }}</option>
                                                 {% for Source in Sources %}
                                                     <option value="{{ Source.id }}">{{ Source }}</option>
                                                 {% endfor %}

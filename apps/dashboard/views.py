@@ -467,6 +467,8 @@ def edit_customer(request, id):
         inq_service = request.POST.getlist('inquiry-services')
         inq_desc = request.POST.getlist('inquiry-description')
 
+        
+
         # counter to know inquiries of each address
         inq_counters = request.POST.get('inq_counters')
 
@@ -575,21 +577,27 @@ def edit_customer(request, id):
 
         q=0
         s = json.loads(inq_counters)
-        print("wahaaaaa ana")
-        print(inq_counters)
+        print("debugging")
+
+        print("counter")
         print(s)
+        print("inquiries data")
+        print(inq_date,inq_source,inq_number,inq_service,inq_desc)
+
+
+        
+        
         for i in range(1,len(s)+1):
             for _ in range(s[f"{i}"]):
-                print(adress_name[i-1])
-                address = addresses[i-1]
-                services_set = Service.objects.filter(id=inq_service[q])
-                print(inq_source[q])
-                inq_source = Source.objects.get(id=inq_source[q])
-                print(inq_source)
-                print(s[f"{i}"])
+                print(f'lenth of inquiries in adress{i}',s[f"{i}"])
+                print("i: ",i)
+                print("q: ",q)
                 if s[f"{i}"]>0:
-                    print("i: ",i)
-                    print("q: ",q)
+                    print(adress_name[i-1])
+                    address = addresses[i-1]
+                    services_set = Service.objects.filter(id=inq_service[q])
+                    print(inq_source[q])
+                    inq_source = Source.objects.get(id=inq_source[q])
                     if inq_date[q]:
                         inquiry = Inquiry(
                             customer=customer,
