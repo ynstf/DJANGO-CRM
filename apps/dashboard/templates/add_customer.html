@@ -382,6 +382,7 @@
                         deleteButton.textContent = 'Remove Address';
                         deleteButton.onclick = function () {
                             newAddressSection.remove();
+                            updateInqCountersInput()
                             delete inqCounters[addressIndex];  // Remove the counter for this address
                         };
 
@@ -447,7 +448,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="id_inquiry-description"> Description : </label>
-                                        <textarea name="inquiry-description" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number"></textarea>
+                                        <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number"></textarea>
                                     </div>
                                     <br>
                         `;
@@ -462,6 +463,7 @@
 
                             // Decrement the inquiry counter for this address when an inquiry is removed
                             inqCounters[addressIndex]--;
+                            updateInqCountersInput()
                             document.getElementById(`inqCount_${addressIndex}`).textContent = inqCounters[addressIndex];
                         };
                         newInqSection.appendChild(deleteInqButton);

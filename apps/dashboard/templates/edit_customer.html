@@ -603,8 +603,10 @@
                         deleteButton.textContent = 'Remove Address';
                         deleteButton.onclick = function () {
                             newAddressSection.remove();
+                            updateInqCountersInput();
                             delete inqCounters[addressIndex];  // Remove the counter for this address
                             addressCounter = addressCounter-1
+                            
                         };
 
                         newAddressSection.appendChild(deleteButton);
@@ -684,7 +686,9 @@
 
                             // Decrement the inquiry counter for this address when an inquiry is removed
                             inqCounters[addressIndex]--;
+                            updateInqCountersInput();
                             document.getElementById(`inqCount_${addressIndex}`).textContent = inqCounters[addressIndex];
+                            
                         };
                         newInqSection.appendChild(deleteInqButton);
 
