@@ -50,7 +50,7 @@
                         <div class="col-md-4">
                             <label for="id_customer-gender">Gender :</label>
                             <select id="id_customer-gender" name="customer-gender" class="form-control">
-                                    <option value="{{ customer.gender }}" selected disabled>{{ customer.gender }}</option>
+                                    <option value="{{ customer.gender }}" selected>{{ customer.gender }}</option>
                                     {% for gender in Genders %}
                                         <option value="{{ gender.id }}">{{ gender.gender }}</option>
                                     {% endfor %}
@@ -484,6 +484,7 @@
                                         // Decrement the inquiry counter for this address when an inquiry is removed
                                         inqCounters[addressIndex]--;
                                         document.getElementById(`inqCount_${addressIndex}`).textContent = inqCounters[addressIndex];
+                                        updateInqCountersInput();
                                     };
                                     newInqSection.appendChild(deleteInqButton);
 
