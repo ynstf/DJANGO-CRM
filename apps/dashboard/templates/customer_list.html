@@ -53,10 +53,57 @@
                                         <option value="source" {% if search_field.name == 'source' %}selected{% endif %}>Source</option>
                                     </select>
                                 </div>
+                                {% if search_field.name == "date" %}
+
+                                <div id="myinput" class="col-md-6">
+                                    <label for="start_date">Start Date:</label>
+                                    <input type="date" name="start_date" class="form-control" value="{{ search_field.start_date }}" placeholder="Enter start date..." aria-label="Start Date">
+                                    <label for="end_date">End Date:</label>
+                                    <input type="date" name="end_date" class="form-control" value="{{ search_field.end_date }}" placeholder="Enter end date..." aria-label="End Date"><br>
+                                </div>
+                                <br>
+                                {% elif search_field.name  == "language" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="language" class="form-control">
+                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% for language in languages %}
+                                            <option value="{{ language.name }}">{{ language.name }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
+                                {% elif search_field.name  == "nationality" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="nationality" class="form-control">
+                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% for nat in nationality %}
+                                            <option value="{{ nat.name }}">{{ nat.name }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
+                                {% elif search_field.name  == "source" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="source" class="form-control">
+                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% for source in sources %}
+                                            <option value="{{ source.name }}">{{ source.name }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
+                                {% else %}
                                 <div id="myinput" class="col-md-6">
                                     <label for="search_value">Search Value:</label>
                                     <input type="text" name="{{ search_field.name }}" class="form-control" value="{{ search_field.value }}" placeholder='{{ search_field.name }} ....' aria-label="Search Value">
                                 </div>
+                                {% endif %}
                                 <br>
                             {% endfor %}
 
@@ -95,130 +142,193 @@
             </div>
             
             <script>
+
                 function updatePlaceholder(select) {
-                    var searchField = select.value;
-                    var searchValue = select.parentElement.nextElementSibling.querySelector('.form-control');
-            
-                    // Define the placeholders for each search field
-                    var placeholders = {
-                        'id': 'Enter ID...',
-                        'name': 'Enter Name...',
-                        'trn': 'Enter TRN...',
-                        'number': 'Enter Phone Number...',
-                        'date': 'Enter Register Date...',
-                        'add_name': 'Enter Address Name...',
-                        'language': 'Select Language...',
-                        'nationality': 'Select Nationality...',
-                        'source': 'Enter Source...'
-                    };
-                    var names = {
-                        'id': 'id',
-                        'name': 'name',
-                        'trn': 'trn',
-                        'number': 'number',
-                        'date': 'date',
-                        'add_name': 'add_name',
-                        'language': 'language',
-                        'nationality': 'nationality',
-                        'source': 'source'
-                    };
-            
-                    // Set the placeholder based on the selected search field
-                    searchValue.placeholder = placeholders[searchField];
-                    searchValue.name = names[searchField];
-            
-                    // Change the input type to 'date' for the 'date' field
-                    if (searchField === 'date') {
-                        searchValue.type = 'date';
-                    }
-            
-                    // Fetch data for the 'language' field using AJAX
-                    else if (searchField === 'language') {
-                        var searchContainer = select.parentElement.nextElementSibling;
-                        $.get("{% url 'get_languages' %}", function (data) {
-                            // Assuming data is an array of language options
-                            var options = '<option value="" selected>Select Language...</option>';
-                            data["data"].forEach(function (language) {
-                                options += '<option value="' + language + '">' + language + '</option>';
-                            });
-            
-                            var selection = document.createElement('select');
-                            selection.name = "language";
-                            selection.className = 'form-control';
-                            selection.innerHTML = options;
-            
-                            // Replace the existing input with the new select element
-                            searchContainer.querySelector('.form-control').replaceWith(selection);
-                        });
-                    }
-            
-                    // Fetch data for the 'nationality' field using AJAX
-                    else if (searchField === 'nationality') {
-                        var searchContainer = select.parentElement.nextElementSibling;
-                        $.get("{% url 'get_nationalities' %}", function (data) {
-                            // Assuming data is an array of nationality options
-                            var options = '<option value="" selected>Select nationality...</option>';
-                            data["data"].forEach(function (nationality) {
-                                options += '<option value="' + nationality + '">' + nationality + '</option>';
-                            });
-            
-                            var selection = document.createElement('select');
-                            selection.name = "nationality";
-                            selection.className = 'form-control';
-                            selection.innerHTML = options;
-            
-                            // Replace the existing input with the new select element
-                            searchContainer.querySelector('.form-control').replaceWith(selection);
-                        });
-                    }
-
-                    // Fetch data for the 'source' field using AJAX
-                    else if (searchField === 'source') {
-                        var searchContainer = select.parentElement.nextElementSibling;
-                        $.get("{% url 'get_sources' %}", function (data) {
-                            // Assuming data is an array of source options
-                            var options = '<option value="" selected>Select source...</option>';
-                            data["data"].forEach(function (source) {
-                                options += '<option value="' + source + '">' + source + '</option>';
-                            });
-            
-                            var selection = document.createElement('select');
-                            selection.name = "source";
-                            selection.className = 'form-control';
-                            selection.innerHTML = options;
-            
-                            // Replace the existing input with the new select element
-                            searchContainer.querySelector('.form-control').replaceWith(selection);
-                        });
-                    }
-
-                    else {
-                        console.log("wara else");
-                        var label = document.createElement('label');
-                        label.htmlFor = 'search_field';
-                        label.textContent = 'Search By:';
-
-                        var input = document.createElement('input');
-                        input.id = 'search_field';
-                        input.className = 'form-control';
-                        input.setAttribute('onchange', 'updatePlaceholder(this)');
-                        input.placeholder = placeholders[searchField];
-                        input.name = names[searchField];
-
                         var searchField = select.value;
-                        var searchValue = select.parentElement.nextElementSibling.querySelector('.form-control');
+                        var searchContainer = select.parentElement.nextElementSibling;
+                        var searchValue = searchContainer.querySelector('.form-control');
 
-                        var newRow = document.createElement('div');
-                        newRow.className = 'mysearsh row g-3';
-                        newRow.appendChild(label);
-                        newRow.appendChild(input);
+                        // Remove existing elements in the search container
+                        searchContainer.innerHTML = '';
 
-                        // Append the new row inside the search container
-                        select.parentElement.nextElementSibling.querySelector('.form-control').replaceWith(input);
-                        
+                        // Define the placeholders for each search field
+                        var placeholders = {
+                            'id': 'Enter ID...',
+                            'name': 'Enter Name...',
+                            'trn': 'Enter TRN...',
+                            'number': 'Enter Phone Number...',
+                            'date': 'Enter Register Date...',
+                            'add_name': 'Enter Address Name...',
+                            'language': 'Select Language...',
+                            'nationality': 'Select Nationality...',
+                            'source': 'Enter Source...'
+                        };
+                        var names = {
+                            'id': 'id',
+                            'name': 'name',
+                            'trn': 'trn',
+                            'number': 'number',
+                            'date': 'date',
+                            'add_name': 'add_name',
+                            'language': 'language',
+                            'nationality': 'nationality',
+                            'source': 'source'
+                        };
+
+                        // Set the placeholder based on the selected search field
+                        searchValue.placeholder = placeholders[searchField];
+                        searchValue.name = names[searchField];
+
+                        // Change the input type to 'date' for the 'date' field
+                        if (searchField === 'date') {
+                            searchValue.type = 'date';
+
+                            // Create labels and input fields for the start and end dates
+                            var labelStart = document.createElement('label');
+                            labelStart.htmlFor = 'start_date';
+                            labelStart.textContent = 'Start Date:';
+
+                            var inputStart = document.createElement('input');
+                            inputStart.type = 'date';
+                            inputStart.id = 'start_date';
+                            inputStart.name = 'start_date';
+                            inputStart.className = 'form-control';
+
+                            var labelEnd = document.createElement('label');
+                            labelEnd.htmlFor = 'end_date';
+                            labelEnd.textContent = 'End Date:';
+
+                            var inputEnd = document.createElement('input');
+                            inputEnd.type = 'date';
+                            inputEnd.id = 'end_date';
+                            inputEnd.name = 'end_date';
+                            inputEnd.className = 'form-control';
+
+                            // Append labels and input fields to the search container
+                            searchContainer.appendChild(labelStart);
+                            searchContainer.appendChild(inputStart);
+                            searchContainer.appendChild(labelEnd);
+                            searchContainer.appendChild(inputEnd);
                         }
-                }
-            
+
+                        // Fetch data for the 'language' field using AJAX
+                        else if (searchField === 'language') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+                            $.get("{% url 'get_languages' %}", function (data) {
+                                var options = '<option value="" selected>Select Language...</option>';
+                                data["data"].forEach(function (language) {
+                                    options += '<option value="' + language + '">' + language + '</option>';
+                                });
+
+                                var selection = document.createElement('select');
+                                selection.name = "language";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the language select element to the search container
+                                searchContainer.appendChild(selection);
+                            });
+                        }
+
+                        // Fetch data for the 'nationality' field using AJAX
+                        else if (searchField === 'nationality') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+                            $.get("{% url 'get_nationalities' %}", function (data) {
+                                var options = '<option value="" selected>Select Nationality...</option>';
+                                data["data"].forEach(function (nationality) {
+                                    options += '<option value="' + nationality + '">' + nationality + '</option>';
+                                });
+
+                                var selection = document.createElement('select');
+                                selection.name = "nationality";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the nationality select element to the search container
+                                searchContainer.appendChild(selection);
+                            });
+                        }
+
+                        // Fetch data for the 'source' field using AJAX
+                        else if (searchField === 'source') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+                            $.get("{% url 'get_sources' %}", function (data) {
+                                var options = '<option value="" selected>Select Source...</option>';
+                                data["data"].forEach(function (source) {
+                                    options += '<option value="' + source + '">' + source + '</option>';
+                                });
+
+                                var selection = document.createElement('select');
+                                selection.name = "source";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the source select element to the search container
+                                searchContainer.appendChild(selection);
+                            });
+                        }
+
+                        // For other fields (not 'date', 'language', 'nationality', or 'source'), create a standard input field
+                        else {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            searchContainer.appendChild(input);
+                        }
+                    }
+
                 function addSearchRow() {
                     // Create a new search row
                     var newRow = document.createElement('div');
@@ -306,7 +416,7 @@
                             <td>{{ customer.info.nationality }}</td>
                             <td>{{ customer.info.register }}</td>
                             <td>{{ customer.info.language }}</td>
-                            <td>{{ customer.info.source }}</td>
+                            <td>{{ customer.source }}</td>
                             <td>{{ customer.info.trn }}</td>
                             <td>{{ customer.email.email }}</td>
                             <td>{{ customer.number.number }}</td>

@@ -56,6 +56,10 @@ def customer_list(request):
         date_query = request.GET.get('date')
         add_name_query = request.GET.get('add_name')
 
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        print(start_date,end_date)
+
         #email = request.GET.get('email')
         search_fields = []
         # Filter customers based on the entered name
@@ -74,10 +78,14 @@ def customer_list(request):
                                 'value':trn_query})
             customers = customers.filter(trn__icontains=trn_query)
 
-        if date_query:
+        """if date_query:
             search_fields.append({'name':'date',
                                 'value':date_query})
-            customers = customers.filter(register__icontains=date_query)
+            customers = customers.filter(register__icontains=date_query)"""
+
+        if start_date and end_date:
+            search_fields.append({'name': 'date', 'start_date': start_date, "end_date":end_date })
+            customers = customers.filter(register__range=[start_date, end_date])
 
         if add_name_query:
             search_fields.append({'name':'add_name',
@@ -135,10 +143,19 @@ def customer_list(request):
     # show all infos
     customer = []
     for c in customers:
-        customer.append({'info':c,
-                        'number':PhoneNumber.objects.filter(customer=c).first(),
-                        'email':Email.objects.filter(customer=c).first(),
+        try:
+            customer.append({'info':c,
+                            'number':PhoneNumber.objects.filter(customer=c).first(),
+                            'email':Email.objects.filter(customer=c).first(),
+                            'source':Inquiry.objects.filter(customer=c).first().source
                         })
+        except:
+            customer.append({'info':c,
+                            'number':PhoneNumber.objects.filter(customer=c).first(),
+                            'email':Email.objects.filter(customer=c).first(),
+                            'source':"None"
+                        })
+            
 
     # all language
     languages = Language.objects.all()
