@@ -17,7 +17,28 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
 import json
 
+# Example view to check if user is in the 'admin' group
+from django.contrib.auth.decorators import user_passes_test
+
 # Create your views here.
+
+
+@user_passes_test(lambda u: u.groups.filter(name='supervisor').exists())
+@login_required(login_url='/')
+def inquiries_list(request):
+    # Get the current user
+    user = request.user
+
+    # Check if the user is authenticated and has an associated employee
+    if user.is_authenticated and hasattr(user, 'employee'):
+        employee = user.employee
+
+        # Add the employee's position to the context
+        context = {'position': employee.position}
+    # Your view logic here
+    return render(request, 'inquiries_list.html',context)
+
+
 
 def get_languages(request):
     languages = [l.name for l in Language.objects.all()]
@@ -34,11 +55,14 @@ def get_sources(request):
 
 @login_required(login_url='/')
 def dashboard(request):
-    context={
-    }
+
+
+    # Add the employee's position to the context
+    context = {'position': request.user.employee.position}
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
 
+@user_passes_test(lambda u: u.groups.filter(name='supervisor').exists())
 @login_required(login_url='/')
 def customer_list(request):
     customers = Customer.objects.all()
@@ -77,11 +101,6 @@ def customer_list(request):
             search_fields.append({'name':'trn',
                                 'value':trn_query})
             customers = customers.filter(trn__icontains=trn_query)
-
-        """if date_query:
-            search_fields.append({'name':'date',
-                                'value':date_query})
-            customers = customers.filter(register__icontains=date_query)"""
 
         if start_date and end_date:
             search_fields.append({'name': 'date', 'start_date': start_date, "end_date":end_date })
@@ -163,7 +182,8 @@ def customer_list(request):
     sources = Source.objects.all()
 
 
-    context = {'layout_path': layout_path,
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
                 'customers': customer,
 
                 'name_query':name_query if name_query!=None else '' ,
@@ -371,7 +391,8 @@ def add_customer(request):
 
     # Set the layout path even when authentication fails
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-    context = {'layout_path': layout_path,
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
                 'customer_form': customer_form, 
                 'inquiry_form':inquiry_form,
 
@@ -396,7 +417,8 @@ def customer_info(request, id):
 
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-    context = {'layout_path': layout_path,
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
             'customer': customer,
             'addresses': addresses,
             'inquiries': inquiries,
@@ -439,7 +461,6 @@ def delete_inquiry(request, id_inq):
     id = inquiry.customer.id
     inquiry.delete()
     return redirect('edit_customer', id=id)
-
 
 
 @login_required(login_url='/')
@@ -698,10 +719,6 @@ def edit_customer(request, id):
                             'inq':i})
         print(inquiries)
         
-
-
-    
-
     # selection fields
     Sources = Source.objects.all()
     Genders = [{'gender':"Male",'id':'male'},
@@ -720,6 +737,7 @@ def edit_customer(request, id):
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
 
     context = {
+        'position': request.user.employee.position,
         'layout_path': layout_path,
         'customer': customer,
         'Genders':Genders,

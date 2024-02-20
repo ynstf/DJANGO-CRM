@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import dashboard,add_customer,customer_list,customer_info,edit_customer,delete_number
 from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry
-from .views import get_languages, get_nationalities,get_sources
+from .views import get_languages, get_nationalities,get_sources,inquiries_list
 
 urlpatterns = [
     path("dashboard/",dashboard,name="dashboard",),
@@ -20,6 +20,10 @@ urlpatterns = [
     path('get_languages', get_languages, name='get_languages'),
     path('get_nationalities', get_nationalities, name='get_nationalities'),
     path('get_sources', get_sources, name='get_sources'),
+
+
+    
+    path('inquiries_list', inquiries_list, name='inquiries_list'),
 
 
     
