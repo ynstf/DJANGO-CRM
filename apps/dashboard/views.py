@@ -26,16 +26,24 @@ from django.contrib.auth.decorators import user_passes_test
 @user_passes_test(lambda u: u.groups.filter(name='supervisor').exists())
 @login_required(login_url='/')
 def inquiries_list(request):
-    # Get the current user
-    user = request.user
+    inquiries = Inquiry.objects.all()
+    
 
-    # Check if the user is authenticated and has an associated employee
-    if user.is_authenticated and hasattr(user, 'employee'):
-        employee = user.employee
+    # Render the initial page with the full customer list
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
 
-        # Add the employee's position to the context
-        context = {'position': employee.position}
-    # Your view logic here
+
+
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'inquiries': inquiries,
+
+
+
+                }
+    
+
+    context = TemplateLayout.init(request, context)
     return render(request, 'inquiries_list.html',context)
 
 
@@ -62,7 +70,7 @@ def dashboard(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
 
-@user_passes_test(lambda u: u.groups.filter(name='supervisor').exists())
+@user_passes_test(lambda u: u.groups.filter(name='agent').exists())
 @login_required(login_url='/')
 def customer_list(request):
     customers = Customer.objects.all()

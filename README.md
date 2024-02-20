@@ -6,3 +6,12 @@ installation:
 
 Run:
     python manage.py runserver
+
+
+agent:
+    said
+    ynstf2020
+
+supervisor:
+    simon
+    simonsimon

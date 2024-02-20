@@ -1,1 +1,457 @@
-hi supervisor
+{% extends 'layout/master.html' %}
+
+{% block title %}Customer List{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+        <div class="container">
+            <center><h2>Customer List</h2></center>
+            <br>
+            <!-- Container for search rows -->
+            <div id="search-container">
+                <!-- Original search row -->
+                <div class="search-row">
+                    <!-- Display dynamic search form with language dropdown -->
+                    <form method="get" action="{% url 'customer_list' %}" >
+
+                        <div class="mysearsh row g-3">
+
+                            {% for search_field in search_fields%}
+                                <div class="col-md-3">
+                                    <label for="search_field">Search By:</label>
+                                    <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
+                                        <option value="id" {% if search_field.name == 'id' %}selected{% endif %} selected>ID</option>
+                                        <option value="name" {% if search_field.name == 'name' %}selected{% endif %}>Name</option>
+                                        <option value="trn" {% if search_field.name == 'trn' %}selected{% endif %}>TRN</option>
+                                        <option value="number" {% if search_field.name == 'number' %}selected{% endif %}>Phone Number</option>
+                                        <option value="date" {% if search_field.name == 'date' %}selected{% endif %}>Register Date</option>
+                                        <option value="add_name" {% if search_field.name == 'add_name' %}selected{% endif %}>Address Name</option>
+                                        <option value="language" {% if search_field.name == 'language' %}selected{% endif %}>Language</option>
+                                        <option value="nationality" {% if search_field.name == 'nationality' %}selected{% endif %}>Nationality</option>
+                                        <option value="source" {% if search_field.name == 'source' %}selected{% endif %}>Source</option>
+                                    </select>
+                                </div>
+                                {% if search_field.name == "date" %}
+
+                                <div id="myinput" class="col-md-6">
+                                    <label for="start_date">Start Date:</label>
+                                    <input type="date" name="start_date" class="form-control" value="{{ search_field.start_date }}" placeholder="Enter start date..." aria-label="Start Date">
+                                    <label for="end_date">End Date:</label>
+                                    <input type="date" name="end_date" class="form-control" value="{{ search_field.end_date }}" placeholder="Enter end date..." aria-label="End Date"><br>
+                                </div>
+                                <br>
+                                {% elif search_field.name  == "language" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="language" class="form-control">
+                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% for language in languages %}
+                                            <option value="{{ language.name }}">{{ language.name }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
+                                {% elif search_field.name  == "nationality" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="nationality" class="form-control">
+                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% for nat in nationality %}
+                                            <option value="{{ nat.name }}">{{ nat.name }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
+                                {% elif search_field.name  == "source" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="source" class="form-control">
+                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% for source in sources %}
+                                            <option value="{{ source.name }}">{{ source.name }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
+                                {% else %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_value">Search Value:</label>
+                                    <input type="text" name="{{ search_field.name }}" class="form-control" value="{{ search_field.value }}" placeholder='{{ search_field.name }} ....' aria-label="Search Value">
+                                </div>
+                                {% endif %}
+                                <br>
+                            {% endfor %}
+
+                            <div class="col-md-3">
+                                <label for="search_field">Search By:</label>
+                                <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
+                                    <option value="id" {% if search_field == 'id' %}selected{% endif %} selected>ID</option>
+                                    <option value="name" {% if search_field == 'name' %}selected{% endif %}>Name</option>
+                                    <option value="trn" {% if search_field == 'trn' %}selected{% endif %}>TRN</option>
+                                    <option value="number" {% if search_field == 'number' %}selected{% endif %}>Phone Number</option>
+                                    <option value="date" {% if search_field == 'date' %}selected{% endif %}>Register Date</option>
+                                    <option value="add_name" {% if search_field == 'add_name' %}selected{% endif %}>Address Name</option>
+                                    <option value="language" {% if search_field == 'language' %}selected{% endif %}>Language</option>
+                                    <option value="nationality" {% if search_field == 'nationality' %}selected{% endif %}>Nationality</option>
+                                    <option value="source" {% if search_field == 'source' %}selected{% endif %}>Source</option>
+                                </select>
+                            </div>
+
+                            
+                            <div id="myinput" class="col-md-6">
+                                <label for="search_value">Search Value:</label>
+                                <input type="text" name="id" class="form-control" value="{{ search_value }}" placeholder="Enter search value..." aria-label="Search Value">
+                            </div>
+                        </div>
+
+                        <div id="mycontainer"> </div>
+
+                        <div >
+                            <br>
+                            <button class="btn btn-secondary" type="button" onclick="addSearchRow()" onchange="addSearchRow(this)">Add Another Search</button>
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            
+            <script>
+
+                function updatePlaceholder(select) {
+                        var searchField = select.value;
+                        var searchContainer = select.parentElement.nextElementSibling;
+                        var searchValue = searchContainer.querySelector('.form-control');
+
+                        // Remove existing elements in the search container
+                        searchContainer.innerHTML = '';
+
+                        // Define the placeholders for each search field
+                        var placeholders = {
+                            'id': 'Enter ID...',
+                            'name': 'Enter Name...',
+                            'trn': 'Enter TRN...',
+                            'number': 'Enter Phone Number...',
+                            'date': 'Enter Register Date...',
+                            'add_name': 'Enter Address Name...',
+                            'language': 'Select Language...',
+                            'nationality': 'Select Nationality...',
+                            'source': 'Enter Source...'
+                        };
+                        var names = {
+                            'id': 'id',
+                            'name': 'name',
+                            'trn': 'trn',
+                            'number': 'number',
+                            'date': 'date',
+                            'add_name': 'add_name',
+                            'language': 'language',
+                            'nationality': 'nationality',
+                            'source': 'source'
+                        };
+
+                        // Set the placeholder based on the selected search field
+                        searchValue.placeholder = placeholders[searchField];
+                        searchValue.name = names[searchField];
+
+                        // Change the input type to 'date' for the 'date' field
+                        if (searchField === 'date') {
+                            searchValue.type = 'date';
+
+                            // Create labels and input fields for the start and end dates
+                            var labelStart = document.createElement('label');
+                            labelStart.htmlFor = 'start_date';
+                            labelStart.textContent = 'Start Date:';
+
+                            var inputStart = document.createElement('input');
+                            inputStart.type = 'date';
+                            inputStart.id = 'start_date';
+                            inputStart.name = 'start_date';
+                            inputStart.className = 'form-control';
+
+                            var labelEnd = document.createElement('label');
+                            labelEnd.htmlFor = 'end_date';
+                            labelEnd.textContent = 'End Date:';
+
+                            var inputEnd = document.createElement('input');
+                            inputEnd.type = 'date';
+                            inputEnd.id = 'end_date';
+                            inputEnd.name = 'end_date';
+                            inputEnd.className = 'form-control';
+
+                            // Append labels and input fields to the search container
+                            searchContainer.appendChild(labelStart);
+                            searchContainer.appendChild(inputStart);
+                            searchContainer.appendChild(labelEnd);
+                            searchContainer.appendChild(inputEnd);
+                        }
+
+                        // Fetch data for the 'language' field using AJAX
+                        else if (searchField === 'language') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+                            $.get("{% url 'get_languages' %}", function (data) {
+                                var options = '<option value="" selected>Select Language...</option>';
+                                data["data"].forEach(function (language) {
+                                    options += '<option value="' + language + '">' + language + '</option>';
+                                });
+
+                                var selection = document.createElement('select');
+                                selection.name = "language";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the language select element to the search container
+                                searchContainer.appendChild(selection);
+                            });
+                        }
+
+                        // Fetch data for the 'nationality' field using AJAX
+                        else if (searchField === 'nationality') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+                            $.get("{% url 'get_nationalities' %}", function (data) {
+                                var options = '<option value="" selected>Select Nationality...</option>';
+                                data["data"].forEach(function (nationality) {
+                                    options += '<option value="' + nationality + '">' + nationality + '</option>';
+                                });
+
+                                var selection = document.createElement('select');
+                                selection.name = "nationality";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the nationality select element to the search container
+                                searchContainer.appendChild(selection);
+                            });
+                        }
+
+                        // Fetch data for the 'source' field using AJAX
+                        else if (searchField === 'source') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+                            $.get("{% url 'get_sources' %}", function (data) {
+                                var options = '<option value="" selected>Select Source...</option>';
+                                data["data"].forEach(function (source) {
+                                    options += '<option value="' + source + '">' + source + '</option>';
+                                });
+
+                                var selection = document.createElement('select');
+                                selection.name = "source";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the source select element to the search container
+                                searchContainer.appendChild(selection);
+                            });
+                        }
+
+                        // For other fields (not 'date', 'language', 'nationality', or 'source'), create a standard input field
+                        else {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            searchContainer.appendChild(input);
+                        }
+                    }
+
+                function addSearchRow() {
+                    // Create a new search row
+                    var newRow = document.createElement('div');
+                    newRow.className = 'mysearsh row g-3';
+            
+                    var col1 = document.createElement('div');
+                    col1.className = 'col-md-3';
+            
+                    var label = document.createElement('label');
+                    label.htmlFor = 'search_field';
+                    label.textContent = 'Search By:';
+            
+                    var select = document.createElement('select');
+                    select.id = 'search_field';
+                    select.name = 'search_field';
+                    select.className = 'form-control';
+                    select.setAttribute('onchange', 'updatePlaceholder(this)');
+            
+                    // Add options to the select element
+                    var options = ['id', 'name', 'trn', 'number', 'date', 'add_name', 'language', 'nationality', 'source'];
+                    options.forEach(function (option) {
+                        var opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option.charAt(0).toUpperCase() + option.slice(1).replace('_', ' ');
+                        select.appendChild(opt);
+                    });
+            
+                    col1.appendChild(label);
+                    col1.appendChild(select);
+            
+                    var col2 = document.createElement('div');
+                    col2.id = 'myinput';
+                    col2.className = 'col-md-6';
+            
+                    label = document.createElement('label');
+                    label.htmlFor = 'search_value';
+                    label.textContent = 'Search Value:';
+            
+                    var input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = 'search_value';
+                    input.className = 'form-control';
+                    input.placeholder = 'Enter search value...';
+                    input.setAttribute('aria-label', 'Search Value');
+            
+                    col2.appendChild(label);
+                    col2.appendChild(input);
+            
+                    newRow.appendChild(col1);
+                    newRow.appendChild(col2);
+            
+                    // Append the new row inside the search container
+                    document.getElementById('mycontainer').appendChild(newRow);
+                }
+            </script>
+
+
+            <!-- Table to display customer information -->
+            <table class="table">
+                <thead>
+                    <tr>
+
+                        <th>inquiries Number</th>
+                        <th>Customer & Address</th>
+                        <th>date_inq</th>
+                        <th>services</th>
+                        <th>source</th>
+
+
+                        <!-- Add other columns as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inquiry in inquiries %}
+                        <tr>
+                            <td>{{ inquiry.inq_num }}</td>
+                            <td> <a href="{% url 'customer_info' inquiry.customer.id %}">{{ inquiry.customer.first_name }} - {{ inquiry.address.address_name }}</a></td>
+                            <td>{{ inquiry.date_inq }}</td>
+                            <td>{% for srv in inquiry.services.all %}{{ srv }}{% endfor %}
+                            </td>
+                            <td>{{ inquiry.source }}</td>
+
+
+
+                            <!-- Add other columns as needed -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}
