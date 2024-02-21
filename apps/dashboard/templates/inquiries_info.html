@@ -42,7 +42,7 @@
 
             <hr>
         
-            <h3>Inquiries</h3>
+            <h3>Inquiry</h3>
                 <h4>inquiry address in: {{ inquiry.address.address_name }}</h4>
                 <p>Date Inq: {{ inquiry.date_inq }}</p>
                 <p>Inq Num: {{ inquiry.inq_num }}</p>
@@ -51,6 +51,39 @@
                 <p>Description: {{ inquiry.description }}</p>
                 <br>
                 <!-- Add other inquiry details as needed -->
+
+            
+            <hr>
+        
+            <h3>Quotations</h3>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>details</th>
+                            <th>prices</th>
+                            <th>quantities</th>
+                            <th>total</th>
+                            <!-- Add other columns as needed -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for q in quotations %}
+                            <tr>
+                                <td>{{ q.detail }}</td>
+                                <td> {{ q.price }}</td>
+                                <td>{{ q.quantity }}</td>
+                                <td>{{ q.total }}</td>
+                                <!-- Add other columns as needed -->
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <br>
+                <!-- Add other inquiry details as needed -->
+
+            
         </div>
 
 

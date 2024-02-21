@@ -51,6 +51,8 @@ def inquiry_info(request, id):
             'layout_path': layout_path,
             'customer': customer,
             'inquiry': inquiry,
+            'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
+
             }
     context = TemplateLayout.init(request, context)
     return render(request, "inquiries_info.html", context)
