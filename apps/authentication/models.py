@@ -6,7 +6,7 @@ from django.dispatch import receiver
 
 # Create groups for different roles
 agent_group, created = Group.objects.get_or_create(name='agent')
-supervisor_group, created = Group.objects.get_or_create(name='supervisor')
+provider_group, created = Group.objects.get_or_create(name='provider')
 admin_group, created = Group.objects.get_or_create(name='admin')
 
 class Employee(models.Model):
@@ -15,7 +15,7 @@ class Employee(models.Model):
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
-    position = models.CharField(max_length=16, choices=[('admin', 'admin'), ('agent', 'agent'), ('supervisor', 'supervisor')], blank=True, null=True)
+    position = models.CharField(max_length=16, choices=[('admin', 'admin'), ('agent', 'agent'), ('provider', 'provider')], blank=True, null=True)
     # Add more fields as needed
 
 
@@ -30,7 +30,7 @@ def assign_group(sender, instance, created, **kwargs):
     if created:
         if instance.position == 'agent':
             instance.user.groups.add(agent_group)
-        elif instance.position == 'supervisor':
-            instance.user.groups.add(supervisor_group)
+        elif instance.position == 'provider':
+            instance.user.groups.add(provider_group)
         elif instance.position == 'admin':
             instance.user.groups.add(admin_group)

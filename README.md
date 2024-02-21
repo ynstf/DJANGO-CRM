@@ -12,6 +12,6 @@ agent:
     said
     ynstf2020
 
-supervisor:
+provider:
     simon
     simonsimon

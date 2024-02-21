@@ -1,0 +1,245 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Add quotation{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+            <center>
+                <h1>make quotation</h1>
+                <br>
+                <h4>description</h4>
+                <p> {{ inquiry.description }}</p>
+            </center>
+            <br>
+
+            <form method="post" id="quotationForm" >
+                {% csrf_token %}
+                <!-- {{ quotation_form }} -->
+
+                <h3>quotation Details</h3>
+                <div>
+                    <div class="col-md-4">
+                        <label for="id_quotation-date" > Quotation Date : </label>
+                        <input type="date" id="id_quotation-date" name="quotation-date" class="form-control" >
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="id_quotation-service">service :</label>
+                        <select id="id_quotation-service" name="quotation-service" class="form-control">
+                                <option value="" selected disabled>Select Service...</option>
+                                {% for service in services %}
+                                    <option value="{{ service.id }}">{{ service }}</option>
+                                {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <br><br>
+
+
+
+                    <!-- add details forms -->
+                    <!-- Add details forms -->
+                    <div class="col-md-4">
+                        <label for="id_quotation-detail">Detail :</label>
+                        <textarea type="text" rows="3" id="id_quotation-detail" name="quotation-detail" class="form-control" placeholder="Detail..." aria-label="detail"></textarea>
+
+                        <label for="id_quotation-price-1">Price :</label>
+                        <input type="number" id="id_quotation-price-1" name="quotation-price" class="form-control" placeholder="Price..." aria-label="Price" oninput="updateTotal(1)">
+                        
+                        <label for="id_quotation-quantity-1">Quantity :</label>
+                        <input type="number" id="id_quotation-quantity-1" name="quotation-quantity" class="form-control" placeholder="Quantity..." aria-label="Quantity" oninput="updateTotal(1)">
+                        
+                        <label for="Total">Total:</label>
+                        <span id="total-1" name="total"></span>
+
+                        <hr>
+                    </div>
+
+                    <div id="additional-quotations"></div>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addQuotation()">Add New Quotation</button>
+
+                    <script>
+                        var quotationCounter = 2;
+
+                        function updateTotal(quotationId) {
+                            var price = document.getElementById('id_quotation-price-' + quotationId).value;
+                            var quantity = document.getElementById('id_quotation-quantity-' + quotationId).value;
+
+                            // Calculate total
+                            var total = price * quantity;
+
+                            // Display the total
+                            document.getElementById('total-' + quotationId).innerHTML = total.toFixed(2); // You can format the total as needed
+                        }
+
+                        function addQuotation() {
+                            var hr = document.createElement('hr');
+                            var container = document.createElement('div');
+                            container.className = 'col-md-4';
+
+                            var label = document.createElement('label');
+                            label.setAttribute('for', 'id_quotation-detail-' + quotationCounter);
+                            label.textContent = 'Detail ' + quotationCounter + ' :';
+                            var textarea = document.createElement('textarea');
+                            textarea.type = 'text';
+                            textarea.id = 'id_quotation-detail-' + quotationCounter;
+                            textarea.name = 'quotation-detail';
+                            textarea.className = 'form-control';
+                            textarea.placeholder = 'Detail ' + quotationCounter + '...';
+                            textarea.setAttribute('aria-label', 'Detail ' + quotationCounter);
+                            textarea.rows = 3;
+                            container.appendChild(label);
+                            container.appendChild(textarea);
+
+                            var labelPrice = document.createElement('label');
+                            labelPrice.setAttribute('for', 'id_quotation-price-' + quotationCounter);
+                            labelPrice.textContent = 'Price ' + quotationCounter + ' :';
+                            var inputPrice = document.createElement('input');
+                            inputPrice.type = 'number';
+                            inputPrice.id = 'id_quotation-price-' + quotationCounter;
+                            inputPrice.name = 'quotation-price';
+                            inputPrice.className = 'form-control';
+                            inputPrice.placeholder = 'Price ' + quotationCounter + '...';
+                            inputPrice.setAttribute('aria-label', 'Price ' + quotationCounter);
+                            inputPrice.setAttribute('oninput', 'updateTotal(' + quotationCounter + ')');
+                            container.appendChild(labelPrice);
+                            container.appendChild(inputPrice);
+
+                            var labelQuantity = document.createElement('label');
+                            labelQuantity.setAttribute('for', 'id_quotation-quantity-' + quotationCounter);
+                            labelQuantity.textContent = 'Quantity ' + quotationCounter + ' :';
+                            var inputQuantity = document.createElement('input');
+                            inputQuantity.type = 'number';
+                            inputQuantity.id = 'id_quotation-quantity-' + quotationCounter;
+                            inputQuantity.name = 'quotation-quantity';
+                            inputQuantity.className = 'form-control';
+                            inputQuantity.placeholder = 'Quantity ' + quotationCounter + '...';
+                            inputQuantity.setAttribute('aria-label', 'quantity' + quotationCounter);
+                            inputQuantity.setAttribute('oninput', 'updateTotal(' + quotationCounter + ')');
+                            container.appendChild(labelQuantity);
+                            container.appendChild(inputQuantity);
+
+                            var labelTotal = document.createElement('label');
+                            labelTotal.setAttribute('for', 'total-' + quotationCounter);
+                            labelTotal.textContent = 'Total:';
+                            var spanTotal = document.createElement('span');
+                            spanTotal.id = 'total-' + quotationCounter;
+                            spanTotal.name = 'total';
+                            container.appendChild(labelTotal);
+                            container.appendChild(spanTotal);
+
+                            var divv = document.createElement('div');
+                            container.appendChild(divv);
+
+
+                            var button = document.createElement('button');
+                            button.type = 'button';
+                            button.className = 'btn btn-danger btn-sm';
+                            button.textContent = 'Remove';
+                            button.onclick = function () {
+                                container.remove();
+                            };
+
+                            container.appendChild(button);
+                            container.appendChild(hr);
+
+                            document.getElementById('additional-quotations').appendChild(container);
+
+                            quotationCounter++;
+                        }
+                    </script>
+
+                    <br><br>
+
+
+
+
+
+                    <br><br>
+                </div>
+
+                <br>
+
+
+
+                <br><br>
+                <button class="btn btn-success" type="submit">Add Quotation</button>
+            </form>
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}
+

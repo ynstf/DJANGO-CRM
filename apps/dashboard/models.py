@@ -96,7 +96,31 @@ class Inquiry(models.Model):
     description = models.TextField(blank=True, null=True)
     # Add other fields as needed
     def __str__(self):
-        return f'{self.customer} - {self.address} - {self.services}'
+        return f'{self.customer} - {self.address}'
+
+
+
+
+
+class Quotation(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
+
+    quotation_service = models.ForeignKey(Service, on_delete=models.CASCADE, blank=True, null=True)
+    quotation_date = models.DateField(blank=True, null=True)
+
+    detail = models.CharField(max_length=100, blank=True, null=True)
+    price = models.CharField(max_length=50, blank=True, null=True)
+    quantity = models.CharField(max_length=50, blank=True, null=True)
+
+    total = models.CharField(max_length=50, blank=True, null=True)
+
+    # Add other fields as needed
+
+    def __str__(self):
+        return f'{self.customer} - {self.inquiry}'
+    
 
 class Booking(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)

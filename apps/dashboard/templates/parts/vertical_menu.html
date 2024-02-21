@@ -48,7 +48,7 @@
             <div class="text-truncate" data-i18n="Without menu">Customers</div>
           </a>
         </li>
-        {% elif position == 'supervisor' %}
+        {% elif position == 'provider' %}
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
           <a href="{% url 'inquiries_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Inquiries</div>

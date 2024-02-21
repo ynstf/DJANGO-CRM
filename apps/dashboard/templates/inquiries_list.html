@@ -405,7 +405,7 @@
                     {% for inquiry in inquiries %}
                         <tr>
                             <td>{{ inquiry.inq_num }}</td>
-                            <td> <a href="{% url 'customer_info' inquiry.customer.id %}">{{ inquiry.customer.first_name }} - {{ inquiry.address.address_name }}</a></td>
+                            <td> <a href="{% url 'inquiry_info' inquiry.id %}">{{ inquiry.customer.first_name }} - {{ inquiry.address.address_name }}</a></td>
                             <td>{{ inquiry.date_inq }}</td>
                             <td>{% for srv in inquiry.services.all %}{{ srv }}{% endfor %}
                             </td>

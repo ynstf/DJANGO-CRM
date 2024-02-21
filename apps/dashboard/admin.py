@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Service, Emirate, Source, Language, Nationality, Customer, PhoneNumber, WhatsApp, Landline, Email, Address, Inquiry, Booking
+from .models import Service, Emirate, Source, Language, Nationality, Customer, PhoneNumber, WhatsApp, Landline, Email
+from .models import Address, Inquiry, Quotation, Booking
+
 
 # Register your models here.
 
@@ -50,6 +52,10 @@ class AddressAdmin(admin.ModelAdmin):
 @admin.register(Inquiry)
 class InquiryAdmin(admin.ModelAdmin):
     list_display = ('customer', 'address', 'date_inq', 'source', 'inq_num', 'description')
+
+@admin.register(Quotation)
+class QuotationAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'inquiry', 'quotation_service', 'quotation_date', 'detail', 'price', 'quantity')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):

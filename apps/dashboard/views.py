@@ -3,7 +3,7 @@ from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee
 from django.shortcuts import render, redirect
 
-from apps.dashboard.models import Address, Customer, Inquiry, Language, Service, Source
+from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotation, Service, Source
 from .forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
@@ -23,35 +23,95 @@ from django.contrib.auth.decorators import user_passes_test
 # Create your views here.
 
 
-@user_passes_test(lambda u: u.groups.filter(name='supervisor').exists())
+@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
 @login_required(login_url='/')
 def inquiries_list(request):
     inquiries = Inquiry.objects.all()
-    
 
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
 
-
-
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'inquiries': inquiries,
-
-
-
                 }
     
 
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiries_list.html',context)
 
+@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
+@login_required(login_url='/')
+def inquiry_info(request, id):
+    inquiry = Inquiry.objects.get(id=id)
+    customer = inquiry.customer
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
+            'customer': customer,
+            'inquiry': inquiry,
+            }
+    context = TemplateLayout.init(request, context)
+    return render(request, "inquiries_info.html", context)
+
+@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
+@login_required(login_url='/')
+def make_quotation(request, id):
+    
+    if request.method == 'POST':
+        quotation_service = request.POST.get('quotation-service')
+        quotation_date = request.POST.get('quotation-date')
+
+        details = request.POST.getlist('quotation-detail')
+        prices = request.POST.getlist('quotation-price')
+        quantities = request.POST.getlist('quotation-quantity')
+
+
+        inquiry = Inquiry.objects.get(id=id)
+        customer_id = inquiry.customer.id
+        customer = Customer.objects.get(id=customer_id)
+        employee_id = request.user.employee.id
+        employee = Employee.objects.get(id=employee_id)
+
+        print(employee,inquiry,customer,quotation_service,quotation_date,details,prices,quantities)
+        
+        srv_id = quotation_service
+        quotation_service = Service.objects.get(id=srv_id)
+
+        for i in range(len(prices)):
+
+            quotation = Quotation(
+                employee=employee,
+                customer=customer,
+                inquiry=inquiry,
+                quotation_service=quotation_service,
+                quotation_date=quotation_date,
+                detail=details[i],
+                price=prices[i],
+                quantity=quantities[i],
+                total=float(prices[i])*float(quantities[i])
+            )
+            quotation.save()
+
+        return redirect('inquiry_info', id=id)
+
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
+            'customer': Inquiry.objects.get(id=id).customer,
+            'inquiry': Inquiry.objects.get(id=id),
+            'services':Service.objects.all(),
+            }
+    context = TemplateLayout.init(request, context)
+    return render(request, "make_quotation.html", context)
 
 
 def get_languages(request):
     languages = [l.name for l in Language.objects.all()]
     return JsonResponse({'data':languages})
-
 
 def get_nationalities(request):
     nationalities = [n.name for n in Nationality.objects.all()]

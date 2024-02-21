@@ -485,19 +485,19 @@
   content: "\F0BE8";
 }
 
-.mdi-account-supervisor::before {
+.mdi-account-provider::before {
   content: "\F0A8B";
 }
 
-.mdi-account-supervisor-circle::before {
+.mdi-account-provider-circle::before {
   content: "\F0A8C";
 }
 
-.mdi-account-supervisor-circle-outline::before {
+.mdi-account-provider-circle-outline::before {
   content: "\F14EC";
 }
 
-.mdi-account-supervisor-outline::before {
+.mdi-account-provider-outline::before {
   content: "\F112D";
 }
 
