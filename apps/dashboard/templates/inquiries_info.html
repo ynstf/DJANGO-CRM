@@ -27,7 +27,7 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
-        <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Make Quotation</a>
+        <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
         <br>
         <div class="container">
             <br>
@@ -55,7 +55,11 @@
             
             <hr>
         
-            <h3>Quotations</h3>
+            <h3>Quotations 
+                {% if quotations %}
+                <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
+                {% endif %}
+            </h3> 
                 
                 <table class="table">
                     <thead>
@@ -79,7 +83,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                
+
                 <br>
                 <!-- Add other inquiry details as needed -->
 
