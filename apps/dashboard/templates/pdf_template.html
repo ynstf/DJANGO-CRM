@@ -1,0 +1,137 @@
+<style>
+    table {
+        width: 100%;
+    }
+
+    td {
+        vertical-align: top;
+    }
+
+    #services-info {
+        text-align: right;
+    }
+
+    #logo {
+        text-align: center;
+    }
+
+    #company-info {
+        text-align: left;
+    }
+</style>
+
+<table>
+    <tr>
+        <td id="services-info">
+            <br>
+            <br>
+            <center>
+                <h4>Service Provided By</h4>
+                <h4>{{ service }} services</h4>
+            </center>
+        </td>
+        <td id="logo">
+            <img src="https://res.cloudinary.com/dbhawzisa/image/upload/v1708538372/eajvxoib61qbzfxbrftk.png" width="100">
+            <h3>QUOTATION</h3>
+        </td>
+        <td id="company-info">
+            <br>
+            <br>
+            <center>
+                <h4>www.technical-24.com</h4>
+                <h4>Date : {{date}}</h4>
+                <h4>Inquiry number : {{ inquiry.id }}</h4>
+            </center>
+        </td>
+    </tr>
+</table>
+
+<hr>
+<br><br>
+<h3>Bill To:</h3>
+<ul>
+    <li><p>customer name : {{ inquiry.customer }} </p></li>
+    <li><p>customer TRN : {{ inquiry.customer.trn }} </p></li>
+    <li><p>Phone number : {{ phone }} </p></li>
+    <li><p>Address : {{ address }} </p></li>
+    <li><p>Email : {{ email }} </p></li>
+</ul>
+
+<br>
+<br>
+
+<style>
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .th, .td {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 8px;
+    }
+
+    .th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">Details</th>
+            <th class="th">Prices</th>
+            <th class="th">Quantities</th>
+            <th class="th">Cost (SAR)</th>
+            <!-- Add other columns as needed -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for q in quotations %}
+            <tr class="tr">
+                <td class="td">{{ q.detail }}</td>
+                <td class="td">{{ q.price }}</td>
+                <td class="td">{{ q.quantity }}</td>
+                <td class="td">{{ q.total }}</td>
+                <!-- Add other columns as needed -->
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+<br><br>
+
+
+<style>
+    /* Apply styles to ensure consistent spacing */
+    li {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px; /* Adjust padding as needed */
+    }
+
+    /* Optionally, style the <p> elements for additional control */
+    li p {
+        margin: 0;
+    }
+</style>
+
+<!-- HTML content -->
+<ul>
+    <li><h3>Amount without VAR :       {{ total }} SAR</h3></li>
+    <li><h3>VAR :       0 SAR</h3></li>
+    <li><h3>Total amount:       {{ total }} SAR</h3></li>
+</ul>
+
+<br><br>
+<hr>
+<br>
+<ul>
+    <li><h3> service mail</h3></li>
+    <li><h3> service number</h3></li>
+</ul>
+
+
+

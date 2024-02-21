@@ -20,11 +20,61 @@ import json
 # Example view to check if user is in the 'admin' group
 from django.contrib.auth.decorators import user_passes_test
 
+
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+import io
+
+def generate_pdf(request, id):
+    # Retrieve the inquiry and associated quotations
+    inquiry = Inquiry.objects.get(id=id)
+    quotations = Quotation.objects.filter(inquiry=inquiry)
+    customer = Customer.objects.get(id=inquiry.customer.id)
+    phone = PhoneNumber.objects.filter(customer=customer)[0]
+    email = Email.objects.filter(customer=customer)[0]
+    address = inquiry.address.address_name
+
+    total = 0
+    for quotation in quotations:
+        total += float(quotation.total)
+
+
+    date=quotations[0].quotation_date
+    service=quotations[0].quotation_service
+
+    # Create a PDF template using Django template
+    template_path = 'pdf_template.html'  # Create a template for your PDF
+    template = get_template(template_path)
+    context = {'inquiry': inquiry,
+                'quotations': quotations,
+                'date':date,
+                'service':service,
+                'phone':phone,
+                'address':address,
+                'email':email,
+                'total':total,
+
+                }
+    html_content = template.render(context)
+
+    # Create a PDF file using ReportLab
+    pdf_file = io.BytesIO()
+    pisa.CreatePDF(html_content, dest=pdf_file)
+
+    # Set response content type
+    response = HttpResponse(pdf_file.getvalue(), content_type='application/pdf')
+
+    # Set the filename for download
+    response['Content-Disposition'] = f'inline; filename="{inquiry.customer.first_name}_{inquiry.customer.last_name}_quotation{inquiry.id}.pdf"'
+
+    return response
+
+
 # Create your views here.
 
-
-@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
 @login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
 def inquiries_list(request):
     inquiries = Inquiry.objects.all()
 
@@ -41,9 +91,8 @@ def inquiries_list(request):
     return render(request, 'inquiries_list.html',context)
 
 
-
-@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
 @login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
 def edit_quotation(request,id):
     inquiry = Inquiry.objects.get(id = id)
 
@@ -114,10 +163,8 @@ def edit_quotation(request,id):
     return render(request, 'edit_quotation.html',context)
 
 
-
-
-@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
 @login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
 def inquiry_info(request, id):
     inquiry = Inquiry.objects.get(id=id)
     customer = inquiry.customer
@@ -133,8 +180,9 @@ def inquiry_info(request, id):
     context = TemplateLayout.init(request, context)
     return render(request, "inquiries_info.html", context)
 
-@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
+
 @login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name='provider').exists())
 def make_quotation(request, id):
     
     if request.method == 'POST':
@@ -208,8 +256,8 @@ def dashboard(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
 
-@user_passes_test(lambda u: u.groups.filter(name='agent').exists())
 @login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name='agent').exists())
 def customer_list(request):
     customers = Customer.objects.all()
     
@@ -561,6 +609,11 @@ def customer_info(request, id):
     addresses = Address.objects.filter(customer=customer)
     inquiries = Inquiry.objects.filter(address__in=addresses)
 
+    # Add a boolean field indicating if there are any quotations for each inquiry
+    for inquiry in inquiries:
+        inquiry.has_quotations = Quotation.objects.filter(inquiry=inquiry).exists()
+
+
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
@@ -568,6 +621,7 @@ def customer_info(request, id):
             'customer': customer,
             'addresses': addresses,
             'inquiries': inquiries,
+            
             }
     context = TemplateLayout.init(request, context)
     return render(request, "customer_info.html", context)
@@ -614,11 +668,6 @@ def edit_customer(request, id):
     customer = get_object_or_404(Customer, id=id)
     
     if request.method == 'POST':
-        print("hiiiiiiii")
-
-        #customer fields
-        #customer_form = CustomerForm(request.POST, prefix='customer')
-
 
         first_name = request.POST.get('customer-first_name')
         last_name = request.POST.get('customer-last_name')

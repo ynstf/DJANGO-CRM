@@ -3,6 +3,7 @@ ENVCRM
 commands.txt
 media/
 DATA.txt
+staticfiles
 data/
 
 # Byte-compiled / optimized / DLL files

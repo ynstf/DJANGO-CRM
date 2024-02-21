@@ -58,7 +58,9 @@
             <h3>Quotations 
                 {% if quotations %}
                 <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
+                <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Generate PDF</a>
                 {% endif %}
+                
             </h3> 
                 
                 <table class="table">

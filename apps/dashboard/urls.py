@@ -2,7 +2,7 @@ from django.urls import path
 from .views import dashboard,add_customer,customer_list,customer_info,edit_customer
 from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry,delete_number
 from .views import get_languages, get_nationalities,get_sources
-from .views import inquiries_list,inquiry_info,make_quotation,edit_quotation
+from .views import inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
 
 urlpatterns = [
     path("dashboard/",dashboard,name="dashboard",),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('inquiry/<int:id>', inquiry_info, name='inquiry_info'),
     path('make_quotation/<int:id>', make_quotation, name='make_quotation'),
     path('edit_quotation/<int:id>', edit_quotation, name='edit_quotation'),
+    path('generate_pdf/<int:id>/', generate_pdf, name='generate_pdf'),
 
 
     
