@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import user_passes_test
 ############### customer manupilations #################
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name='agent').exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 def customer_list_view(request):
     customers = Customer.objects.all()
     
@@ -164,6 +164,7 @@ def customer_list_view(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'customer_list.html', context)
 
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
 def add_customer_view(request):
     if request.method == 'POST':
@@ -365,6 +366,7 @@ def add_customer_view(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'add_customer.html', context)
 
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
 def customer_info_view(request, id):
     customer = get_object_or_404(Customer, id=id)
@@ -388,7 +390,7 @@ def customer_info_view(request, id):
     context = TemplateLayout.init(request, context)
     return render(request, "customer_info.html", context)
 
-
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
 def edit_customer_view(request, id):
     customer = get_object_or_404(Customer, id=id)

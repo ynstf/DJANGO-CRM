@@ -8,14 +8,14 @@ Run:
     python manage.py runserver
 
 
-agent:
+call center:
     said
     ynstf2020
 
 provider:
-    simon
-    simonsimon
+    hamod
+    hamodhamod
 
 admin :
-    admin
+    amin
     adminadmin

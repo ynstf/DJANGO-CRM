@@ -29,493 +29,61 @@
 
         <div class="container">
 
-            
             <br>
-            <center><h2>Add Customer</h2></center>
+            <center><h2>Add Employee</h2></center>
             <br>
-            
-
-            <form method="post" id="customerForm">
+        
+            <form method="post" id="employeeForm">
                 {% csrf_token %}
-                <!-- {{ customer_form.as_p }} -->
-
-                <h3>Customer Details</h3>
-                <div>
-                    <div class="col-md-4">
-                        <label for="id_customer-first_name" > First name : </label>
-                        <input type="text" id="id_customer-first_name" name="customer-first_name" class="form-control" placeholder="First name..." aria-label="First name">
-                    </div>
-                    
-
-                    <div class="col-md-4">
-                        <label for="id_customer-last_name" > Last name : </label>
-                        <input type="text" id="id_customer-last_name" name="customer-last_name" class="form-control" placeholder="First name..." aria-label="First name">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="id_customer-gender">Gender :</label>
-                        <select id="id_customer-gender" name="customer-gender" class="form-control">
-                                <option value="" selected disabled>Select gender...</option>
-                                {% for gender in Genders %}
-                                    <option value="{{ gender.id }}">{{ gender.gender }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="id_customer-nationality">Nationality :</label>
-                        <select id="id_customer-nationality" name="customer-nationality" class="form-control">
-                                <option value="" selected disabled>Select Nationality...</option>
-                                {% for Nationality in Nationalities  %}
-                                    <option value="{{ Nationality.id }}">{{ Nationality }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="id_customer-language">Language :</label>
-                        <select id="id_customer-language" name="customer-language" class="form-control">
-                                <option value="" selected disabled>Select Language...</option>
-                                {% for Language in Languages %}
-                                    <option value="{{ Language.id }}">{{ Language }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
-
-
-                    <div class="col-md-4">
-                        <label for="id_customer-trn" > TRN : </label>
-                        <input type="text" id="id_customer-trn" name="customer-trn" class="form-control" placeholder="TRN..." aria-label="TRN">
-                    </div>
-
-
-
-                    <!-- add Phone Number forms -->
-                    <div class="col-md-4">
-                        <label for="id_customer-whats_apps" > Phone Number : </label>
-                        <input type="text" id="id_customer-phone_numbers" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
-                    </div>
-                    <div id="additional-phone-numbers"></div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addNewPhoneNumber()">Add New Phone Number</button>
-                    <script>
-                        var phoneNumberCounter = 2;
-                        function addNewPhoneNumber() {
-                            var container = document.createElement('div');
-                            container.className = 'col-md-4';
-
-                            var label = document.createElement('label');
-                            label.setAttribute('for', 'id_customer-phone-number-' + phoneNumberCounter);
-                            label.textContent = 'Phone Number ' + phoneNumberCounter + ' :';
-                    
-                            var input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = 'id_customer-phone-number-' + phoneNumberCounter;
-                            input.name = 'customer-phone_numbers';
-                            input.className = 'form-control';
-                            input.placeholder = 'Phone Number ' + phoneNumberCounter + '...';
-                            input.setAttribute('aria-label', 'Phone Number ' + phoneNumberCounter);
-                    
-                            container.appendChild(label);
-                            container.appendChild(input);
-                    
-                            var button = document.createElement('button');
-                            button.type = 'button';
-                            button.className = 'btn btn-danger btn-sm';
-                            button.textContent = 'Remove';
-                            button.onclick = function () {
-                                container.remove();
-                            };
-                    
-                            container.appendChild(button);
-                    
-                            document.getElementById('additional-phone-numbers').appendChild(container);
-                    
-                            // Optionally, you can clear the value of the new input
-                            input.value = '';
-                    
-                            phoneNumberCounter++;
-                        }
-                    </script>
-                    
-                    <br><br>
-
-                    <!-- add Landlines forms -->
-                    <div class="col-md-4">
-                        <label for="id_customer-landlines">Landlines :</label>
-                        <input type="text" id="id_customer-landlines" name="customer-landlines" class="form-control" placeholder="Landlines..." aria-label="Landlines">
-                    </div>
-                    <div id="additional-landlines"></div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addNewLandline()">Add New Landline</button>
-                    <script>
-                        var landlineCounter = 2;
-                    
-                        function addNewLandline() {
-                            var container = document.createElement('div');
-                            container.className = 'col-md-4';
-                    
-                            var label = document.createElement('label');
-                            label.setAttribute('for', 'id_customer-landline-' + landlineCounter);
-                            label.textContent = 'Landline ' + landlineCounter + ' :';
-                    
-                            var input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = 'id_customer-landline-' + landlineCounter;
-                            input.name = 'customer-landlines';
-                            input.className = 'form-control';
-                            input.placeholder = 'Landline ' + landlineCounter + '...';
-                            input.setAttribute('aria-label', 'Landline ' + landlineCounter);
-                    
-                            container.appendChild(label);
-                            container.appendChild(input);
-                    
-                            var button = document.createElement('button');
-                            button.type = 'button';
-                            button.className = 'btn btn-danger btn-sm';
-                            button.textContent = 'Remove';
-                            button.onclick = function () {
-                                container.remove();
-                            };
-                    
-                            container.appendChild(button);
-                    
-                            document.getElementById('additional-landlines').appendChild(container);
-                    
-                            // Optionally, you can clear the value of the new input
-                            input.value = '';
-                    
-                            landlineCounter++;
-                        }
-                    </script>
-                    
-                    <br><br>
-
-
-                    <!-- add WhatsApp forms -->
-                    <div class="col-md-4">
-                        <label for="id_customer-whats_apps">WhatsApp :</label>
-                        <input type="text" id="id_customer-whats_apps" name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
-                    </div>
-                    <div id="additional-whatsapps"></div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addNewWhatsapp()">Add New WhatsApp</button>
-                    <script>
-                        var whatsappCounter = 2;
-                    
-                        function addNewWhatsapp() {
-                            var container = document.createElement('div');
-                            container.className = 'col-md-4';
-                    
-                            var label = document.createElement('label');
-                            label.setAttribute('for', 'id_customer-whatsapp-' + whatsappCounter);
-                            label.textContent = 'WhatsApp ' + whatsappCounter + ' :';
-                    
-                            var input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = 'id_customer-whatsapp-' + whatsappCounter;
-                            input.name = 'customer-whats_apps';
-                            input.className = 'form-control';
-                            input.placeholder = 'WhatsApp ' + whatsappCounter + '...';
-                            input.setAttribute('aria-label', 'WhatsApp ' + whatsappCounter);
-                    
-                            container.appendChild(label);
-                            container.appendChild(input);
-                    
-                            var button = document.createElement('button');
-                            button.type = 'button';
-                            button.className = 'btn btn-danger btn-sm';
-                            button.textContent = 'Remove';
-                            button.onclick = function () {
-                                container.remove();
-                            };
-                    
-                            container.appendChild(button);
-                    
-                            document.getElementById('additional-whatsapps').appendChild(container);
-                    
-                            // Optionally, you can clear the value of the new input
-                            input.value = '';
-                    
-                            whatsappCounter++;
-                        }
-                    </script>
-                    
-                    <br><br>
-
-
-                    <!-- add Emails forms -->
-                    <div class="col-md-4">
-                        <label for="id_customer-emails">Email :</label>
-                        <input type="text" id="id_customer-emails" name="customer-emails" class="form-control" placeholder="Email..." aria-label="Email">
-                    </div>
-                    <div id="additional-emails"></div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addNewEmail()">Add New Email</button>
-                    <script>
-                        var emailCounter = 2;
-                    
-                        function addNewEmail() {
-                            var container = document.createElement('div');
-                            container.className = 'col-md-4';
-                    
-                            var label = document.createElement('label');
-                            label.setAttribute('for', 'id_customer-email-' + emailCounter);
-                            label.textContent = 'Email ' + emailCounter + ' :';
-                    
-                            var input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = 'id_customer-email-' + emailCounter;
-                            input.name = 'customer-emails';
-                            input.className = 'form-control';
-                            input.placeholder = 'Email ' + emailCounter + '...';
-                            input.setAttribute('aria-label', 'Email ' + emailCounter);
-                    
-                            container.appendChild(label);
-                            container.appendChild(input);
-                    
-                            var button = document.createElement('button');
-                            button.type = 'button';
-                            button.className = 'btn btn-danger btn-sm';
-                            button.textContent = 'Remove';
-                            button.onclick = function () {
-                                container.remove();
-                            };
-                    
-                            container.appendChild(button);
-                    
-                            document.getElementById('additional-emails').appendChild(container);
-                    
-                            // Optionally, you can clear the value of the new input
-                            input.value = '';
-                    
-                            emailCounter++;
-                        }
-                    </script>
-                    
-                    <br><br>
+        
+                <h3>Employee Details</h3>
+        
+                <div class="col-md-4">
+                    <label for="id_employee-first_name">First name :</label>
+                    <input type="text" id="id_employee-first_name" name="employee-first_name" class="form-control" placeholder="First name..." aria-label="First name">
+                </div>
+        
+                <div class="col-md-4">
+                    <label for="id_employee-last_name">Last name :</label>
+                    <input type="text" id="id_employee-last_name" name="employee-last_name" class="form-control" placeholder="Last name..." aria-label="Last name">
+                </div>
+        
+                <div class="col-md-4">
+                    <label for="id_employee-email">Email :</label>
+                    <input type="email" id="id_employee-email" name="employee-email" class="form-control" placeholder="Email..." aria-label="Email">
+                </div>
+        
+                <div class="col-md-4">
+                    <label for="id_employee-phone_number">Phone Number :</label>
+                    <input type="text" id="id_employee-phone_number" name="employee-phone_number" class="form-control" placeholder="Phone Number..." aria-label="Phone Number">
+                </div>
+        
+                <div class="col-md-4">
+                    <label for="id_employee-position">Position :</label>
+                    <select id="id_employee-position" name="employee-position" class="form-control">
+                        <option value="" selected disabled>Select position...</option>
+                        {% for position in positions %}
+                            <option value="{{ position.id }}">{{ position.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
-                <br>
-                <div class="col-md-4"></div>
-
-                    <div id="newaddressSection" class="address-form" >
-                    </div>
-
-                    <!-- Add new address button -->
-                    <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewAddress()">Add New Address</button>
-                    <input type="hidden" name="inq_counters" id="inqCountersInput" value="">
-
-                    <br>
-                
-
-                <!-- JavaScript code to add new address forms dynamically -->
-                <script>
-                    var br = document.createElement('br');
-                    var addressCounter = 1;
-                     var inqCounters = {};  // Counter for each address
-                                
-                    function addNewAddress() {
-
-                        // Create a new div for the address section
-                        var newAddressSection = document.createElement('div');
-                        newAddressSection.className = 'address-form';
-
-                        // Initialize the inquiry counter for this address
-                        var addressIndex = addressCounter;
-                        inqCounters[addressIndex] = 0;
-
-                        // Append the HTML for the address section
-                        newAddressSection.innerHTML = `
-                            <h3>Address</h3>
-                            <div class="col-md-4">
-                                <label for="id_address-address_name"> Address Name :</label>
-                                <input type="text" name="address-address_name" class="form-control" placeholder="Address name..." aria-label="Address name">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="id_address-type"> Type :</label>
-                                <select name="address-type" class="form-control">
-                                    <option value="" selected>Select Type...</option>
-                                    {% for Type in types %}
-                                        <option value="{{ Type.id }}">{{ Type.type }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="id_address-emirate">  Emirate :</label>
-                                <select name="address-emirate" class="form-control">
-                                    <option value="" selected>Select Emirate...</option>
-                                    {% for Emirate in Emirates %}
-                                        <option value="{{ Emirate.id }}">{{ Emirate }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="id_address-description_location"> Description location : </label>
-                                <textarea name="address-description_location" class="form-control" placeholder="Description location..." aria-label="Description location"></textarea>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="id_address-location"> Location :</label>
-                                <input type="text" name="address-location" class="form-control" placeholder="Location..." aria-label="Location">
-                                <input type="hidden" name="address-customer" id="id_address-customer">
-                            </div>
-                            <br>
-
-                            <!-- Container for inquiries associated with this address -->
-                            <ul class="inq-container" id="inqContainer_${addressCounter}"></ul>
-
-                            <!-- Add new inquiry button for this address -->
-                            <button class="btn btn-secondary btn-sm" type="button" onclick="addNewInq(${addressCounter})">Add New Inquiry</button>
-
-                            <!-- Display the number of inquiries for this address -->
-                            <p>Total Inquiries: <span id="inqCount_${addressIndex}">0</span></p>
-                            
-                        `;
-                        
-                        
-                        newAddressSection.appendChild(br);
-                        newAddressSection.appendChild(br);
-                        // Add a delete button
-                        var deleteButton = document.createElement('button');
-                        deleteButton.type = 'button';
-                        deleteButton.className = 'btn btn-danger btn-sm';
-                        deleteButton.textContent = 'Remove Address';
-                        deleteButton.onclick = function () {
-                            newAddressSection.remove();
-                            updateInqCountersInput()
-                            delete inqCounters[addressIndex];  // Remove the counter for this address
-                        };
-
-                        newAddressSection.appendChild(deleteButton);
-                        // Increment the counter for the next address
-                        addressCounter++;
-
-                        // Append the new address section to the container
-                        document.getElementById('newaddressSection').appendChild(newAddressSection);
-                        updateInqCountersInput();
-                    }
-
-                    var inqCounter = 1;
-
-                    function addNewInq(addressIndex) {
-                        
-                        // Create a new div for the inquiry section
-                        var newInqSection = document.createElement('li');
-                        newInqSection.className = 'inq-form';
-
-                        // Increment the inquiry counter for this address
-                        inqCounters[addressIndex]++;
-
-                        // Update the displayed number of inquiries for this address
-                        document.getElementById(`inqCount_${addressIndex}`).textContent = inqCounters[addressIndex];
-
-
-                        // Append the HTML for the inquiry section
-                        newInqSection.innerHTML = `
-                                <h3>Inquiry</h3>
-
-                                    <div class="col-md-4">
-                                        <label for="id_inquiry-inq_num"> Inquiry Number : </label>
-                                        <input type="text" name="inquiry-inq_num" class="form-control" placeholder="Inquiry Number..." aria-label="Inquiry Number">
-                                    </div>
-                                    
-                                    <div class="col-md-4">
-                                        <label for="id_inquiry-date_inq"> Date Inquiry : </label>
-                                        <input type="date" name="inquiry-date_inq" class="form-control" placeholder="Date Inquiry..." aria-label="Date Inquiry">
-                                        <!--<button class="btn btn" type="button" onclick="fillCurrentDate()">Fill Current Date</button>-->
-                                    </div>
-                                    
-                                    <div class="col-md-4">
-                                        <label for="id_customer-source">Source :</label>
-                                        <select name="customer-source" class="form-control">
-                                            <option value="" selected disabled>Select Source...</option>
-                                            {% for Source in Sources %}
-                                                <option value="{{ Source.id }}">{{ Source }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="id_inquiry-services"> Services : </label>
-                                        <select name="inquiry-services" class="form-control">
-                                            {% for srv in Services %}
-                                                {% if srv.name == "Others" %}
-                                                    <option value="{{ srv.id }}" selected>{{ srv }}</option>
-                                                {% else %}
-                                                    <option value="{{ srv.id }}">{{ srv }}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="id_inquiry-description"> Description : </label>
-                                        <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number"></textarea>
-                                    </div>
-                                    <br>
-                        `;
-
-                        // Add a delete button for the inquiry
-                        var deleteInqButton = document.createElement('button');
-                        deleteInqButton.type = 'button';
-                        deleteInqButton.className = 'btn btn-danger btn-sm';
-                        deleteInqButton.textContent = 'Remove Inquiry';
-                        deleteInqButton.onclick = function () {
-                            newInqSection.remove();
-
-                            // Decrement the inquiry counter for this address when an inquiry is removed
-                            inqCounters[addressIndex]--;
-                            updateInqCountersInput()
-                            document.getElementById(`inqCount_${addressIndex}`).textContent = inqCounters[addressIndex];
-                        };
-                        newInqSection.appendChild(deleteInqButton);
-
-                        // Append the new inquiry section to the associated address container
-                        var inqContainerId = `inqContainer_${addressIndex}`;
-                        document.getElementById(inqContainerId).appendChild(newInqSection);
-                        
-                        updateInqCountersInput();
-                    }
-
-                    function updateInqCountersInput() {
-                        console.log(inqCounters)
-                        // Update the hidden input field with the serialized JSON data
-                        var inqCountersInput = document.getElementById('inqCountersInput');
-                        inqCountersInput.value = JSON.stringify(inqCounters);
-                    }
-                </script>
-
+                <div class="col-md-4">
+                    <label for="id_employee-username">User Name :</label>
+                    <input type="text" id="id_employee-username" name="employee-username" class="form-control" placeholder="User Name..." aria-label="username">
                 </div>
 
-
+                <div class="col-md-4">
+                    <label for="id_employee-password">Password :</label>
+                    <input type="password" id="id_employee-password" name="employee-password" class="form-control" placeholder="Password..." aria-label="password">
+                </div>
+        
+                <!-- Add more fields as needed -->
+        
                 <br><br>
-                <button class="btn btn-success" type="submit">Add Customer</button>
+                <button class="btn btn-success" type="submit">Add Employee</button>
             </form>
-            <!--<button class="btn btn-primary" type="button" onclick="showInquirySection()">Add Inquiry</button>-->
 
-            <script>
-                // JavaScript to clone address and inquiry sections
-                document.getElementById('add-sections').addEventListener('click', function () {
-                var addressSection = document.querySelector('.address-form-section').cloneNode(true);
-                var inquirySection = document.querySelector('.inquiry-form-section').cloneNode(true);
-        
-                // Clear input values in cloned sections
-                addressSection.querySelectorAll('input').forEach(function (input) {
-                    input.value = '';
-                });
-        
-                inquirySection.querySelectorAll('input').forEach(function (input) {
-                    input.value = '';
-                });
-        
-                // Append cloned sections to the form
-                document.querySelector('form').appendChild(addressSection);
-                document.querySelector('form').appendChild(inquirySection);
-                });
-                
-        
-                function showAddressSection() {
-                    document.getElementById('addressSection').style.display = 'block';
-                }
-        
-                function showInquirySection() {
-                    document.getElementById('inquirySection').style.display = 'block';
-                }
-            </script>
         </div>
         
 

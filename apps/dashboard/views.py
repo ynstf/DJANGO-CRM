@@ -4,13 +4,20 @@ from django.shortcuts import render
 
 
 
-
 @login_required(login_url='/')
 def dashboard(request):
     # Add the employee's position to the context
     context = {'position': request.user.employee.position}
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
+
+
+
+################# admin ################
+from .all_views.admin import add_employee_view,employee_list_view
+add_employee = add_employee_view
+employee_list = employee_list_view
+
 
 
 ################# inquiries ###################

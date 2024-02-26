@@ -42,13 +42,29 @@
 
       <ul class="menu-sub">
         
-        {% if position == 'agent' %}
+        {% if position.name == 'call center' %}
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
           <a href="{% url 'customer_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Customers</div>
           </a>
         </li>
-        {% elif position == 'provider' %}
+        {% elif position.name == 'super provider' %}
+        <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+          <a href="{% url 'inquiries_list' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
+          </a>
+        </li>
+        {% elif position.name == 'admin' %}
+        <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+          <a href="{% url 'employee_list' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Employee</div>
+          </a>
+        </li>
+        <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+          <a href="{% url 'customer_list' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Customers</div>
+          </a>
+        </li>
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
           <a href="{% url 'inquiries_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
@@ -68,24 +84,23 @@
         <div class="text-truncate" data-i18n="Form Elements">Form Elements</div>
       </a>
       <ul class="menu-sub">
+
+        {% if position.name == 'admin' %}
+          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+            <a href="{% url 'add_employee' %}" class="menu-link">
+              <div class="text-truncate" data-i18n="Basic Inputs">Add Employee</div>
+            </a>
+          </li>
+        {% endif %}
         
-        <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
-          <a href="{% url 'add_customer' %}" class="menu-link">
-            <div class="text-truncate" data-i18n="Basic Inputs">Customer Entery</div>
-          </a>
-        </li>
+        {% if position.name == 'call center' or position.name == 'admin' %}
+          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+            <a href="{% url 'add_customer' %}" class="menu-link">
+              <div class="text-truncate" data-i18n="Basic Inputs">Customer Entery</div>
+            </a>
+          </li>
+        {% endif %}
 
-        <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
-          <a href="#" class="menu-link">
-            <div class="text-truncate" data-i18n="Basic Inputs">Address Entery</div>
-          </a>
-        </li>
-
-        <li class="menu-item {% if '/input_groups/' in request.path %}active{% endif %}">
-          <a href="#" class="menu-link">
-            <div class="text-truncate" data-i18n="Input groups">Inquery Entery</div>
-          </a>
-        </li>
       </ul>
     </li>
 
