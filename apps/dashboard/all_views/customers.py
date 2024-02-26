@@ -2,45 +2,25 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee
 from django.shortcuts import render, redirect
-
-from apps.dashboard.models import Address, Customer, Inquiry, Language, Service, Source
-from .forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
-
+from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotation, Service, Source
+from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
-from .forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
-
-from .models import Customer, Nationality
+from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
+from ..models import Customer, Nationality
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Email,PhoneNumber,WhatsApp,Landline
+from ..models import Email,PhoneNumber,WhatsApp,Landline
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import TemplateView
 import json
-
-# Create your views here.
-
-def get_languages(request):
-    languages = [l.name for l in Language.objects.all()]
-    return JsonResponse({'data':languages})
+from django.contrib.auth.decorators import user_passes_test
 
 
-def get_nationalities(request):
-    nationalities = [n.name for n in Nationality.objects.all()]
-    return JsonResponse({'data':nationalities})
 
-def get_sources(request):
-    sources = [s.name for s in Source.objects.all()]
-    return JsonResponse({'data':sources})
+############### customer manupilations #################
 
 @login_required(login_url='/')
-def dashboard(request):
-    context={
-    }
-    context = TemplateLayout.init(request, context)
-    return render(request, 'dashboard.html',context)
-
-@login_required(login_url='/')
-def customer_list(request):
+@user_passes_test(lambda u: u.groups.filter(name='agent').exists())
+def customer_list_view(request):
     customers = Customer.objects.all()
     
     # Handle search form submission
@@ -55,6 +35,10 @@ def customer_list(request):
         source_query = request.GET.get('source')
         date_query = request.GET.get('date')
         add_name_query = request.GET.get('add_name')
+
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        print(start_date,end_date)
 
         #email = request.GET.get('email')
         search_fields = []
@@ -74,10 +58,9 @@ def customer_list(request):
                                 'value':trn_query})
             customers = customers.filter(trn__icontains=trn_query)
 
-        if date_query:
-            search_fields.append({'name':'date',
-                                'value':date_query})
-            customers = customers.filter(register__icontains=date_query)
+        if start_date and end_date:
+            search_fields.append({'name': 'date', 'start_date': start_date, "end_date":end_date })
+            customers = customers.filter(register__range=[start_date, end_date])
 
         if add_name_query:
             search_fields.append({'name':'add_name',
@@ -135,10 +118,19 @@ def customer_list(request):
     # show all infos
     customer = []
     for c in customers:
-        customer.append({'info':c,
-                        'number':PhoneNumber.objects.filter(customer=c).first(),
-                        'email':Email.objects.filter(customer=c).first(),
+        try:
+            customer.append({'info':c,
+                            'number':PhoneNumber.objects.filter(customer=c).first(),
+                            'email':Email.objects.filter(customer=c).first(),
+                            'source':Inquiry.objects.filter(customer=c).first().source
                         })
+        except:
+            customer.append({'info':c,
+                            'number':PhoneNumber.objects.filter(customer=c).first(),
+                            'email':Email.objects.filter(customer=c).first(),
+                            'source':"None"
+                        })
+            
 
     # all language
     languages = Language.objects.all()
@@ -146,7 +138,8 @@ def customer_list(request):
     sources = Source.objects.all()
 
 
-    context = {'layout_path': layout_path,
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
                 'customers': customer,
 
                 'name_query':name_query if name_query!=None else '' ,
@@ -172,7 +165,7 @@ def customer_list(request):
     return render(request, 'customer_list.html', context)
 
 @login_required(login_url='/')
-def add_customer(request):
+def add_customer_view(request):
     if request.method == 'POST':
         #customer fields
         customer_form = CustomerForm(request.POST, prefix='customer')
@@ -206,8 +199,6 @@ def add_customer(request):
         print(adress_name,adress_type,emarate,adress_desc,location)
 
         print(inq_date,inq_number,inq_source,inq_service,inq_desc)
-
-
 
         # Save the customer
         customer = customer_form.save(commit=False)
@@ -281,42 +272,29 @@ def add_customer(request):
                         )
                         address.save()
                         addresses.append(address)
-        
-        
-        #print(inq_address,inq_date,inq_time,inq_number,inq_service,inq_desc)
 
-        """for i in range(len(inq_address)):
-            for j in range(len(adress_name)):
-                print(inq_address[i],adress_name[j])
-                if inq_address[i]==adress_name[j]:
-                    inquiries = Inquiry(customer = customer,
-                                        address = addresses[j],
-                                        date_inq = inq_date[i],
-                                        time_inq = inq_time[i],
-                                        inq_num = inq_number[i],
-                                        services = inq_service[i],
-                                        description = inq_desc[i]
-                                        )
-                    inquiries.save()
-        """
+        if inq_counters :
+            q=0
+            s = json.loads(inq_counters)
+            for i in range(1,len(s)+1):
+                for _ in range(s[f"{i}"]):
+                    print(adress_name[i-1])
+                    address = addresses[i-1]
+                    services_set = Service.objects.filter(id=inq_service[q])
+                    print(inq_source[q])
+                    current_inq_source_id = inq_source[q]
+                    current_inq_source = Source.objects.get(id=current_inq_source_id)
+                    print(current_inq_source)
+                    print(inq_source)
 
-        """
-        for i in range(len(inq_address)):
-            for j in range(len(adress_name)):
-                print(inq_address[i], adress_name[j])
-                if inq_address[i] == adress_name[j]:
-                    address = addresses[j]
-                    services_set = Service.objects.filter(id=inq_service[i])
-                    inq_source = Source.objects.get(id=inq_source[i])
-
-                    if inq_date[i]:
+                    if inq_date[q]:
                         inquiry = Inquiry(
                             customer=customer,
                             address=address,
-                            date_inq=inq_date[i],
-                            source = inq_source,
-                            inq_num=inq_number[i],
-                            description=inq_desc[i]
+                            date_inq=inq_date[q],
+                            source = current_inq_source,
+                            inq_num=inq_number[q],
+                            description=inq_desc[q]
                         )
                         inquiry.save()
                         inquiry.services.set(services_set)
@@ -324,48 +302,14 @@ def add_customer(request):
                         inquiry = Inquiry(
                         customer=customer,
                         address=address,
-                        source = inq_source,
-                        inq_num=inq_number[i],
-                        description=inq_desc[i]
+                        source = current_inq_source,
+                        inq_num=inq_number[q],
+                        description=inq_desc[q]
                         )
                         inquiry.save()
                         inquiry.services.set(services_set)
-        """
 
-        q=0
-        s = json.loads(inq_counters)
-        for i in range(1,len(s)+1):
-            for _ in range(s[f"{i}"]):
-                print(adress_name[i-1])
-                address = addresses[i-1]
-                services_set = Service.objects.filter(id=inq_service[q])
-                print(inq_source[q])
-                inq_source = Source.objects.get(id=inq_source[q])
-                print(inq_source)
-
-                if inq_date[i]:
-                    inquiry = Inquiry(
-                        customer=customer,
-                        address=address,
-                        date_inq=inq_date[q],
-                        source = inq_source,
-                        inq_num=inq_number[q],
-                        description=inq_desc[q]
-                    )
-                    inquiry.save()
-                    inquiry.services.set(services_set)
-                else :
-                    inquiry = Inquiry(
-                    customer=customer,
-                    address=address,
-                    source = inq_source,
-                    inq_num=inq_number[q],
-                    description=inq_desc[q]
-                    )
-                    inquiry.save()
-                    inquiry.services.set(services_set)
-
-                q+=1
+                    q+=1
 
 
 
@@ -403,7 +347,8 @@ def add_customer(request):
 
     # Set the layout path even when authentication fails
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-    context = {'layout_path': layout_path,
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
                 'customer_form': customer_form, 
                 'inquiry_form':inquiry_form,
 
@@ -421,137 +366,227 @@ def add_customer(request):
     return render(request, 'add_customer.html', context)
 
 @login_required(login_url='/')
-def customer_info(request, id):
+def customer_info_view(request, id):
     customer = get_object_or_404(Customer, id=id)
     addresses = Address.objects.filter(customer=customer)
     inquiries = Inquiry.objects.filter(address__in=addresses)
 
+    # Add a boolean field indicating if there are any quotations for each inquiry
+    for inquiry in inquiries:
+        inquiry.has_quotations = Quotation.objects.filter(inquiry=inquiry).exists()
+
+
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-    context = {'layout_path': layout_path,
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
             'customer': customer,
             'addresses': addresses,
             'inquiries': inquiries,
+            
             }
     context = TemplateLayout.init(request, context)
     return render(request, "customer_info.html", context)
 
-def delete_number(request, id_number):
-    phone = get_object_or_404(PhoneNumber, id=id_number)
-    id = phone.customer.id
-    phone.delete()
-    return redirect('edit_customer', id=id)
-
-def delete_whatsApp(request, id_number):
-    whatsApp = get_object_or_404(WhatsApp, id=id_number)
-    id = whatsApp.customer.id
-    whatsApp.delete()
-    return redirect('edit_customer', id=id)
-
-def delete_email(request, id_mail):
-    mail = get_object_or_404(Email, id=id_mail)
-    id = mail.customer.id
-    mail.delete()
-    return redirect('edit_customer', id=id)
-
-def delete_landline(request, id_number):
-    landline = get_object_or_404(Landline, id=id_number)
-    id = landline.customer.id
-    landline.delete()
-    return redirect('edit_customer', id=id)
-
-def delete_address(request, id_address):
-    address = get_object_or_404(Address, id=id_address)
-    id = address.customer.id
-    address.delete()
-    return redirect('edit_customer', id=id)
-
-
 
 @login_required(login_url='/')
-def edit_customer(request, id):
+def edit_customer_view(request, id):
     customer = get_object_or_404(Customer, id=id)
     
     if request.method == 'POST':
-        form = CustomerFormEdit(request.POST, instance=customer)
+
+        first_name = request.POST.get('customer-first_name')
+        last_name = request.POST.get('customer-last_name')
+        gender = request.POST.get('customer-gender')
+        nationality_cus = request.POST.get('customer-nationality')
+        
+        language = request.POST.get('customer-language')
+        trn = request.POST.get('customer-trn')
+        
+        #contact fields
+        phone_form = request.POST.getlist('customer-phone_numbers')
+        whatsapp_form = request.POST.getlist('customer-whats_apps')
+        landline_form = request.POST.getlist('customer-landlines')
+        email_form = request.POST.getlist('customer-emails')
+
+        print(phone_form,whatsapp_form,landline_form,email_form)
+
+        #address fields
+        adress_name = request.POST.getlist('address-address_name')
+        adress_type = request.POST.getlist('address-type')
+        emarate = request.POST.getlist('address-emirate')
+        adress_desc = request.POST.getlist('address-description_location')
+        location = request.POST.getlist('address-location')
+
+
+        #inquiry fields
+        inq_date = request.POST.getlist('inquiry-date_inq')
+        inq_source = request.POST.getlist('customer-source')
+        inq_number = request.POST.getlist('inquiry-inq_num')
+        inq_service = request.POST.getlist('inquiry-services')
+        inq_desc = request.POST.getlist('inquiry-description')
+
         
 
-        #update number
-        pre_numbers = PhoneNumber.objects.filter(customer=customer)
-        pre_numbers.delete()
-        numbers = request.POST.getlist("number")
-        print(numbers)
-        for number in numbers:
-            new = PhoneNumber(customer = customer,
-                                number =number)
-            new.save()
+        # counter to know inquiries of each address
+        inq_counters = request.POST.get('inq_counters')
+
+
+        # Save the customer
+        customer = get_object_or_404(Customer, id=id)
+        customer.employee = Employee.objects.get(user=request.user)
+        customer.first_name = first_name
+        customer.last_name = last_name
+        customer.gender = gender
+
+        print(nationality_cus)
+        nat = Nationality.objects.get(id=nationality_cus)
+        customer.nationality = nat
         
-        #update whatsapp
-        pre_numbers = WhatsApp.objects.filter(customer=customer)
-        pre_numbers.delete()
-        numbers = request.POST.getlist("whatsapp")
-        print(numbers)
-        for number in numbers:
-            new = WhatsApp(customer = customer,
-                                whatsapp =number)
-            new.save()
+        lg = Language.objects.get(id=language)
+        customer.language = lg
 
-        #update Landline
-        pre_numbers = Landline.objects.filter(customer=customer)
-        pre_numbers.delete()
-        numbers = request.POST.getlist("landline")
-        print(numbers)
-        for number in numbers:
-            new = Landline(customer = customer,
-                                landline =number)
-            new.save()
+        customer.trn = trn
 
-        #update email
+        customer.save()
+        print(customer)
+
+        # Save the emails
         pre_numbers = Email.objects.filter(customer=customer)
         pre_numbers.delete()
-        numbers = request.POST.getlist("email")
-        print(numbers)
-        for number in numbers:
-            new = Email(customer = customer,
-                                email =number)
-            new.save()
+        for e in email_form:
+            email = Email(customer=customer,email=e)
+            email = email.save() 
+
+        # Save the phones
+        pre_numbers = PhoneNumber.objects.filter(customer=customer)
+        pre_numbers.delete()
+        for p in phone_form:
+            phone = PhoneNumber(customer=customer,number=p)
+            phone = phone.save()
+
+        # Save the whatsapps
+        pre_numbers = WhatsApp.objects.filter(customer=customer)
+        pre_numbers.delete()
+        for w in whatsapp_form:
+            whatsapp = WhatsApp(customer=customer,whatsapp=w)
+            whatsapp = whatsapp.save()
+
+        # Save the landlines
+        pre_numbers = Landline.objects.filter(customer=customer)
+        pre_numbers.delete()
+        for l in landline_form:
+            landline = Landline(customer=customer,landline=l)
+            landline = landline.save()
 
 
-
-        #update address
+        # Iterate through the data and update Address instances
         address = Address.objects.filter(customer=customer)
         address.delete()
-        address_names = request.POST.getlist("address_name")
-        types = request.POST.getlist("type")
-        emirates = request.POST.getlist("emirate")
-        description_locations = request.POST.getlist("description_location")
-        locations = request.POST.getlist("location")
-        for adrs in range(len(address_names)):
-            try:
-                print(emirates[adrs])
-                emirate = Emirate.objects.get(id=emirates[adrs])
-                print(emirate)
-                new_address = Address(customer = customer,
-                                        address_name = address_names[adrs],
-                                        type = types[adrs],
-                                        emirate = emirate, 
-                                        description_location = description_locations[adrs], 
-                                        location = locations[adrs])
-                new_address.save()
+        addresses = []
+        for i in range(len(adress_name)):
+            if emarate[i] and adress_type[i] :
+                address = Address(
+                    customer=customer,
+                    address_name=adress_name[i],
+                    type=adress_type[i],
+                    emirate=Emirate.objects.get(id=emarate[i]),  # Replace with the actual Emirate retrieval
+                    description_location=adress_desc[i],
+                    location=location[i],
+                )
+                address.save()
+                addresses.append(address)
+            else:
+                if emarate[i]=="" and adress_type[i]=="" :
+                    address = Address(
+                    customer=customer,
+                    address_name=adress_name[i],
+                    description_location=adress_desc[i],
+                    location=location[i],
+                    )
+                    address.save()
+                    addresses.append(address)
+                else:
+                    if emarate[i]=="":
+                        address = Address(
+                            customer=customer,
+                            address_name=adress_name[i],
+                            type=adress_type[i],
+                            description_location=adress_desc[i],
+                            location=location[i],
+                        )
+                        address.save()
+                        addresses.append(address)
 
-            except:
-                new_address = Address(customer = customer,
-                                        address_name = address_names[adrs],
-                                        type = types[adrs],
-                                        description_location = description_locations[adrs], 
-                                        location = locations[adrs])
-                new_address.save()
-                print(2)
+                    if adress_type[i]=="" :
+                        address = Address(
+                            customer=customer,
+                            address_name=adress_name[i],
+                            emirate=Emirate.objects.get(id=emarate[i]),  # Replace with the actual Emirate retrieval
+                            description_location=adress_desc[i],
+                            location=location[i],
+                        )
+                        address.save()
+                        addresses.append(address)
         
 
-        if form.is_valid():
-            form.save()
-            return redirect('customer_info', id=id)
+        # Iterate through the data and update Inquiry instances
+        inqs = Inquiry.objects.filter(customer=customer)
+        inqs.delete()
+
+        q=0
+        s = json.loads(inq_counters)
+        print("debugging")
+
+        print("counter")
+        print(s)
+        print("inquiries data")
+        print(inq_date,inq_source,inq_number,inq_service,inq_desc)
+
+
+        
+        
+        for i in range(1,len(s)+1):
+            for _ in range(s[f"{i}"]):
+                print(f'lenth of inquiries in adress{i}',s[f"{i}"])
+                print("i: ",i)
+                print("q: ",q)
+                if s[f"{i}"]>0:
+                    print(adress_name[i-1])
+                    address = addresses[i-1]
+                    services_set = Service.objects.filter(id=inq_service[q])
+                    
+                    inq_src = Source.objects.get(id=inq_source[q])
+
+                    print(inq_src)
+
+                    if inq_date[q]:
+                        inquiry = Inquiry(
+                            customer=customer,
+                            address=address,
+                            date_inq=inq_date[q],
+                            source = inq_src,
+                            inq_num=inq_number[q],
+                            description=inq_desc[q]
+                        )
+                        inquiry.save()
+                        inquiry.services.set(services_set)
+                    else :
+                        inquiry = Inquiry(
+                        customer=customer,
+                        address=address,
+                        source = inq_source,
+                        inq_num=inq_number[q],
+                        description=inq_desc[q]
+                        )
+                        inquiry.save()
+                        inquiry.services.set(services_set)
+                    q+=1
+                else:
+                    pass
+                
+
+        return redirect('customer_info', id=id)
     else:
         form = CustomerFormEdit(instance=customer)
 
@@ -598,18 +633,54 @@ def edit_customer(request, id):
                             'adrs':a})
         print(addresses)
 
+        inquiry = Inquiry.objects.filter(customer=customer)
+        inquiries = []
+        for i in inquiry:
+            inquiries.append({'form':InquiryForm(instance=i),
+                            'inq':i})
+        print(inquiries)
+        
+    # selection fields
+    Sources = Source.objects.all()
+    Genders = [{'gender':"Male",'id':'male'},
+                {'gender':"Female",'id':'female'}]
+    Nationalities = Nationality.objects.all()
+    Services = Service.objects.all()
+    Languages = Language.objects.all()
+    types = [{'type':"House",'id':'house'},
+                {'type':"Company",'id':'company'}]
+    Emirates = Emirate.objects.all()
+    inquiries = Inquiry.objects.all()
 
-
+    #counters = {"""i want to include my counters of addresses and inquiries eg:{"1":1,"2":2} that mean i have the first address contain one inquiry and the second contain 2 inquiries that counter i want to send it to the front end to start count from it i dont start from zero like in creation no, i want to intiat my variables based on this counter so i can update my info end retrive the new counter of my new form"""}
+    # Get the initial counters for addresses and inquiries
+    initial_inq_counters = {str(index + 1): address.inquiry_set.count() for index, address in enumerate(customer.address_set.all())}
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+
     context = {
+        'position': request.user.employee.position,
         'layout_path': layout_path,
         'customer': customer,
+        'Genders':Genders,
+        'Nationalities':Nationalities,
+        'Languages':Languages,
+        'types':types,
+        'Services':Services,
+        'Sources':Sources,
+        'Emirates':Emirates,
+
+
+        'initial_inq_counters': initial_inq_counters,
+        'addresseslen':len(addresses),
+
         'form': form,
         'phones':phones,
         'whatsApps':whatsApps,
         'landlines':landlines,
         'emails':emails,
         'addresses':addresses,
+        'inquiries':inquiries
     }
     context = TemplateLayout.init(request, context)
     return render(request, "edit_customer.html", context)
+

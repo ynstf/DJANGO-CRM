@@ -15,3 +15,7 @@ agent:
 provider:
     simon
     simonsimon
+
+admin :
+    admin
+    adminadmin
