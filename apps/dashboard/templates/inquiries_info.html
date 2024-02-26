@@ -1,6 +1,6 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Customer Information{% endblock %}
+{% block title %}Inquiry Information{% endblock %}
 
 {% block layout %}
 <!-- Layout wrapper: Start -->
@@ -57,8 +57,10 @@
         
             <h3>Quotations 
                 {% if quotations %}
-                <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
-                <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Generate PDF</a>
+                    <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
+                {% endif %}
+                {% if quotations and user.employee.position.name == "admin" %}
+                    <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Generate PDF</a>
                 {% endif %}
                 
             </h3> 
