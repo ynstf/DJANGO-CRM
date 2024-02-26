@@ -14,7 +14,7 @@ from apps.authentication.models import Employee
 ################# inquiries ###################
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin','team_leader']).exists())
 def inquiries_list_view(request):
     inquiries = Inquiry.objects.all()
 
@@ -104,7 +104,7 @@ def edit_quotation_view(request,id):
 
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists())
 def inquiry_info_view(request, id):
     inquiry = Inquiry.objects.get(id=id)
     customer = inquiry.customer

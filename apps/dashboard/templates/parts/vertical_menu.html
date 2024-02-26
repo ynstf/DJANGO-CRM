@@ -54,6 +54,17 @@
             <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
           </a>
         </li>
+        {% elif position.name == 'team leader' %}
+        <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+          <a href="{% url 'inquiries_list' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
+          </a>
+        </li>
+        <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+          <a href="{% url 'inquiries_list' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Booking</div>
+          </a>
+        </li>
         {% elif position.name == 'admin' %}
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
           <a href="{% url 'employee_list' %}" class="menu-link">

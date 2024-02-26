@@ -58,7 +58,6 @@ def add_employee_view(request):
     return render(request, 'admin/add_employee.html', context)
 
 
-
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def employee_list_view(request):

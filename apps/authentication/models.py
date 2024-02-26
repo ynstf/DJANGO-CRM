@@ -28,6 +28,7 @@ class Employee(models.Model):
 call_center_group, created = Group.objects.get_or_create(name='call_center')
 provider_group, created = Group.objects.get_or_create(name='provider')
 admin_group, created = Group.objects.get_or_create(name='admin')
+team_leader_group, created = Group.objects.get_or_create(name='team_leader')
 
 @receiver(post_save, sender=Employee)
 def assign_group(sender, instance, created, **kwargs):
@@ -39,4 +40,6 @@ def assign_group(sender, instance, created, **kwargs):
             instance.user.groups.add(provider_group)
         elif instance.position.name == 'admin':
             instance.user.groups.add(admin_group)
+        elif instance.position.name == 'team leader':
+            instance.user.groups.add(team_leader_group)
 
