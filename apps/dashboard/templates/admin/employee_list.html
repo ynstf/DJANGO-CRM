@@ -1,6 +1,6 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Customer List{% endblock %}
+{% block title %}Employee List{% endblock %}
 
 {% block layout %}
 <!-- Layout wrapper: Start -->
@@ -61,6 +61,7 @@
                         <th>Email</th>
                         <th>Phone Number</th>
                         <th>Position</th>
+                        <th>Delete</th>
                         <!-- Add other columns as needed -->
                     </tr>
                 </thead>
@@ -73,6 +74,11 @@
                             <td>{{ employee.email }}</td>
                             <td>{{ employee.phone_number }}</td>
                             <td>{{ employee.position.name }}</td>
+                            <td>
+                                {% if employee.user.id != user.id %}
+                                <a class="btn btn-danger" href="{% url 'delete_user' employee.user.id %}">Delete Employee</a>
+                                {% endif %}
+                            </td>
                             <!-- Add other columns as needed -->
                         </tr>
                     {% endfor %}

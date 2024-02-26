@@ -14,9 +14,10 @@ def dashboard(request):
 
 
 ################# admin ################
-from .all_views.admin import add_employee_view,employee_list_view
+from .all_views.admin import add_employee_view,employee_list_view,delete_user_view
 add_employee = add_employee_view
 employee_list = employee_list_view
+delete_user = delete_user_view
 
 
 

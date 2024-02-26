@@ -34,13 +34,13 @@ class Nationality(models.Model):
         return self.name
 
 class Customer(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     gender = models.CharField(max_length=6, choices=[('male', 'Male'), ('female', 'Female')], blank=True, null=True)
-    nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Nationality model
+    nationality = models.ForeignKey(Nationality, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Nationality model
     register = models.DateTimeField(auto_now_add=True)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Language model
+    language = models.ForeignKey(Language, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Language model
     trn = models.CharField(max_length=50, blank=True, null=True)
     
     # Add other fields as needed
@@ -103,7 +103,7 @@ class Inquiry(models.Model):
 
 
 class Quotation(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
 

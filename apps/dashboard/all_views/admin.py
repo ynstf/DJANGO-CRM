@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Position
@@ -83,8 +84,17 @@ def employee_list_view(request):
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'employees': employees,
-                'emp_name':emp_name
+                'emp_name':emp_name if emp_name!=None else '',
+                
                 }
 
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/employee_list.html', context)
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def delete_user_view(request, id_user):
+    user = get_object_or_404(User, id=id_user)
+    user.delete()
+    return redirect('employee_list')
