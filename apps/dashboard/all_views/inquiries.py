@@ -8,7 +8,7 @@ from xhtml2pdf import pisa
 import io
 from ..models import Inquiry, Quotation, Customer, PhoneNumber, Email, Service
 from apps.authentication.models import Employee
-
+from apps.dashboard.models import Source,Language,Nationality
 
 
 ################# inquiries ###################
@@ -18,12 +18,87 @@ from apps.authentication.models import Employee
 def inquiries_list_view(request):
     inquiries = Inquiry.objects.all()
 
+    # Handle search form submission
+    if request.method == 'GET':
+        # Get the name entered in the query parameter
+        name_query = request.GET.get('name')
+        id_query = request.GET.get('id')
+
+        service_query = request.GET.get('service')
+
+        #number_query = request.GET.get('number')
+        language_query = request.GET.get('language')
+        nationality_query = request.GET.get('nationality')
+        source_query = request.GET.get('source')
+        #date_query = request.GET.get('date')
+        add_name_query = request.GET.get('add_name')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+
+
+        search_fields = []
+
+        if name_query:
+            search_fields.append({'name':'name',
+                                'value':name_query})
+            inquiries = inquiries.filter(customer__first_name__icontains=name_query)
+        
+        if id_query:
+            search_fields.append({'name':'id',
+                                'value':id_query})
+            inquiries = inquiries.filter(id=id_query)
+
+        if start_date and end_date:
+            search_fields.append({'name': 'date', 'start_date': start_date, "end_date":end_date })
+            inquiries = inquiries.filter(date_inq__range=[start_date, end_date])
+
+        if add_name_query:
+            search_fields.append({'name':'add_name',
+                                'value':add_name_query})
+            inquiries = inquiries.filter(address__address_name__icontains=add_name_query)
+        
+        if service_query:
+            search_fields.append({'name':'service',
+                                'value':service_query})
+            id = Service.objects.get(name=service_query)
+            inquiries = inquiries.filter(services=id)
+
+        if source_query:
+            search_fields.append({'name':'source',
+                                'value':source_query})
+            id = Source.objects.get(name=source_query)
+            inquiries = inquiries.filter(source=id)
+
+        if language_query:
+            search_fields.append({'name':'language',
+                                'value':language_query})
+            id = Language.objects.get(name=language_query)
+            inquiries = inquiries.filter(customer__language=id)
+
+        if nationality_query:
+            search_fields.append({'name':'nationality',
+                                'value':nationality_query})
+            id = Nationality.objects.get(name=nationality_query)
+            inquiries = inquiries.filter(customer__nationality=id)
+
+
+
+
+
+
+
+
+
+
+
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
 
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'inquiries': inquiries,
+
+                'search_fields':search_fields,
                 }
     
 

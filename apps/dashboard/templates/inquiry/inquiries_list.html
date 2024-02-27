@@ -1,6 +1,6 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Customer List{% endblock %}
+{% block title %}Inquiries List{% endblock %}
 
 {% block layout %}
 <!-- Layout wrapper: Start -->
@@ -34,7 +34,7 @@
                 <!-- Original search row -->
                 <div class="search-row">
                     <!-- Display dynamic search form with language dropdown -->
-                    <form method="get" action="{% url 'customer_list' %}" >
+                    <form method="get" action="{% url 'inquiries_list' %}" >
 
                         <div class="mysearsh row g-3">
 
@@ -44,8 +44,7 @@
                                     <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
                                         <option value="id" {% if search_field.name == 'id' %}selected{% endif %} selected>ID</option>
                                         <option value="name" {% if search_field.name == 'name' %}selected{% endif %}>Name</option>
-                                        <option value="trn" {% if search_field.name == 'trn' %}selected{% endif %}>TRN</option>
-                                        <option value="number" {% if search_field.name == 'number' %}selected{% endif %}>Phone Number</option>
+                                        <option value="service" {% if search_field.name == 'service' %}selected{% endif %}>Service</option>
                                         <option value="date" {% if search_field.name == 'date' %}selected{% endif %}>Register Date</option>
                                         <option value="add_name" {% if search_field.name == 'add_name' %}selected{% endif %}>Address Name</option>
                                         <option value="language" {% if search_field.name == 'language' %}selected{% endif %}>Language</option>
@@ -98,6 +97,18 @@
                                     </select>
                                 </div>
 
+                                {% elif search_field.name  == "service" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="service" class="form-control">
+                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% for service in services %}
+                                            <option value="{{ service.name }}">{{ service.name }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
                                 {% else %}
                                 <div id="myinput" class="col-md-6">
                                     <label for="search_value">Search Value:</label>
@@ -112,8 +123,7 @@
                                 <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
                                     <option value="id" {% if search_field == 'id' %}selected{% endif %} selected>ID</option>
                                     <option value="name" {% if search_field == 'name' %}selected{% endif %}>Name</option>
-                                    <option value="trn" {% if search_field == 'trn' %}selected{% endif %}>TRN</option>
-                                    <option value="number" {% if search_field == 'number' %}selected{% endif %}>Phone Number</option>
+                                    <option value="service" {% if search_field == 'service' %}selected{% endif %}>Service</option>
                                     <option value="date" {% if search_field == 'date' %}selected{% endif %}>Register Date</option>
                                     <option value="add_name" {% if search_field == 'add_name' %}selected{% endif %}>Address Name</option>
                                     <option value="language" {% if search_field == 'language' %}selected{% endif %}>Language</option>
@@ -155,7 +165,7 @@
                         var placeholders = {
                             'id': 'Enter ID...',
                             'name': 'Enter Name...',
-                            'trn': 'Enter TRN...',
+                            'service': 'Enter Service...',
                             'number': 'Enter Phone Number...',
                             'date': 'Enter Register Date...',
                             'add_name': 'Enter Address Name...',
@@ -166,7 +176,7 @@
                         var names = {
                             'id': 'id',
                             'name': 'name',
-                            'trn': 'trn',
+                            'service': 'service',
                             'number': 'number',
                             'date': 'date',
                             'add_name': 'add_name',
@@ -240,6 +250,38 @@
                                 selection.innerHTML = options;
 
                                 // Append the language select element to the search container
+                                searchContainer.appendChild(selection);
+                            });
+                        }
+                        // Fetch data for the 'service' field using AJAX
+                        else if (searchField === 'service') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+                            $.get("{% url 'get_services' %}", function (data) {
+                                var options = '<option value="" selected>Select Service...</option>';
+                                data["data"].forEach(function (service) {
+                                    options += '<option value="' + service + '">' + service + '</option>';
+                                });
+
+                                var selection = document.createElement('select');
+                                selection.name = "service";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the service select element to the search container
                                 searchContainer.appendChild(selection);
                             });
                         }
@@ -348,7 +390,7 @@
                     select.setAttribute('onchange', 'updatePlaceholder(this)');
             
                     // Add options to the select element
-                    var options = ['id', 'name', 'trn', 'number', 'date', 'add_name', 'language', 'nationality', 'source'];
+                    var options = ['id', 'name', 'service', 'number', 'date', 'add_name', 'language', 'nationality', 'source'];
                     options.forEach(function (option) {
                         var opt = document.createElement('option');
                         opt.value = option;
@@ -391,7 +433,7 @@
                 <thead>
                     <tr>
 
-                        <th>inquiries Number</th>
+                        <th>inquiries id</th>
                         <th>Customer & Address</th>
                         <th>date_inq</th>
                         <th>services</th>
@@ -404,7 +446,7 @@
                 <tbody>
                     {% for inquiry in inquiries %}
                         <tr>
-                            <td>{{ inquiry.inq_num }}</td>
+                            <td>{{ inquiry.id }}</td>
                             <td> <a href="{% url 'inquiry_info' inquiry.id %}">{{ inquiry.customer.first_name }} - {{ inquiry.address.address_name }}</a></td>
                             <td>{{ inquiry.date_inq }}</td>
                             <td>{% for srv in inquiry.services.all %}{{ srv }}{% endfor %}
