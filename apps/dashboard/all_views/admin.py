@@ -15,6 +15,7 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Position
 from django.http import JsonResponse
+from apps.dashboard.models import Service
 
 
 @login_required(login_url='/')
@@ -28,13 +29,16 @@ def add_employee_view(request):
         last_name = request.POST.get('employee-last_name')
         email = request.POST.get('employee-email')
         phone_number = request.POST.get('employee-phone_number')
-        position_id = request.POST.get('employee-position')
+        position_name = request.POST.get('employee-position')
+        sp = request.POST.get('employee-sp')
         username = request.POST.get('employee-username')
         password = request.POST.get('employee-password')
 
 
         # Retrieve the selected position
-        position = Position.objects.get(id=position_id)
+        position = Position.objects.get(name=position_name)
+        service = Service.objects.get(id=sp)
+
 
         # Create the employee instance
         employee = Employee.objects.create(
@@ -43,7 +47,8 @@ def add_employee_view(request):
             last_name=last_name,
             email=email,
             phone_number=phone_number,
-            position=position
+            position=position,
+            sp_service=service,
         )
 
         return redirect('employee_list')  # Redirect to the employee list page
@@ -52,6 +57,7 @@ def add_employee_view(request):
     context = {'position': request.user.employee.position,
                 'positions':positions,
                 'layout_path': layout_path,
+                'services':Service.objects.all(),
                 }
     
     context = TemplateLayout.init(request, context)

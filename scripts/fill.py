@@ -1,6 +1,7 @@
 # fill.py
 
 from apps.dashboard.models import Language, Source, Nationality, Emirate, Service
+from apps.authentication.models import Position
 
 def run():
     Languages = [
@@ -56,6 +57,13 @@ def run():
         "plumber",
     ]
 
+    Positions = [
+        'admin',
+        'call center',
+        'super provider',
+        'team leader'
+    ]
+
     # Create Languages
     for language in Languages:
         lang, created = Language.objects.get_or_create(name=language)
@@ -85,3 +93,9 @@ def run():
         srv, created = Service.objects.get_or_create(name=service)
         if created:
             srv.save()
+
+    # Create Position
+    for position in Positions:
+        ps, created = Position.objects.get_or_create(name=position)
+        if created:
+            ps.save()

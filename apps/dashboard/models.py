@@ -1,13 +1,8 @@
 # models.py
 from django.db import models
 from apps.authentication.models import Employee
+from .models_com import Service
 
-
-class Service(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
     
 class Emirate(models.Model):
     name = models.CharField(max_length=50)
@@ -79,7 +74,7 @@ class Address(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     address_name = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=10, choices=[('house', 'House'), ('company', 'Company')], blank=True, null=True)
-    emirate = models.ForeignKey(Emirate, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Emirate model
+    emirate = models.ForeignKey(Emirate, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Emirate model
     description_location = models.TextField(blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     # Add other fields as needed
@@ -92,28 +87,22 @@ class Inquiry(models.Model):
     date_inq = models.DateField(blank=True, null=True)
     inq_num = models.CharField(max_length=50, blank=True, null=True)
     services = models.ManyToManyField(Service, blank=True, null=True)
-    source = models.ForeignKey(Source, on_delete=models.CASCADE, blank=True, null=True)  # Link to the Source model
+    source = models.ForeignKey(Source, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Source model
     description = models.TextField(blank=True, null=True)
     # Add other fields as needed
     def __str__(self):
         return f'{self.customer} - {self.address}'
 
 
-
-
-
 class Quotation(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
-
-    quotation_service = models.ForeignKey(Service, on_delete=models.CASCADE, blank=True, null=True)
+    quotation_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_date = models.DateField(blank=True, null=True)
-
     detail = models.CharField(max_length=100, blank=True, null=True)
     price = models.CharField(max_length=50, blank=True, null=True)
     quantity = models.CharField(max_length=50, blank=True, null=True)
-
     total = models.CharField(max_length=50, blank=True, null=True)
 
     # Add other fields as needed
@@ -131,4 +120,4 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'{self.inquiry}'
-    
+

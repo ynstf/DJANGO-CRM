@@ -73,7 +73,18 @@
                             <td>{{ employee.last_name }}</td>
                             <td>{{ employee.email }}</td>
                             <td>{{ employee.phone_number }}</td>
-                            <td>{{ employee.position.name }}</td>
+
+                            <td>
+                                {% if employee.position.name == 'super provider' %}
+                                SP
+                                {% else %}
+                                {{ employee.position.name }}
+                                {% endif %}
+                                {% if employee.sp_service.name %}
+                                <small>({{ employee.sp_service.name }})</small>
+                                {% endif %}
+                            </td>
+
                             <td>
                                 {% if employee.user.id != user.id %}
                                 <a class="btn btn-danger" href="{% url 'delete_user' employee.user.id %}">Delete Employee</a>
