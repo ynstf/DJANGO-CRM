@@ -1,7 +1,7 @@
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotation, Service, Source
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
@@ -10,7 +10,6 @@ from ..models import Customer, Nationality
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ..models import Email,PhoneNumber,WhatsApp,Landline
-from django.shortcuts import render, get_object_or_404
 import json
 from django.contrib.auth.decorators import user_passes_test
 
@@ -162,7 +161,7 @@ def customer_list_view(request):
     
 
     context = TemplateLayout.init(request, context)
-    return render(request, 'customer_list.html', context)
+    return render(request, 'customer/customer_list.html', context)
 
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
@@ -364,7 +363,7 @@ def add_customer_view(request):
                 }
     
     context = TemplateLayout.init(request, context)
-    return render(request, 'add_customer.html', context)
+    return render(request, 'customer/add_customer.html', context)
 
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
@@ -388,7 +387,7 @@ def customer_info_view(request, id):
             
             }
     context = TemplateLayout.init(request, context)
-    return render(request, "customer_info.html", context)
+    return render(request, "customer/customer_info.html", context)
 
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
@@ -684,5 +683,5 @@ def edit_customer_view(request, id):
         'inquiries':inquiries
     }
     context = TemplateLayout.init(request, context)
-    return render(request, "edit_customer.html", context)
+    return render(request, "customer/edit_customer.html", context)
 

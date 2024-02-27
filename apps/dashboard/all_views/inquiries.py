@@ -28,7 +28,7 @@ def inquiries_list_view(request):
     
 
     context = TemplateLayout.init(request, context)
-    return render(request, 'inquiries_list.html',context)
+    return render(request, 'inquiry/inquiries_list.html',context)
 
 
 
@@ -47,7 +47,7 @@ def inquiry_info_view(request, id):
 
             }
     context = TemplateLayout.init(request, context)
-    return render(request, "inquiries_info.html", context)
+    return render(request, "inquiry/inquiries_info.html", context)
 
 
 @login_required(login_url='/')
@@ -101,7 +101,7 @@ def make_quotation_view(request, id):
             'services':Service.objects.all(),
             }
     context = TemplateLayout.init(request, context)
-    return render(request, "make_quotation.html", context)
+    return render(request, "inquiry/make_quotation.html", context)
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists())
@@ -148,7 +148,7 @@ def edit_quotation_view(request,id):
             )
             quotation.save()
 
-        return redirect('inquiry_info', id=id)
+        return redirect('inquiry/inquiry_info', id=id)
 
 
 
@@ -172,7 +172,7 @@ def edit_quotation_view(request,id):
     
 
     context = TemplateLayout.init(request, context)
-    return render(request, 'edit_quotation.html',context)
+    return render(request, 'inquiry/edit_quotation.html',context)
 
 
 
