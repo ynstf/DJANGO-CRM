@@ -66,6 +66,9 @@ def run():
 
     Permissions = [
         "extract quotations",
+        "customer list",
+        "see customer info",
+
     ]
 
     # Create Languages

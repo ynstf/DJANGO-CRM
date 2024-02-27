@@ -40,7 +40,8 @@
         <div class="text-truncate" data-i18n="Tables">Tables</div>
       </a>
 
-      <ul class="menu-sub">
+      <!--
+        <ul class="menu-sub">
         
         {% if position.name == 'call center' %}
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
@@ -84,6 +85,46 @@
         {% endif %}
 
       </ul>
+      -->
+
+      <ul class="menu-sub">
+        
+        {% if position.name == 'admin' %}
+            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                <a href="{% url 'employee_list' %}" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Employee</div>
+                </a>
+            </li>
+        {% endif %}
+        
+        <!--    ########## customer list ########          -->
+        {% if position.name == 'admin' or position.name == 'call center' or position.name == 'team leader' %}
+            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                <a href="{% url 'customer_list' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Without menu">Customers</div>
+                </a>
+            </li>
+        {% endif %}
+        {% for permission in user.employee.permissions.all %}
+            {% if permission.name == "customer list" %}
+              <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                <a href="{% url 'customer_list' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Without menu">Customers</div>
+                </a>
+              </li>
+            {% endif %}
+        {% endfor %}
+    
+    
+        {% if position.name == 'admin' or position.name == 'super provider' or position.name == 'team leader' %}
+            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                <a href="{% url 'inquiries_list' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
+                </a>
+            </li>
+        {% endif %}
+
+    </ul>
 
     </li>
 

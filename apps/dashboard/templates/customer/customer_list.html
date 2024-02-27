@@ -410,7 +410,20 @@
                     {% for customer in customers %}
                         <tr>
                             <td>{{ customer.info.id }}</td>
-                            <td> <a href="{% url 'customer_info' customer.info.id %}">{{ customer.info.first_name }}</a></td>
+                            <td> 
+                                {% if user.employee.permissions.all %}
+                                    {% for permission in user.employee.permissions.all %}
+                                        {% if permission.name == "see customer info" %}
+                                            <a href="{% url 'customer_info' customer.info.id %}">{{ customer.info.first_name }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% elif user.employee.position.name == 'call center' %}
+                                <a href="{% url 'customer_info' customer.info.id %}">{{ customer.info.first_name }}</a>
+                                {% else %}
+                                    {{ customer.info.first_name }}
+                                {% endif %}
+                            </td>
+
                             <td>{{ customer.info.last_name }}</td>
                             <td>{{ customer.info.gender }}</td>
                             <td>{{ customer.info.nationality }}</td>

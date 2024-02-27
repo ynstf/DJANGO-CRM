@@ -1,6 +1,6 @@
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
-from apps.authentication.models import Employee
+from apps.authentication.models import Employee, Permission
 from django.shortcuts import render, redirect, get_object_or_404
 from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotation, Service, Source
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import user_passes_test
 ############### customer manupilations #################
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="customer list") in u.employee.permissions.all()))
 def customer_list_view(request):
     customers = Customer.objects.all()
     
@@ -163,8 +163,8 @@ def customer_list_view(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'customer/customer_list.html', context)
 
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 def add_customer_view(request):
     if request.method == 'POST':
         #customer fields
@@ -365,8 +365,8 @@ def add_customer_view(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'customer/add_customer.html', context)
 
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="see customer info") in u.employee.permissions.all()) )
 def customer_info_view(request, id):
     customer = get_object_or_404(Customer, id=id)
     addresses = Address.objects.filter(customer=customer)
@@ -389,8 +389,8 @@ def customer_info_view(request, id):
     context = TemplateLayout.init(request, context)
     return render(request, "customer/customer_info.html", context)
 
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 @login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
 def edit_customer_view(request, id):
     customer = get_object_or_404(Customer, id=id)
     
