@@ -66,10 +66,16 @@ def run():
 
     Permissions = [
         "extract quotations",
+
         "customer list",
         "see customer info",
         "edit customer",
         "add customer",
+
+        "inquiry list",
+        "inquiry info",
+        "make quotation",
+        "edit quotation",
 
     ]
 

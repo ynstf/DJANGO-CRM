@@ -11,10 +11,21 @@ from apps.authentication.models import Employee,Permission
 from apps.dashboard.models import Source,Language,Nationality
 
 
+
+################# permissions ############
+"""
+inquiry list
+inquiry info
+make quotation
+edit quotation
+extract quotations
+"""
+
+
 ################# inquiries ###################
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin','team_leader']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin','team_leader']).exists() or (Permission.objects.get(name="inquiry list") in u.employee.permissions.all()) )
 def inquiries_list_view(request):
     inquiries = Inquiry.objects.all()
 
@@ -106,9 +117,8 @@ def inquiries_list_view(request):
     return render(request, 'inquiry/inquiries_list.html',context)
 
 
-
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
 def inquiry_info_view(request, id):
     inquiry = Inquiry.objects.get(id=id)
     customer = inquiry.customer
@@ -126,7 +136,7 @@ def inquiry_info_view(request, id):
 
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="make quotation") in u.employee.permissions.all()) )
 def make_quotation_view(request, id):
     
     if request.method == 'POST':
@@ -178,8 +188,9 @@ def make_quotation_view(request, id):
     context = TemplateLayout.init(request, context)
     return render(request, "inquiry/make_quotation.html", context)
 
+
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
 def edit_quotation_view(request,id):
     inquiry = Inquiry.objects.get(id = id)
 
@@ -296,6 +307,4 @@ def generate_pdf_view(request, id):
     response['Content-Disposition'] = f'inline; filename="{inquiry.customer.first_name}_{inquiry.customer.last_name}_quotation{inquiry.id}.pdf"'
 
     return response
-
-
 

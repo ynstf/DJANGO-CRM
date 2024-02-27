@@ -104,24 +104,35 @@
                     <div class="text-truncate" data-i18n="Without menu">Customers</div>
                 </a>
             </li>
+        {% elif user.employee.permissions.all %}
+          {% for permission in user.employee.permissions.all %}
+              {% if permission.name == "customer list" %}
+                <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                  <a href="{% url 'customer_list' %}" class="menu-link">
+                      <div class="text-truncate" data-i18n="Without menu">Customers</div>
+                  </a>
+                </li>
+              {% endif %}
+          {% endfor %}
         {% endif %}
-        {% for permission in user.employee.permissions.all %}
-            {% if permission.name == "customer list" %}
-              <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
-                <a href="{% url 'customer_list' %}" class="menu-link">
-                    <div class="text-truncate" data-i18n="Without menu">Customers</div>
-                </a>
-              </li>
-            {% endif %}
-        {% endfor %}
     
     
         {% if position.name == 'admin' or position.name == 'super provider' or position.name == 'team leader' %}
             <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
                 <a href="{% url 'inquiries_list' %}" class="menu-link">
-                    <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
+                  <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
                 </a>
             </li>
+        {% elif user.employee.permissions.all %}
+          {% for permission in user.employee.permissions.all %}
+              {% if permission.name == "inquiry list" %}
+                <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                  <a href="{% url 'inquiries_list' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
+                  </a>
+                </li>
+              {% endif %}
+          {% endfor %}
         {% endif %}
 
     </ul>

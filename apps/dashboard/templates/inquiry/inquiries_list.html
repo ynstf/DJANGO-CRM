@@ -447,7 +447,21 @@
                     {% for inquiry in inquiries %}
                         <tr>
                             <td>{{ inquiry.id }}</td>
-                            <td> <a href="{% url 'inquiry_info' inquiry.id %}">{{ inquiry.customer.first_name }} - {{ inquiry.address.address_name }}</a></td>
+                            <td>
+                                {% if user.employee.position.name == 'super provider' %}
+                                    <a href="{% url 'inquiry_info' inquiry.id %}">{{ inquiry.customer.first_name }} - {{ inquiry.address.address_name }}</a>
+                                {% else %}
+                                    {{ inquiry.customer.first_name }} - {{ inquiry.address.address_name }}
+                                {% endif %}
+
+                                {% if user.employee.permissions.all %}
+                                    {% for permission in user.employee.permissions.all %}
+                                        {% if permission.name == "inquiry info" %}
+                                            <a href="{% url 'inquiry_info' inquiry.id %}">{{ inquiry.customer.first_name }} - {{ inquiry.address.address_name }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
                             <td>{{ inquiry.date_inq }}</td>
                             <td>{% for srv in inquiry.services.all %}{{ srv }}{% endfor %}
                             </td>

@@ -27,8 +27,14 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
-        {% if user.employee.position.name == "provider" %}
+        {% if user.employee.position.name == "super provider" %}
             <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
+        {% elif user.employee.permissions.all %}
+            {% for permission in user.employee.permissions.all %}
+                {% if permission.name == "make quotation" %}
+                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
+                {% endif %}
+            {% endfor %}
         {% endif %}
         <br>
         <div class="container">
@@ -68,6 +74,9 @@
                 {% for permission in user.employee.permissions.all %}
                     {% if permission.name == "extract quotations" %}
                         <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
+                    {% endif %}
+                    {% if permission.name == "edit quotation" %}
+                        <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
                     {% endif %}
                 {% endfor %}
                 
