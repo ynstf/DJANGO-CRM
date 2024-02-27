@@ -59,26 +59,7 @@
                     <label for="id_employee-phone_number">Phone Number :</label>
                     <input type="text" id="id_employee-phone_number" name="employee-phone_number" class="form-control" placeholder="Phone Number..." aria-label="Phone Number">
                 </div>
-                <!---
-                <div class="col-md-4">
-                    <label for="id_employee-position">Position :</label>
-                    <select id="id_employee-position" name="employee-position" class="form-control">
-                        <option value="" selected disabled>Select position...</option>
-                        {% for position in positions %}
-                            <option value="{{ position.id }}">{{ position.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="id_employee-sp">Super Provider:</label>
-                    <select id="id_employee-sp" name="employee-sp" class="form-control">
-                        <option value="" selected disabled>Select SP service...</option>
-                        {% for service in services %}
-                            <option value="{{ service.id }}">{{ service.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>-->
-                <!-- Your existing HTML code -->
+
                 <div class="col-md-4">
                     <label for="id_employee-position">Position:</label>
                     <select id="id_employee-position" name="employee-position" class="form-control">
@@ -88,7 +69,6 @@
                         {% endfor %}
                     </select>
                 </div>
-
                 <div class="col-md-4" id="super-provider-container" style="display: none;">
                     <label for="id_employee-sp">Super Provider:</label>
                     <select id="id_employee-sp" name="employee-sp" class="form-control">
@@ -98,7 +78,6 @@
                         {% endfor %}
                     </select>
                 </div>
-
                 <!-- JavaScript to toggle Super Provider select box -->
                 <script>
                     $(document).ready(function() {
@@ -113,6 +92,19 @@
                         });
                     });
                 </script>
+
+                
+                <div class="col-md-4">
+                    <label for="id_employee-permissions">Permissions:</label>
+                    <select id="id_employee-permissions" name="employee-permissions" class="form-control" multiple size="5">
+                        <option value="" selected disabled>Select Permissions...</option>
+                        {% for permission in permissions %}
+                            <option value="{{ permission.name }}">{{ permission.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
 
                 <div class="col-md-4">
                     <label for="id_employee-username">User Name :</label>

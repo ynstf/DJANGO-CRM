@@ -1,0 +1,102 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Employee Information{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <br>
+        <div class="container">
+            <br>
+            <center><h2>Employee Information</h2></center>
+            <br>
+
+            <h3>Employee Details</h3>
+            <p>First Name: {{ employee.first_name }}</p>
+            <p>Last Name: {{ employee.last_name }}</p>
+            <p>Email: {{ employee.email }}</p>
+            <p>Phone Number: {{ employee.phone_number }}</p>
+            <p>Position: 
+                {% if employee.position.name == 'super provider' %}
+                    SP
+                    {% else %}
+                    {{ employee.position.name }}
+                {% endif %}
+                {% if employee.sp_service.name %}
+                    <small>({{ employee.sp_service.name }})</small>
+                {% endif %}
+            </p>
+            <p>Permissions: 
+                <ul>
+                    {% for permission in employee.permissions.all %}
+                    <li>{{ permission.name }}</li>
+                    {% endfor %}
+                </ul>
+                
+            </p>
+            <!-- Add other customer details as needed -->
+
+            <hr>
+        
+
+        </div>
+
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

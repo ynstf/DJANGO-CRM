@@ -65,6 +65,11 @@
                     <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
                     <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Generate PDF</a>
                 {% endif %}
+                {% for permission in user.employee.permissions.all %}
+                    {% if permission.name == "extract quotations" %}
+                        <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
+                    {% endif %}
+                {% endfor %}
                 
             </h3> 
                 

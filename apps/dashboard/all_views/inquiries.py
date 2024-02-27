@@ -7,7 +7,7 @@ from web_project import TemplateLayout
 from xhtml2pdf import pisa
 import io
 from ..models import Inquiry, Quotation, Customer, PhoneNumber, Email, Service
-from apps.authentication.models import Employee
+from apps.authentication.models import Employee,Permission
 from apps.dashboard.models import Source,Language,Nationality
 
 
@@ -250,7 +250,9 @@ def edit_quotation_view(request,id):
     return render(request, 'inquiry/edit_quotation.html',context)
 
 
-
+@login_required(login_url='/')
+#@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists() or (Permission.objects.get(name="extract quotations") in u.employee.permissions.all()))
 def generate_pdf_view(request, id):
     # Retrieve the inquiry and associated quotations
     inquiry = Inquiry.objects.get(id=id)

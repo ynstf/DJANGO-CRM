@@ -1,7 +1,7 @@
 # fill.py
 
 from apps.dashboard.models import Language, Source, Nationality, Emirate, Service
-from apps.authentication.models import Position
+from apps.authentication.models import Position, Permission
 
 def run():
     Languages = [
@@ -64,6 +64,10 @@ def run():
         'team leader'
     ]
 
+    Permissions = [
+        "extract quotations",
+    ]
+
     # Create Languages
     for language in Languages:
         lang, created = Language.objects.get_or_create(name=language)
@@ -99,3 +103,9 @@ def run():
         ps, created = Position.objects.get_or_create(name=position)
         if created:
             ps.save()
+
+    # Create Permission
+    for permission in Permissions:
+        prm, created = Permission.objects.get_or_create(name=permission)
+        if created:
+            prm.save()

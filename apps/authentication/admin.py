@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Employee, Position
+from .models import Employee, Position,Permission
 
 # Register your models here.
 admin.site.register(Employee)
 admin.site.register(Position)
+admin.site.register(Permission)

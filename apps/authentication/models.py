@@ -8,10 +8,14 @@ from apps.dashboard.models_com import Service
 
 class Position(models.Model):
     name = models.CharField(max_length=16, unique=True)
-
     def __str__(self):
         return self.name
 
+class Permission(models.Model):
+    name = models.CharField(max_length=16, unique=True)
+    def __str__(self):
+        return self.name
+    
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255)
@@ -20,10 +24,12 @@ class Employee(models.Model):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
     sp_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    permissions = models.ManyToManyField(Permission, blank=True, null=True)
     # Add more fields as needed
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
 
 
 

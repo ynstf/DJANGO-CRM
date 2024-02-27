@@ -3,7 +3,7 @@ from .views import dashboard,add_customer,customer_list,customer_info,edit_custo
 from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry,delete_number
 from .views import get_languages, get_nationalities,get_sources,get_services
 from .views import inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
-from .views import add_employee,employee_list,delete_user
+from .views import add_employee,employee_list,delete_user,employee_info
 
 urlpatterns = [
     path("dashboard/",dashboard,name="dashboard",),
@@ -37,6 +37,7 @@ urlpatterns = [
     path('add_employee/', add_employee, name='add_employee'),
     path('employee_list/', employee_list, name='employee_list'),
     path('delete_user/<int:id_user>', delete_user, name='delete_user'),
+    path('employee_info/<int:id>', employee_info, name='employee_info'),
 
 
 

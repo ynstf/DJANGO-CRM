@@ -69,7 +69,7 @@
                     {% for employee in employees %}
                         <tr>
                             <td>{{ employee.user.id }}</td>
-                            <td>{{ employee.first_name }}</td>
+                            <td><a href="{% url 'employee_info' employee.id %}">{{ employee.first_name }}</a></td>
                             <td>{{ employee.last_name }}</td>
                             <td>{{ employee.email }}</td>
                             <td>{{ employee.phone_number }}</td>
