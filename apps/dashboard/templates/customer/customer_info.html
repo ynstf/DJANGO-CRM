@@ -27,7 +27,15 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
-        <a style="text-align: right;" href="{% url 'edit_customer' customer.id %}" class="btn btn-primary">Edit Customer</a>
+        {% if user.employee.position.name == "call center" %}
+            <a style="text-align: right;" href="{% url 'edit_customer' customer.id %}" class="btn btn-primary">Edit Customer</a>
+        {% elif user.employee.permissions.all %}
+            {% for permission in user.employee.permissions.all %}
+                {% if permission.name == "edit customer" %}
+                <a style="text-align: right;" href="{% url 'edit_customer' customer.id %}" class="btn btn-primary">Edit Customer</a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
         <br>
         <div class="container">
             <br>

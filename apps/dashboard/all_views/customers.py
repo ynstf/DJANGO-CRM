@@ -390,7 +390,7 @@ def customer_info_view(request, id):
     return render(request, "customer/customer_info.html", context)
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="edit customer") in u.employee.permissions.all()))
 def edit_customer_view(request, id):
     customer = get_object_or_404(Customer, id=id)
     
