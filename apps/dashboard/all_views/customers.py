@@ -13,7 +13,13 @@ from ..models import Email,PhoneNumber,WhatsApp,Landline
 import json
 from django.contrib.auth.decorators import user_passes_test
 
-
+######### permissions #########
+"""
+customer list
+add customer
+see customer info
+edit customer
+"""
 
 ############### customer manupilations #################
 
@@ -164,7 +170,7 @@ def customer_list_view(request):
     return render(request, 'customer/customer_list.html', context)
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists())
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="add customer") in u.employee.permissions.all()))
 def add_customer_view(request):
     if request.method == 'POST':
         #customer fields

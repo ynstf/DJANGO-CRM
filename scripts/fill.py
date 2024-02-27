@@ -68,6 +68,8 @@ def run():
         "extract quotations",
         "customer list",
         "see customer info",
+        "edit customer",
+        "add customer",
 
     ]
 
