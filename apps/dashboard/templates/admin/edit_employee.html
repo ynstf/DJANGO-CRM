@@ -1,0 +1,188 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Edit employee{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+            <br>
+            <center><h2>Edit employee</h2></center>
+            <br>
+            <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+            <form method="post" id="employeeForm" action="{% url 'edit_employee' employee.id %}">
+                {% csrf_token %}
+
+                <h3>employee Details</h3>
+                <div>
+                    {% if employee %}
+
+                        <div class="col-md-4">
+                            <label for="id_employee-first_name">First name :</label>
+                            <input type="text" value="{{ employee.first_name }}" id="id_employee-first_name" name="employee-first_name" class="form-control" placeholder="First name..." aria-label="First name">
+                        </div>
+                
+                        <div class="col-md-4">
+                            <label for="id_employee-last_name">Last name :</label>
+                            <input type="text" value="{{ employee.last_name }}" id="id_employee-last_name" name="employee-last_name" class="form-control" placeholder="Last name..." aria-label="Last name">
+                        </div>
+                
+                        <div class="col-md-4">
+                            <label for="id_employee-email">Email :</label>
+                            <input type="email" value="{{ employee.email }}" id="id_employee-email" name="employee-email" class="form-control" placeholder="Email..." aria-label="Email">
+                        </div>
+                
+                        <div class="col-md-4">
+                            <label for="id_employee-phone_number">Phone Number :</label>
+                            <input type="text" value="{{ employee.phone_number }}" id="id_employee-phone_number" name="employee-phone_number" class="form-control" placeholder="Phone Number..." aria-label="Phone Number">
+                        </div>
+        
+                        <div class="col-md-4">
+                            <label for="id_employee-position">Position:</label>
+                            <select id="id_employee-position" name="employee-position" class="form-control">
+                                {% for position in positions %}
+                                    {% if position.name == employee.position.name %}
+                                    <option value="{{ position.name }}" selected >{{ position.name }}</option>
+                                    {% else %}
+                                    <option value="{{ position.name }}">{{ position.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        {% if employee.position.name == "super provider" %}
+                            <div class="col-md-4" id="super-provider-container" style="display: blocky;">
+                                <label for="id_employee-sp">Super Provider:</label>
+                                <select id="id_employee-sp" name="employee-sp" class="form-control">
+                                    {% for service in Services %}
+                                        {% if service.name == employee.sp_service.name %}
+                                        <option value="{{ service.id }}" selected>{{ service.name }}</option>
+                                        {% else %}
+                                        <option value="{{ service.id }}">{{ service.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% else %}
+                            <div class="col-md-4" id="super-provider-container" style="display: none;">
+                                <label for="id_employee-sp">Super Provider:</label>
+                                <select id="id_employee-sp" name="employee-sp" class="form-control">
+                                    {% for service in Services %}
+                                        {% if service.name == employee.sp_service.name %}
+                                        <option value="{{ service.id }}" selected>{{ service.name }}</option>
+                                        {% else %}
+                                        <option value="{{ service.id }}">{{ service.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        <!-- JavaScript to toggle Super Provider select box -->
+                        <script>
+                            $(document).ready(function() {
+                                // When Position select box changes
+                                $("#id_employee-position").change(function() {
+                                    // If the selected value is "super provider", show the Super Provider select box, otherwise hide it
+                                    if ($(this).val() === "super provider") {
+                                        $("#super-provider-container").show();
+                                    } else {
+                                        $("#super-provider-container").hide();
+                                    }
+                                });
+                            });
+                        </script>
+        
+                        
+                        <div class="col-md-4">
+                            <label for="id_employee-permissions">Permissions:</label>
+                            <select id="id_employee-permissions" name="employee-permissions" class="form-control" multiple size="5">
+                                {% for permission in permissions %}
+                                    {% if permission in employee.permissions.all %}
+                                    <option value="{{ permission.name }}" selected>{{ permission.name }}</option>
+                                    {% else %}
+                                    <option value="{{ permission.name }}">{{ permission.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+        
+                        <div class="col-md-4">
+                            <label for="id_employee-username">User Name :</label>
+                            <input type="text" value="{{ employee.user.username }}" id="id_employee-username" name="employee-username" class="form-control" placeholder="User Name..." aria-label="username">
+                        </div>
+        
+                        <div class="col-md-4">
+                            <label for="id_employee-password">Password :</label>
+                            <input type="password" id="id_employee-password" name="employee-password" class="form-control" placeholder="Password..." aria-label="password">
+                        </div>
+                    {% endif %}
+
+
+
+                    
+                    <br><br>
+                </div>
+
+                <br>
+                <button class="btn btn-success" type="submit">Edit employee</button>
+            </form>
+
+<!-- ######################################################################### -->
+
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

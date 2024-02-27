@@ -139,3 +139,78 @@ def employee_info_view(request, id):
             }
     context = TemplateLayout.init(request, context)
     return render(request, "admin/employee_info.html", context)
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def edit_employee_view(request, id):
+    if request.method == 'POST':
+        # Handle form submission
+        first_name = request.POST.get('employee-first_name')
+        last_name = request.POST.get('employee-last_name')
+        email = request.POST.get('employee-email')
+        phone_number = request.POST.get('employee-phone_number')
+        position_name = request.POST.get('employee-position')
+        sp = request.POST.get('employee-sp')
+        permissions = request.POST.getlist('employee-permissions')
+        username = request.POST.get('employee-username')
+        password = request.POST.get('employee-password')
+
+        # Retrieve the selected position
+        if position_name:
+            position = Position.objects.get(name=position_name)
+
+        # Retrieve the selected super provider service
+        if sp:
+            service = Service.objects.get(id=sp)
+
+        # Retrieve the employee instance
+        employee = Employee.objects.get(id=id)
+
+        # Update employee instance with new values
+        employee.first_name = first_name
+        employee.last_name = last_name
+        employee.email = email
+        employee.phone_number = phone_number
+        employee.position = position
+        employee.sp_service = service
+        employee.permissions.set(Permission.objects.filter(name__in=permissions))
+
+        # Update user instance associated with the employee
+        usr = User.objects.get(id=employee.user.id)
+        if usr.username != username:
+            usr.username = username
+        if password:
+            usr.set_password(password)
+        usr.save()
+
+
+        # Save the changes to the employee instance
+        employee.save()
+
+        return redirect('employee_list')  # Redirect to the employee list page
+
+    # If the request is not a POST request, display the edit form
+    Services = Service.objects.all()
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'Services': Services,
+        'employee': Employee.objects.get(id=id),
+        'permissions': Permission.objects.all(),
+        'positions': Position.objects.all(),
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, "admin/edit_employee.html", context)
