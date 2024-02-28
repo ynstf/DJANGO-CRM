@@ -141,15 +141,6 @@ def employee_info_view(request, id):
     return render(request, "admin/employee_info.html", context)
 
 
-
-
-
-
-
-
-
-
-
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def edit_employee_view(request, id):
@@ -214,3 +205,51 @@ def edit_employee_view(request, id):
     }
     context = TemplateLayout.init(request, context)
     return render(request, "admin/edit_employee.html", context)
+
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def add_service_view(request):
+    if request.method == 'POST':
+        service_name = request.POST.get('service-name')
+        columns = request.POST.getlist('service-column')
+        
+        # Convert the list to a comma-separated string
+        print(columns)
+        not_empty = []
+        for c in columns:
+            if c != "":
+                not_empty.append(c)
+        columns_str = ",".join(not_empty)
+
+        # Save the Service instance
+        service_instance = Service.objects.create(name=service_name, columns=columns_str)
+        service_instance.save()
+
+        return redirect('services_list')
+    
+    
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/add_service.html',context)
+
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def services_list_view(request):
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'services':Service.objects.all(),
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/services_list.html',context)

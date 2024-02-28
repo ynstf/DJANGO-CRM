@@ -1,0 +1,143 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Add Service{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            <br>
+            <center><h2>Add service</h2></center>
+            <br>
+        
+            <form method="post" id="serviceForm">
+                {% csrf_token %}
+        
+                <h3>Service Details</h3>
+        
+                <div class="col-md-4">
+                    <label for="id_service-name">Name :</label>
+                    <input type="text" id="id_service-name" name="service-name" class="form-control" placeholder="name..." aria-label="name">
+                </div>
+
+                <br><br>
+
+                
+                <!-- Add a container to hold the dynamic fields -->
+                <div id="dynamic-fields-container">
+                    <h5>Columns details</h5>
+
+                <div class="col-md-4">
+                    <label for="id_service-columns">Column's name :</label>
+                    <input type="text" class="form-control service-column" name="service-column" value="details" readonly>
+                </div>
+
+
+                    
+                </div>
+                <button class="btn btn-sm btn-primary" type="button" onclick="addNewField()">Add New Column field</button>
+
+                <script>
+                    // Function to add a new input field
+                    function addNewField() {
+                        var container = document.getElementById('dynamic-fields-container');
+                        var newField = document.createElement('div');
+                        newField.className = 'col-md-4';
+                        newField.innerHTML = `
+                            <label for="id_service-columns">Column's name :</label>
+                            <input type="text" class="form-control" name="service-column" placeholder="Columns name..." aria-label="name">
+                            <button class="btn btn-sm btn-danger" type="button" onclick="removeField(this)">Remove</button>
+                        `;
+                        container.appendChild(newField);
+                    }
+                
+                    // Function to remove the clicked input field
+                    function removeField(button) {
+                        var container = document.getElementById('dynamic-fields-container');
+                        var field = button.parentNode;
+                        container.removeChild(field);
+                    }
+                </script>
+
+
+                <div class="col-md-4">
+                    <label for="id_service-columns">Column's name :</label>
+                    <input type="text" class="form-control service-column" name="service-column" value="price" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_service-columns">Column's name :</label>
+                    <input type="text" class="form-control service-column" name="service-column" value="quantity" readonly>
+                </div>
+
+                <!-- Add more fields as needed -->
+        
+                <br><br>
+                <button class="btn btn-success" type="submit">Add Service</button>
+            </form>
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

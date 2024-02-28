@@ -463,7 +463,7 @@
                                 {% endif %}
                             </td>
                             <td>{{ inquiry.date_inq }}</td>
-                            <td>{% for srv in inquiry.services.all %}{{ srv }}{% endfor %}
+                            <td>{{ inquiry.services }}
                             </td>
                             <td>{{ inquiry.source }}</td>
 

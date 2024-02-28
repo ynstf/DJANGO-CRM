@@ -64,15 +64,18 @@
                     <!-- add details forms -->
                     <!-- Add details forms -->
                     <div class="col-md-4">
-                        <label for="id_quotation-detail">Detail :</label>
-                        <textarea type="text" rows="3" id="id_quotation-detail" name="quotation-detail" class="form-control" placeholder="Detail..." aria-label="detail"></textarea>
 
-                        <label for="id_quotation-price-1">Price :</label>
-                        <input type="number" id="id_quotation-price-1" name="quotation-price" class="form-control" placeholder="Price..." aria-label="Price" oninput="updateTotal(1)">
-                        
-                        <label for="id_quotation-quantity-1">Quantity :</label>
-                        <input type="number" id="id_quotation-quantity-1" name="quotation-quantity" class="form-control" placeholder="Quantity..." aria-label="Quantity" oninput="updateTotal(1)">
-                        
+                        {% for column in columns_list %}
+                            {% if column == "price" or column == "quantity" %}
+                            <label for="id_quotation-{{column}}-1">{{ column }} :</label>
+                            <input type="number" id="id_quotation-{{column}}-1" name="quotation-{{column}}" class="form-control" placeholder="{{column}}..." aria-label="column" oninput="updateTotal(1)">
+                            {% else %}
+                            <label for="id_quotation-{{column}}-1">{{ column }} :</label>
+                            <input type="text" id="id_quotation-{{column}}-1" name="quotation-{{column}}" class="form-control" placeholder="{{column}}..." aria-label="column" oninput="updateTotal(1)">
+                            {% endif %}
+                        {% endfor %}
+
+
                         <label for="Total">Total:</label>
                         <span id="total-1" name="total"></span>
 
@@ -85,6 +88,7 @@
                     <script>
                         var quotationCounter = 2;
 
+                        /*
                         function updateTotal(quotationId) {
                             var price = document.getElementById('id_quotation-price-' + quotationId).value;
                             var quantity = document.getElementById('id_quotation-quantity-' + quotationId).value;
@@ -95,7 +99,8 @@
                             // Display the total
                             document.getElementById('total-' + quotationId).innerHTML = total.toFixed(2); // You can format the total as needed
                         }
-
+                        */
+                        /*
                         function addQuotation() {
                             var hr = document.createElement('hr');
                             var container = document.createElement('div');
@@ -171,6 +176,130 @@
 
                             quotationCounter++;
                         }
+                        */
+
+                        /*function addQuotation() {
+                            var hr = document.createElement('hr');
+                            var container = document.createElement('div');
+                            container.className = 'col-md-4';
+
+                            {% for column in columns_list %}
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_quotation-{{ column }}-' + quotationCounter);
+                                label.textContent = '{{ column }} ' + quotationCounter + ' :';
+                                var input = document.createElement('{% if column == "price" or column == "quantity" %}input{% else %}textarea{% endif %}');
+                                input.type = '{% if column == "price" or column == "quantity" %}number{% endif %}';
+                                input.id = 'id_quotation-{{ column }}-' + quotationCounter;
+                                input.name = 'quotation-{{ column }}[]';
+                                input.className = 'form-control';
+                                input.placeholder = '{{ column }} ' + quotationCounter + '...';
+                                input.setAttribute('aria-label', '{{ column }} ' + quotationCounter);
+                                {% if column != "price" and column != "quantity" %}
+                                    input.rows = 3;
+                                {% endif %}
+                                container.appendChild(label);
+                                container.appendChild(input);
+                            {% endfor %}
+
+                            var labelTotal = document.createElement('label');
+                            labelTotal.setAttribute('for', 'total-' + quotationCounter);
+                            labelTotal.textContent = 'Total:';
+                            var spanTotal = document.createElement('span');
+                            spanTotal.id = 'total-' + quotationCounter;
+                            spanTotal.name = 'total';
+                            container.appendChild(labelTotal);
+                            container.appendChild(spanTotal);
+
+                            var divv = document.createElement('div');
+                            container.appendChild(divv);
+
+
+                            var button = document.createElement('button');
+                            button.type = 'button';
+                            button.className = 'btn btn-danger btn-sm';
+                            button.textContent = 'Remove';
+                            button.onclick = function () {
+                                container.remove();
+                            };
+
+                            container.appendChild(button);
+
+                            container.appendChild(hr);
+
+                            document.getElementById('additional-quotations').appendChild(container);
+
+                            quotationCounter++;
+                        }
+                    */
+                    
+                    function updateTotal(quotationId) {
+                        var price = parseFloat(document.getElementById('id_quotation-price-' + quotationId).value) || 0;
+                        var quantity = parseFloat(document.getElementById('id_quotation-quantity-' + quotationId).value) || 0;
+
+                        // Calculate total
+                        var total = price * quantity;
+
+                        // Display the total
+                        document.getElementById('total-' + quotationId).innerHTML = total.toFixed(2);
+                    }
+
+                    function addQuotation() {
+                        var hr = document.createElement('hr');
+                        var container = document.createElement('div');
+                        container.className = 'col-md-4';
+
+                        {% for column in columns_list %}
+                            var label = document.createElement('label');
+                            label.setAttribute('for', 'id_quotation-{{ column }}-' + quotationCounter);
+                            label.textContent = '{{ column }} ' + quotationCounter + ' :';
+                            var input = document.createElement('{% if column == "price" or column == "quantity" %}input{% else %}textarea{% endif %}');
+                            input.type = '{% if column == "price" or column == "quantity" %}number{% else %}text{% endif %}';
+                            input.id = 'id_quotation-{{ column }}-' + quotationCounter;
+                            input.name = 'quotation-{{ column }}[]';
+                            input.className = 'form-control';
+                            input.placeholder = '{{ column }} ' + quotationCounter + '...';
+                            input.setAttribute('aria-label', '{{ column }} ' + quotationCounter);
+                            {% if column != "price" and column != "quantity" %}
+                                input.rows = 3;
+                            {% endif %}
+                            // Add an event listener to each input for real-time total calculation
+                            input.addEventListener('input', function() {
+                                updateTotal(quotationCounter);
+                            });
+                            input.setAttribute('oninput', 'updateTotal(' + quotationCounter + ')');
+                            container.appendChild(label);
+                            container.appendChild(input);
+                        {% endfor %}
+
+                        var labelTotal = document.createElement('label');
+                        labelTotal.setAttribute('for', 'total-' + quotationCounter);
+                        labelTotal.textContent = 'Total:';
+                        var spanTotal = document.createElement('span');
+                        spanTotal.id = 'total-' + quotationCounter;
+                        spanTotal.name = 'total';
+                        container.appendChild(labelTotal);
+                        container.appendChild(spanTotal);
+
+                        var divv = document.createElement('div');
+                        container.appendChild(divv);
+
+                        var button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = 'btn btn-danger btn-sm';
+                        button.textContent = 'Remove';
+                        button.onclick = function () {
+                            container.remove();
+                        };
+
+                        container.appendChild(button);
+
+                        container.appendChild(hr);
+
+                        document.getElementById('additional-quotations').appendChild(container);
+
+                        quotationCounter++;
+                    }
+
                     </script>
 
                     <br><br>

@@ -286,7 +286,7 @@ def add_customer_view(request):
                 for _ in range(s[f"{i}"]):
                     print(adress_name[i-1])
                     address = addresses[i-1]
-                    services_set = Service.objects.filter(id=inq_service[q])
+                    services_set = Service.objects.get(id=inq_service[q])
                     print(inq_source[q])
                     current_inq_source_id = inq_source[q]
                     current_inq_source = Source.objects.get(id=current_inq_source_id)
@@ -300,20 +300,24 @@ def add_customer_view(request):
                             date_inq=inq_date[q],
                             source = current_inq_source,
                             inq_num=inq_number[q],
+                            services=services_set,
                             description=inq_desc[q]
+                            
                         )
                         inquiry.save()
-                        inquiry.services.set(services_set)
+
                     else :
                         inquiry = Inquiry(
                         customer=customer,
                         address=address,
                         source = current_inq_source,
                         inq_num=inq_number[q],
+                        services=services_set,
                         description=inq_desc[q]
+                        
                         )
                         inquiry.save()
-                        inquiry.services.set(services_set)
+
 
                     q+=1
 

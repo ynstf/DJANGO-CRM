@@ -6,7 +6,7 @@ from web_project.template_helpers.theme import TemplateHelper
 from web_project import TemplateLayout
 from xhtml2pdf import pisa
 import io
-from ..models import Inquiry, Quotation, Customer, PhoneNumber, Email, Service
+from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service
 from apps.authentication.models import Employee,Permission
 from apps.dashboard.models import Source,Language,Nationality
 
@@ -154,6 +154,7 @@ def make_quotation_view(request, id):
         employee_id = request.user.employee.id
         employee = Employee.objects.get(id=employee_id)
 
+
         print(employee,inquiry,customer,quotation_service,quotation_date,details,prices,quantities)
         
         srv_id = quotation_service
@@ -178,12 +179,19 @@ def make_quotation_view(request, id):
 
 
 
+    inquiry = Inquiry.objects.get(id=id)
+    # Retrieve the Service instance
+    service_instance = inquiry.services
+    # Convert the comma-separated string back to a list
+    columns_list = service_instance.columns.split(',')
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
             'customer': Inquiry.objects.get(id=id).customer,
             'inquiry': Inquiry.objects.get(id=id),
             'services':Service.objects.all(),
+            'columns_list':columns_list,
             }
     context = TemplateLayout.init(request, context)
     return render(request, "inquiry/make_quotation.html", context)
@@ -281,6 +289,7 @@ def generate_pdf_view(request, id):
     date=quotations[0].quotation_date
     service=quotations[0].quotation_service
 
+    form = QuotationForm.objects.all().first()
     # Create a PDF template using Django template
     template_path = 'pdf_template.html'  # Create a template for your PDF
     template = get_template(template_path)
@@ -292,6 +301,7 @@ def generate_pdf_view(request, id):
                 'address':address,
                 'email':email,
                 'total':total,
+                'form':form,
 
                 }
     html_content = template.render(context)

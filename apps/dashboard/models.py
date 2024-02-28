@@ -104,12 +104,17 @@ class Quotation(models.Model):
     price = models.CharField(max_length=50, blank=True, null=True)
     quantity = models.CharField(max_length=50, blank=True, null=True)
     total = models.CharField(max_length=50, blank=True, null=True)
-
     # Add other fields as needed
-
     def __str__(self):
         return f'{self.customer} - {self.inquiry}'
     
+class QuotationForm(models.Model):
+    title = models.CharField(max_length=50, blank=True, null=True)
+    image = models.TextField( blank=True, null=True)
+    
+    # Add other fields as needed
+    def __str__(self):
+        return self.title
 
 class Booking(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
