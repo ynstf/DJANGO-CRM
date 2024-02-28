@@ -55,7 +55,7 @@ class InquiryAdmin(admin.ModelAdmin):
 
 @admin.register(Quotation)
 class QuotationAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'inquiry', 'quotation_service', 'quotation_date', 'detail', 'price', 'quantity')
+    list_display = ('customer', 'inquiry', 'quotation_service', 'quotation_date', 'total')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):

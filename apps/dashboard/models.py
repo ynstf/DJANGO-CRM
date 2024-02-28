@@ -100,9 +100,10 @@ class Quotation(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     quotation_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_date = models.DateField(blank=True, null=True)
-    detail = models.CharField(max_length=100, blank=True, null=True)
+    """detail = models.CharField(max_length=100, blank=True, null=True)
     price = models.CharField(max_length=50, blank=True, null=True)
-    quantity = models.CharField(max_length=50, blank=True, null=True)
+    quantity = models.CharField(max_length=50, blank=True, null=True)"""
+    data = models.TextField(blank=True, null=True)
     total = models.CharField(max_length=50, blank=True, null=True)
     # Add other fields as needed
     def __str__(self):

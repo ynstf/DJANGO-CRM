@@ -123,11 +123,29 @@ def inquiry_info_view(request, id):
     inquiry = Inquiry.objects.get(id=id)
     customer = inquiry.customer
 
+    # Retrieve the Service instance
+    service_instance = inquiry.services
+    # Convert the comma-separated string back to a list
+    columns_list = service_instance.columns.split(',')
+    print(columns_list)
+
+    data = []
+    quotations = Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id))
+    for quotation in quotations:
+        line = quotation.data.split(',*,')
+        print(line)
+        data.append(line)
+
+
+    
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
             'customer': customer,
             'inquiry': inquiry,
+            'columns_list':columns_list,
+            'data':data,
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
 
             }
@@ -138,14 +156,11 @@ def inquiry_info_view(request, id):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="make quotation") in u.employee.permissions.all()) )
 def make_quotation_view(request, id):
-    
+
     if request.method == 'POST':
+
         quotation_service = request.POST.get('quotation-service')
         quotation_date = request.POST.get('quotation-date')
-
-        details = request.POST.getlist('quotation-detail')
-        prices = request.POST.getlist('quotation-price')
-        quantities = request.POST.getlist('quotation-quantity')
 
 
         inquiry = Inquiry.objects.get(id=id)
@@ -154,28 +169,38 @@ def make_quotation_view(request, id):
         employee_id = request.user.employee.id
         employee = Employee.objects.get(id=employee_id)
 
+        # Retrieve the Service instance
+        service_instance = inquiry.services
+        # Convert the comma-separated string back to a list
+        columns_list = service_instance.columns.split(',')
 
-        print(employee,inquiry,customer,quotation_service,quotation_date,details,prices,quantities)
-        
+
         srv_id = quotation_service
         quotation_service = Service.objects.get(id=srv_id)
 
-        for i in range(len(prices)):
-
+        lent = request.POST.getlist('quotation-price')
+        for i in range(len(lent)):
+            data = []
+            for field in columns_list:
+                details = request.POST.getlist(f'quotation-{field}')[i]
+                data.append(details)
+            total = float(data[-1])*float(data[-2])
+            columns_str = ",*,".join(data)
+            print(columns_str)
+            
             quotation = Quotation(
                 employee=employee,
                 customer=customer,
                 inquiry=inquiry,
                 quotation_service=quotation_service,
                 quotation_date=quotation_date,
-                detail=details[i],
-                price=prices[i],
-                quantity=quantities[i],
-                total=float(prices[i])*float(quantities[i])
+                data = columns_str,
+                total=total
             )
             quotation.save()
 
-        return redirect('inquiry_info', id=id)
+            print()
+
 
 
 

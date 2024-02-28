@@ -44,7 +44,7 @@
                 <div>
                     <div class="col-md-4">
                         <label for="id_quotation-date" > Quotation Date : </label>
-                        <input type="date" id="id_quotation-date" name="quotation-date" class="form-control" >
+                        <input type="date" id="id_quotation-date" name="quotation-date" class="form-control" required >
                     </div>
 
                     <div class="col-md-4">
@@ -255,7 +255,7 @@
                             var input = document.createElement('{% if column == "price" or column == "quantity" %}input{% else %}textarea{% endif %}');
                             input.type = '{% if column == "price" or column == "quantity" %}number{% else %}text{% endif %}';
                             input.id = 'id_quotation-{{ column }}-' + quotationCounter;
-                            input.name = 'quotation-{{ column }}[]';
+                            input.name = 'quotation-{{ column }}';
                             input.className = 'form-control';
                             input.placeholder = '{{ column }} ' + quotationCounter + '...';
                             input.setAttribute('aria-label', '{{ column }} ' + quotationCounter);
