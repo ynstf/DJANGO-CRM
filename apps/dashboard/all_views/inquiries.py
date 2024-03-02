@@ -8,7 +8,7 @@ from xhtml2pdf import pisa
 import io
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service
 from apps.authentication.models import Employee,Permission
-from apps.dashboard.models import Source,Language,Nationality
+from apps.dashboard.models import Language, Nationality, QuotationNotify, Source
 
 
 
@@ -24,10 +24,39 @@ extract quotations
 
 ################# inquiries ###################
 
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
+def notifications_view(request):
+    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
+
+            }
+    context = TemplateLayout.init(request, context)
+    return render(request, "inquiry/notifications.html", context)
+
+
+
+
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin','team_leader']).exists() or (Permission.objects.get(name="inquiry list") in u.employee.permissions.all()) )
 def inquiries_list_view(request):
     inquiries = Inquiry.objects.all()
+
+    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    print("teest")
+    print(notifications)
+    print("counter")
+    print(notifications_counter)
+
 
     # Handle search form submission
     if request.method == 'GET':
@@ -102,20 +131,14 @@ def inquiries_list_view(request):
 
 
 
-
-
-
-
-
-
-
-
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-
+    
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'inquiries': inquiries,
+                'notifications':notifications,
+                'notifications_counter':notifications_counter,
 
                 'search_fields':search_fields,
                 }
@@ -128,14 +151,32 @@ def inquiries_list_view(request):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
 def inquiry_info_view(request, id):
+
+
+
+    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
     inquiry = Inquiry.objects.get(id=id)
     customer = inquiry.customer
+
+
+    # delete the notification for this inquiry id
+    try :
+        this_notification = QuotationNotify.objects.get(inquiry=inquiry)
+        if this_notification:
+            this_notification.delete()
+    except :
+        pass
 
     # Retrieve the Service instance
     service_instance = inquiry.services
     # Convert the comma-separated string back to a list
-    columns_list = service_instance.columns.split(',')
-    print(columns_list)
+    try:
+        columns_list = service_instance.columns.split(',')
+        print(columns_list)
+    except:
+        columns_list = []
+        pass
 
     data = []
     quotations = Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id))
@@ -144,12 +185,17 @@ def inquiry_info_view(request, id):
         print(line)
         data.append(line)
 
+    
+
+
 
     
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
             'customer': customer,
             'inquiry': inquiry,
             'columns_list':columns_list,
@@ -164,6 +210,8 @@ def inquiry_info_view(request, id):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="make quotation") in u.employee.permissions.all()) )
 def make_quotation_view(request, id):
+    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
 
     if request.method == 'POST':
 
@@ -221,6 +269,8 @@ def make_quotation_view(request, id):
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
             'customer': Inquiry.objects.get(id=id).customer,
             'inquiry': Inquiry.objects.get(id=id),
             'services':Service.objects.all(),
@@ -233,6 +283,8 @@ def make_quotation_view(request, id):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
 def edit_quotation_view(request,id):
+    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
     inquiry = Inquiry.objects.get(id = id)
 
     quotations = Quotation.objects.filter(inquiry=inquiry)
@@ -290,6 +342,8 @@ def edit_quotation_view(request,id):
 
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
+                'notifications':notifications,
+                'notifications_counter':notifications_counter,
                 'inquiry': Inquiry.objects.get(id=id),
                 'date':date,
                 'service' : service,

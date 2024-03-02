@@ -306,12 +306,15 @@ def add_customer_view(request):
                         )
                         inquiry.save()
 
-                        notification = QuotationNotify(
-                            employee = Employee.objects.get(user=request.user),
-                            inquiry = inquiry,
-                            service = services_set,
-                        )
-                        notification.save()
+                        all_employees = Employee.objects.filter(sp_service=services_set)
+                        
+                        for employee in all_employees:
+                            notification = QuotationNotify(
+                                employee = employee,
+                                inquiry = inquiry,
+                                service = services_set,
+                            )
+                            notification.save()
 
                     else :
                         inquiry = Inquiry(
@@ -325,12 +328,15 @@ def add_customer_view(request):
                         )
                         inquiry.save()
 
-                        notification = QuotationNotify(
-                            employee = Employee.objects.get(user=request.user),
-                            inquiry = inquiry,
-                            service = services_set,
-                        )
-                        notification.save()
+                        all_employees = Employee.objects.filter(sp_service=services_set)
+                        
+                        for employee in all_employees:
+                            notification = QuotationNotify(
+                                employee = employee,
+                                inquiry = inquiry,
+                                service = services_set,
+                            )
+                            notification.save()
 
 
                     q+=1

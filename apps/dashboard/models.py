@@ -125,7 +125,7 @@ class QuotationNotify(models.Model):
     # Add other fields as needed
 
     def __str__(self):
-        return f'employee :{self.employee} with {self.quotation} quotation'
+        return f'employee :{self.employee} with {self.inquiry} inquiry'
 
 
 

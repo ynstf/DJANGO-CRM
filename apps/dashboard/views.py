@@ -1,13 +1,18 @@
 from web_project import TemplateLayout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-
+from apps.dashboard.models import QuotationNotify
 
 
 @login_required(login_url='/')
 def dashboard(request):
+    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
     # Add the employee's position to the context
-    context = {'position': request.user.employee.position}
+    context = {'position': request.user.employee.position,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
+            }
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
 
@@ -28,12 +33,15 @@ services_list = services_list_view
 
 
 ################# inquiries ###################
-from .all_views.inquiries import inquiries_list_view, edit_quotation_view, inquiry_info_view, make_quotation_view, generate_pdf_view
+from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
+                                    inquiry_info_view, make_quotation_view, 
+                                    generate_pdf_view, notifications_view)
 inquiries_list = inquiries_list_view
 edit_quotation = edit_quotation_view
 inquiry_info = inquiry_info_view
 make_quotation = make_quotation_view
 generate_pdf = generate_pdf_view
+notifications = notifications_view
 
 
 ############### get infos ###########

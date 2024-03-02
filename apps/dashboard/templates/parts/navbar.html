@@ -29,6 +29,9 @@
         <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
           <div class="avatar avatar-online">
             <img src="{% static 'img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle">
+            {% if notifications %}
+              <span class="badge bg-danger">{{ notifications_counter }}</span>
+            {% endif %}
           </div>
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -57,6 +60,12 @@
             </a>
           </li>
           <li>
+            <li>
+              <a class="dropdown-item" href="{% url 'notifications' %}">
+                  <i class="mdi mdi-bell-outline me-1 mdi-20px"></i>
+                  <span class="align-middle">Notifications {% if notifications %} <small style="color: brown;">({{ notifications_counter }})</small> {% endif %}</span>
+              </a>
+          </li>          
             <a class="dropdown-item" href="javascript:void(0);">
               <i class="mdi mdi-cog-outline me-1 mdi-20px"></i>
               <span class="align-middle">Settings</span>
