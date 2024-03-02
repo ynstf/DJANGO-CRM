@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Service, Emirate, Source, Language, Nationality, Customer, PhoneNumber, WhatsApp, Landline, Email
-from .models import Address, Inquiry, Quotation, Booking
+from .models import Address, Inquiry, Quotation, Booking, QuotationNotify
 
 
 # Register your models here.
@@ -56,6 +56,10 @@ class InquiryAdmin(admin.ModelAdmin):
 @admin.register(Quotation)
 class QuotationAdmin(admin.ModelAdmin):
     list_display = ('customer', 'inquiry', 'quotation_service', 'quotation_date', 'total')
+
+@admin.register(QuotationNotify)
+class QuotationNotifyAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'inquiry', 'service')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):

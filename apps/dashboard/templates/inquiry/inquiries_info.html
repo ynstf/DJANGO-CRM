@@ -27,6 +27,8 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
+    {% if inquiry.services.name == user.employee.sp_service.name %}
+
         {% if user.employee.position.name == "super provider" %}
             <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
         {% elif user.employee.permissions.all %}
@@ -55,8 +57,9 @@
                 <p>Date Inq: {{ inquiry.date_inq }}</p>
                 <p>Inq Num: {{ inquiry.inq_num }}</p>
                 <p>Source: {{ inquiry.source }}</p>
-                <p>Services: {% for service in inquiry.services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <p>Services: {{ inquiry.services.name }}</p>
                 <p>Description: {{ inquiry.description }}</p>
+                
                 <br>
                 <!-- Add other inquiry details as needed -->
 
@@ -109,6 +112,10 @@
 
             
         </div>
+
+    {% else %}
+        <center><h1>Sorry you dont have right to access this page</h1></center>
+    {% endif %}
 
 
 <!-- ######################################################################### -->

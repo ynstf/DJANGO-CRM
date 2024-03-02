@@ -100,10 +100,9 @@ class Quotation(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     quotation_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_date = models.DateField(blank=True, null=True)
-    """detail = models.CharField(max_length=100, blank=True, null=True)
-    price = models.CharField(max_length=50, blank=True, null=True)
-    quantity = models.CharField(max_length=50, blank=True, null=True)"""
+
     data = models.TextField(blank=True, null=True)
+
     total = models.CharField(max_length=50, blank=True, null=True)
     # Add other fields as needed
     def __str__(self):
@@ -116,6 +115,19 @@ class QuotationForm(models.Model):
     # Add other fields as needed
     def __str__(self):
         return self.title
+
+
+
+class QuotationNotify(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.SET_NULL, blank=True, null=True)
+    service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    # Add other fields as needed
+
+    def __str__(self):
+        return f'employee :{self.employee} with {self.quotation} quotation'
+
+
 
 class Booking(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)

@@ -6,7 +6,7 @@ from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotatio
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
 from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
-from ..models import Customer, Nationality
+from ..models import Customer, Nationality, QuotationNotify
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ..models import Email,PhoneNumber,WhatsApp,Landline
@@ -306,6 +306,13 @@ def add_customer_view(request):
                         )
                         inquiry.save()
 
+                        notification = QuotationNotify(
+                            employee = Employee.objects.get(user=request.user),
+                            inquiry = inquiry,
+                            service = services_set,
+                        )
+                        notification.save()
+
                     else :
                         inquiry = Inquiry(
                         customer=customer,
@@ -317,6 +324,13 @@ def add_customer_view(request):
                         
                         )
                         inquiry.save()
+
+                        notification = QuotationNotify(
+                            employee = Employee.objects.get(user=request.user),
+                            inquiry = inquiry,
+                            service = services_set,
+                        )
+                        notification.save()
 
 
                     q+=1

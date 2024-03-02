@@ -68,11 +68,11 @@ def inquiries_list_view(request):
                                 'value':add_name_query})
             inquiries = inquiries.filter(address__address_name__icontains=add_name_query)
         
-        if service_query:
+        """if service_query:
             search_fields.append({'name':'service',
                                 'value':service_query})
             id = Service.objects.get(name=service_query)
-            inquiries = inquiries.filter(services=id)
+            inquiries = inquiries.filter(services=id)"""
 
         if source_query:
             search_fields.append({'name':'source',
@@ -91,6 +91,14 @@ def inquiries_list_view(request):
                                 'value':nationality_query})
             id = Nationality.objects.get(name=nationality_query)
             inquiries = inquiries.filter(customer__nationality=id)
+
+        
+
+        # to show just the inquiries with the same service with employer
+        employee_id = request.user.employee.id
+        employee = Employee.objects.get(id=employee_id)
+        srvc_id = employee.sp_service.id
+        inquiries = inquiries.filter(services=srvc_id)
 
 
 

@@ -44,7 +44,6 @@
                                     <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
                                         <option value="id" {% if search_field.name == 'id' %}selected{% endif %} selected>ID</option>
                                         <option value="name" {% if search_field.name == 'name' %}selected{% endif %}>Name</option>
-                                        <option value="service" {% if search_field.name == 'service' %}selected{% endif %}>Service</option>
                                         <option value="date" {% if search_field.name == 'date' %}selected{% endif %}>Register Date</option>
                                         <option value="add_name" {% if search_field.name == 'add_name' %}selected{% endif %}>Address Name</option>
                                         <option value="language" {% if search_field.name == 'language' %}selected{% endif %}>Language</option>
@@ -97,17 +96,6 @@
                                     </select>
                                 </div>
 
-                                {% elif search_field.name  == "service" %}
-                                <div id="myinput" class="col-md-6">
-                                    <label for="search_field">Search By:</label>
-                                    <select name="service" class="form-control">
-                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
-                                        {% for service in services %}
-                                            <option value="{{ service.name }}">{{ service.name }}</option>
-                                        {% endfor %}
-
-                                    </select>
-                                </div>
 
                                 {% else %}
                                 <div id="myinput" class="col-md-6">
@@ -123,7 +111,6 @@
                                 <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
                                     <option value="id" {% if search_field == 'id' %}selected{% endif %} selected>ID</option>
                                     <option value="name" {% if search_field == 'name' %}selected{% endif %}>Name</option>
-                                    <option value="service" {% if search_field == 'service' %}selected{% endif %}>Service</option>
                                     <option value="date" {% if search_field == 'date' %}selected{% endif %}>Register Date</option>
                                     <option value="add_name" {% if search_field == 'add_name' %}selected{% endif %}>Address Name</option>
                                     <option value="language" {% if search_field == 'language' %}selected{% endif %}>Language</option>
