@@ -89,7 +89,7 @@
                 <p>Date Inq: {{ inquiry.date_inq }}</p>
                 <p>Inq Num: {{ inquiry.inq_num }}</p>
                 <p>Source: {{ inquiry.source }}</p>
-                <p>Services: {% for service in inquiry.services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <p>Services: {{ inquiry.services }}</p>
                 <p>Description: {{ inquiry.description }}</p>
 
                 {% if inquiry.has_quotations and user.employee.position.name == "admin"  %}

@@ -471,11 +471,17 @@ def edit_customer_view(request, id):
         customer.gender = gender
 
         print(nationality_cus)
-        nat = Nationality.objects.get(id=nationality_cus)
-        customer.nationality = nat
+        try:
+            nat = Nationality.objects.get(id=nationality_cus)
+            customer.nationality = nat
+        except:
+            pass
         
-        lg = Language.objects.get(id=language)
-        customer.language = lg
+        try:
+            lg = Language.objects.get(id=language)
+            customer.language = lg
+        except:
+            pass
 
         customer.trn = trn
 
@@ -510,7 +516,7 @@ def edit_customer_view(request, id):
             landline = Landline(customer=customer,landline=l)
             landline = landline.save()
 
-
+        
         # Iterate through the data and update Address instances
         address = Address.objects.filter(customer=customer)
         address.delete()
@@ -585,7 +591,7 @@ def edit_customer_view(request, id):
                 if s[f"{i}"]>0:
                     print(adress_name[i-1])
                     address = addresses[i-1]
-                    services_set = Service.objects.filter(id=inq_service[q])
+                    services_set = Service.objects.get(id=inq_service[q])
                     
                     inq_src = Source.objects.get(id=inq_source[q])
 
@@ -598,20 +604,21 @@ def edit_customer_view(request, id):
                             date_inq=inq_date[q],
                             source = inq_src,
                             inq_num=inq_number[q],
-                            description=inq_desc[q]
+                            description=inq_desc[q],
+                            services=services_set
                         )
                         inquiry.save()
-                        inquiry.services.set(services_set)
+                        
                     else :
                         inquiry = Inquiry(
                         customer=customer,
                         address=address,
-                        source = inq_source,
+                        source = inq_src,
                         inq_num=inq_number[q],
-                        description=inq_desc[q]
+                        description=inq_desc[q],
+                        services=services_set
                         )
                         inquiry.save()
-                        inquiry.services.set(services_set)
                     q+=1
                 else:
                     pass

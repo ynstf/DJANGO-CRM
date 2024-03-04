@@ -381,7 +381,7 @@
                                                 
 
 
-                                                {% for srv in Services %}
+                                                <!--{% for srv in Services %}
                                                 {% for selected_service in inquiry.services.all %}
                                                     {% if srv.id == selected_service.id %}
                                                         <option value="{{ selected_service.id }}" selected>{{ selected_service }}</option>
@@ -389,7 +389,14 @@
                                                         <option value="{{ srv.id }}">{{ srv }}</option>
                                                     {% endif %}
                                                         {% endfor %}
-                                                {% endfor %}
+                                                {% endfor %}-->
+
+
+                                                        <option value="{{ inquiry.services.id }}" selected>{{ inquiry.services }}</option>
+                                                        {% for service in Services %}
+                                                            <option value="{{ service.id }}">{{ service }}</option>
+                                                        {% endfor %}
+
                                             </select>
                                         </div>
                                         <div class="col-md-4">
