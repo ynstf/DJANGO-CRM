@@ -35,13 +35,14 @@ services_list = services_list_view
 ################# inquiries ###################
 from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
                                     inquiry_info_view, make_quotation_view, 
-                                    generate_pdf_view, notifications_view)
+                                    generate_pdf_view, notifications_view,get_notifications)
 inquiries_list = inquiries_list_view
 edit_quotation = edit_quotation_view
 inquiry_info = inquiry_info_view
 make_quotation = make_quotation_view
 generate_pdf = generate_pdf_view
 notifications = notifications_view
+get_notifications = get_notifications
 
 
 ############### get infos ###########

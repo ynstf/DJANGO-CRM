@@ -9,7 +9,7 @@ import io
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service
 from apps.authentication.models import Employee,Permission
 from apps.dashboard.models import Language, Nationality, QuotationNotify, Source
-
+from django.http import JsonResponse
 
 
 ################# permissions ############
@@ -24,7 +24,11 @@ extract quotations
 
 ################# inquiries ###################
 
-
+def get_notifications(request):
+    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    notifications_data = [{'message': str(notification)} for notification in notifications]
+    return JsonResponse({'notifications': notifications_data, 'notifications_counter': notifications_counter}, safe=False)
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
@@ -126,8 +130,11 @@ def inquiries_list_view(request):
         # to show just the inquiries with the same service with employer
         employee_id = request.user.employee.id
         employee = Employee.objects.get(id=employee_id)
-        srvc_id = employee.sp_service.id
-        inquiries = inquiries.filter(services=srvc_id)
+        try:
+            srvc_id = employee.sp_service.id
+            inquiries = inquiries.filter(services=srvc_id)
+        except:
+            pass
 
 
 
@@ -151,8 +158,6 @@ def inquiries_list_view(request):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
 def inquiry_info_view(request, id):
-
-
 
     notifications = QuotationNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()

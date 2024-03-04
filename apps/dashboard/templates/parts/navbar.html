@@ -2,6 +2,7 @@
 {% load static %}
 
 
+
 <nav class="layout-navbar {{container_class}} navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
   {% if not navbar_hide_toggle %}
   <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
@@ -12,16 +13,98 @@
   {% endif %}
   <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
 
-    <!-- Search -->
-    <!--<div class="navbar-nav align-items-center">
-      <div class="nav-item d-flex align-items-center">
-        <i class="mdi mdi-magnify mdi-24px lh-0"></i>
-        <input type="text" class="form-control border-0 shadow-none bg-body" placeholder="Search..." aria-label="Search...">
-      </div>
-    </div>-->
-    <!-- /Search -->
 
-    <ul class="navbar-nav flex-row align-items-center ms-auto">
+
+    <audio id="notification-sound">
+      <source src="{% static 'notification-sound.mp3' %}" type="audio/mpeg">
+      Your browser does not support the audio element.
+      <button id="notificationButton" style="display: none;"></button>
+    </audio>
+
+
+    
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      // Check if there are new notifications (you can customize this based on your logic)
+      var hasNewNotifications = true;
+      var NotificationsChange = 0;
+
+      document.addEventListener('DOMContentLoaded', function () {
+        if (Notification.permission !== 'granted') {
+          Notification.requestPermission();
+        }
+      });
+      
+
+      function fetchNotifications() {
+        $.get("/get_notifications/", function (data) {
+          // Update the UI with new notifications and counter
+          updateUI(data.notifications, data.notifications_counter);
+    
+          // Play notification sound if there are new notifications
+          if (data.notifications_counter > 0) {
+            if (NotificationsChange != data.notifications_counter ) {
+              
+              NotificationsChange = data.notifications_counter;
+              hasNewNotifications = true;
+            }
+            
+            playNotificationSound();
+            updateNotificationCounter(data.notifications_counter);
+          }
+        });
+      }
+    
+      function updateUI(notifications, notifications_counter) {
+        // Clear existing notifications
+        $("#notifications-list").empty();
+    
+        // Add new notifications to the list
+        notifications.forEach(function (notification) {
+          $("#notifications-list").append("<li>" + notification.message + "</li>");
+        });
+    
+        // Update the counter in the UI
+        $("#notifications-counter").html(notifications_counter);
+    
+        // Show the red notification span if there are new notifications
+        if (notifications_counter > 0) {
+          $("#notifications-counter").show();
+        } else {
+          $("#notifications-counter").hide();
+        }
+      }
+    
+      function playNotificationSound() {
+        if (hasNewNotifications) {
+          var audio = document.getElementById('notification-sound');
+          audio.play().then(function () {
+            // Sound played successfully
+            hasNewNotifications = false;
+          }).catch(function (error) {
+            console.error('Error playing notification sound:', error);
+          });
+        }
+      }
+    
+      function updateNotificationCounter(newCount) {
+        var counterElement = document.getElementById('notifications-counter1');
+        counterElement.innerHTML = newCount > 0 ? '(' + newCount + ')' : '';  // Update the counter text
+      }
+    
+      // Fetch notifications every 5 seconds (adjust as needed)
+      setInterval(fetchNotifications, 2000);
+    
+      // Initial fetch on page load
+      $(document).ready(function () {
+        fetchNotifications();
+      });
+    </script>
+    
+
+
+    <ul class="navbar-nav flex-row align-items-center ms-auto" id="clickonmer">
       
 
       <!-- User -->
@@ -29,9 +112,9 @@
         <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
           <div class="avatar avatar-online">
             <img src="{% static 'img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle">
-            {% if notifications %}
-              <span class="badge bg-danger">{{ notifications_counter }}</span>
-            {% endif %}
+            
+              <span class="badge bg-danger" id="notifications-counter" style="display: none;">{{ notifications_counter }}</span>
+            
           </div>
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -63,7 +146,7 @@
             <li>
               <a class="dropdown-item" href="{% url 'notifications' %}">
                   <i class="mdi mdi-bell-outline me-1 mdi-20px"></i>
-                  <span class="align-middle">Notifications {% if notifications %} <small style="color: brown;">({{ notifications_counter }})</small> {% endif %}</span>
+                  <span class="align-middle">Notifications <small style="color: brown;" id="notifications-counter1" style="display: none;" >({{ notifications_counter }})</small> </span>
               </a>
           </li>          
             <a class="dropdown-item" href="javascript:void(0);">

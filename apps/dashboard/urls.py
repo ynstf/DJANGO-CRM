@@ -2,7 +2,7 @@ from django.urls import path
 from .views import dashboard,add_customer,customer_list,customer_info,edit_customer
 from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry,delete_number
 from .views import get_languages, get_nationalities,get_sources,get_services
-from .views import notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
+from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
 from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list
 
 urlpatterns = [
@@ -28,6 +28,7 @@ urlpatterns = [
 
     
     path('notifications', notifications, name='notifications'),
+    path('get_notifications/', get_notifications, name='get_notifications'),
     path('inquiries_list', inquiries_list, name='inquiries_list'),
     path('inquiry/<int:id>', inquiry_info, name='inquiry_info'),
     path('make_quotation/<int:id>', make_quotation, name='make_quotation'),
