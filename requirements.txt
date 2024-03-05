@@ -15,3 +15,4 @@ psycopg2-binary
 django-extensions
 reportlab
 xhtml2pdf
+faker
