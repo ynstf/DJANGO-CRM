@@ -42,7 +42,7 @@ def run():
         return
 
     # Create Customers with Addresses and Inquiries
-    for _ in range(1000):
+    for _ in range(100):
         employee_id = choice(employees)
 
         # Choose valid foreign key values for nationality and language

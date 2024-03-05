@@ -48,6 +48,25 @@
             <p>First Name: {{ customer.first_name }}</p>
             <p>Last Name: {{ customer.last_name }}</p>
             <p>Nationality: {{ customer.nationality }}</p>
+            <br>
+            <hr>
+        
+            <h3>Contact Information</h3>
+            
+            {% for number in customer.landline_set.all %}
+            <p>Landlines: {{ number.landline }}</p>
+            {% endfor %}
+            {% for number in customer.phonenumber_set.all %}
+                <p>Phone Numbers: {{ number.number }}</p>
+            {% endfor %}
+            {% for whatsApp in customer.whatsapp_set.all %}
+                <p>WhatsApp Numbers: {{ whatsApp.whatsapp }}</p>
+            {% endfor %}
+            {% for email in customer.email_set.all %}
+                <p>Emails: {{ email.email }}</p>
+            {% endfor %}
+
+            <hr>
 
 
             <hr>
