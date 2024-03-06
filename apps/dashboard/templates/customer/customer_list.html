@@ -384,8 +384,11 @@
                     document.getElementById('mycontainer').appendChild(newRow);
                 }
             </script>
+            
 
-
+            <hr>
+            <h4 style="text-align: center;">we found {{ search_counter }} result</h4>
+            <hr>
             <!-- Table to display customer information -->
             <table class="table">
                 <thead>
@@ -442,6 +445,29 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+
+            <h4>
+                <!-- Add this block above or below your table -->
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if customers_with_pages.has_previous %}
+                            <a href="?page=1">&laquo; first</a>
+                            <a href="?page={{ customers_with_pages.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Page {{ customers_with_pages.number }} of {{ customers_with_pages.paginator.num_pages }}.
+                        </span>
+
+                        {% if customers_with_pages.has_next %}
+                            <a href="?page={{ customers_with_pages.next_page_number }}">next</a>
+                            <a href="?page={{ customers_with_pages.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </h4>
+            
         </div>
 <!-- ######################################################################### -->
 

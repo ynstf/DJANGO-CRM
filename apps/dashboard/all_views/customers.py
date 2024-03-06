@@ -22,6 +22,7 @@ edit customer
 """
 
 ############### customer manupilations #################
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="customer list") in u.employee.permissions.all()))
@@ -92,9 +93,7 @@ def customer_list_view(request):
 
             customers = customers.filter(inquiry__source=id)
             
-
-
-
+        search_counter = customers.count()
 
         if number_query:
             search_fields.append({'name':'number',
@@ -103,6 +102,17 @@ def customer_list_view(request):
             phones = phones.filter(number__icontains=number_query)
             customers = [phone.customer for phone in phones ]
 
+
+        # Pagination
+        page = request.GET.get('page', 1)
+        paginator = Paginator(customers, 40)  # Show 40 customers per page
+
+        try:
+            customers = paginator.page(page)
+        except PageNotAnInteger:
+            customers = paginator.page(1)
+        except EmptyPage:
+            customers = paginator.page(paginator.num_pages)
 
         # If it's an AJAX request, return a JSON response
         if request.headers.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
@@ -142,10 +152,14 @@ def customer_list_view(request):
     nationality = Nationality.objects.all()
     sources = Source.objects.all()
 
+    
+
 
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'customers': customer,
+                "customers_with_pages":customers,
+                "search_counter":search_counter,
 
                 'name_query':name_query if name_query!=None else '' ,
                 'id_query':id_query if id_query!=None else '' ,

@@ -23,6 +23,8 @@ extract quotations
 
 
 ################# inquiries ###################
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 def get_notifications(request):
     notifications = QuotationNotify.objects.filter(employee=request.user.employee)
@@ -45,8 +47,6 @@ def notifications_view(request):
             }
     context = TemplateLayout.init(request, context)
     return render(request, "inquiry/notifications.html", context)
-
-
 
 
 @login_required(login_url='/')
@@ -136,6 +136,19 @@ def inquiries_list_view(request):
         except:
             pass
 
+        search_counter = inquiries.count()
+
+        # Pagination
+        page = request.GET.get('page', 1)
+        paginator = Paginator(inquiries, 40)  # Show 40 customers per page
+
+        try:
+            inquiries = paginator.page(page)
+        except PageNotAnInteger:
+            inquiries = paginator.page(1)
+        except EmptyPage:
+            inquiries = paginator.page(paginator.num_pages)
+
 
 
     # Render the initial page with the full customer list
@@ -146,6 +159,8 @@ def inquiries_list_view(request):
                 'inquiries': inquiries,
                 'notifications':notifications,
                 'notifications_counter':notifications_counter,
+                "search_counter":search_counter,
+                
 
                 'search_fields':search_fields,
                 }

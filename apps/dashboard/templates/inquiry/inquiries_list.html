@@ -416,6 +416,10 @@
             </script>
 
 
+            <hr>
+            <h4 style="text-align: center;">we found {{ search_counter }} result</h4>
+            <hr>
+
             <!-- Table to display customer information -->
             <table class="table">
                 <thead>
@@ -462,6 +466,28 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+            <h4>
+                <!-- Add this block above or below your table -->
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if inquiries.has_previous %}
+                            <a href="?page=1">&laquo; first</a>
+                            <a href="?page={{ inquiries.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Page {{ inquiries.number }} of {{ inquiries.paginator.num_pages }}.
+                        </span>
+
+                        {% if inquiries.has_next %}
+                            <a href="?page={{ inquiries.next_page_number }}">next</a>
+                            <a href="?page={{ inquiries.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </h4>
+
         </div>
 <!-- ######################################################################### -->
 
