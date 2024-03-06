@@ -27,7 +27,7 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
-    {% if inquiry.services.name == user.employee.sp_service.name %}
+    {% if inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
 
         {% if user.employee.position.name == "super provider" %}
             <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
@@ -134,6 +134,7 @@
 
     {% else %}
         <center><h1>Sorry you dont have right to access this page</h1></center>
+        <p>{{ permissions_list }}</p>
     {% endif %}
 
 

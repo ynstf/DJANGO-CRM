@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import dashboard,add_customer,customer_list,customer_info,edit_customer
 from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry,delete_number
-from .views import get_languages, get_nationalities,get_sources,get_services
+from .views import get_languages, get_nationalities,get_sources,get_services, make_inq_connecting
 from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
 from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list
 
@@ -33,6 +33,7 @@ urlpatterns = [
     path('inquiry/<int:id>', inquiry_info, name='inquiry_info'),
     path('make_quotation/<int:id>', make_quotation, name='make_quotation'),
     path('edit_quotation/<int:id>', edit_quotation, name='edit_quotation'),
+    path('make_inq_connecting/<int:inq_id>', make_inq_connecting, name='make_inq_connecting'),
     path('generate_pdf/<int:id>/', generate_pdf, name='generate_pdf'),
 
 

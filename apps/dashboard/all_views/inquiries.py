@@ -11,6 +11,7 @@ from apps.authentication.models import Employee,Permission
 from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, QuotationNotify,
     Source, Status)
 from django.http import JsonResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 ################# permissions ############
@@ -24,7 +25,17 @@ extract quotations
 
 
 ################# inquiries ###################
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
+def make_inq_connecting(request,inq_id):
+    connecting = Status.objects.get(name = "connecting")
+
+
+    inquiry = Inquiry.objects.get(id = inq_id)
+    inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.status = connecting
+    inq_state.save()
+    return redirect('inquiries_list')
 
 
 def get_notifications(request):
@@ -217,10 +228,6 @@ def inquiry_info_view(request, id):
 
     
 
-
-
-    
-
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
@@ -231,6 +238,7 @@ def inquiry_info_view(request, id):
             'columns_list':columns_list,
             'data':data,
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
+            'permissions_list':[p.name for p in request.user.employee.permissions.all()]
 
             }
     context = TemplateLayout.init(request, context)
