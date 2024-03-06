@@ -592,9 +592,6 @@ def edit_customer_view(request, id):
 
         # Iterate through the data and update Inquiry instances
         inqs = Inquiry.objects.filter(customer=customer)
-        states = []
-        for i in inqs:
-            states.append(InquiryStatus.objects.get(inquiry=i).status)
         
         for i in Inquiry.objects.filter(customer=customer):
             QuotationNotify.objects.filter(inquiry=i).delete()
@@ -634,15 +631,13 @@ def edit_customer_view(request, id):
                         )
                         inquiry.save()
 
-                        try:
-                            new = states[q]
-                            inq_state = InquiryStatus(
-                                inquiry = inquiry,
-                                status= new
-                            )
-                            inq_state.save()
-                        except:
-                            pass
+                        new = Status.objects.get(name = "new")
+                        inq_state = InquiryStatus(
+                            inquiry = inquiry,
+                            status= new
+                        )
+                        inq_state.save()
+
 
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         for employee in all_employees:
@@ -664,15 +659,12 @@ def edit_customer_view(request, id):
                         )
                         inquiry.save()
 
-                        try:
-                            new = states[q]
-                            inq_state = InquiryStatus(
-                                inquiry = inquiry,
-                                status= new
-                            )
-                            inq_state.save()
-                        except:
-                            pass
+                        new = Status.objects.get(name = "new")
+                        inq_state = InquiryStatus(
+                            inquiry = inquiry,
+                            status= new
+                        )
+                        inq_state.save()
 
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         for employee in all_employees:
