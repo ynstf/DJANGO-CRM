@@ -66,8 +66,11 @@
                 <p>Emails: {{ email.email }}</p>
             {% endfor %}
 
-            <hr>
+            <br>
 
+            {% if user.employee.position.name == "super provider" %}
+                <a href="{% url 'make_inq_connecting' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Contact has been made with the client </a>
+            {% endif %}
 
             <hr>
         

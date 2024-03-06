@@ -226,8 +226,6 @@ def inquiry_info_view(request, id):
         print(line)
         data.append(line)
 
-    
-
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
