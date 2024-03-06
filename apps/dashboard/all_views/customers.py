@@ -6,7 +6,7 @@ from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotatio
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
 from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
-from ..models import Customer, Nationality, QuotationNotify
+from ..models import Customer, Nationality, QuotationNotify, Status, InquiryStatus
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ..models import Email,PhoneNumber,WhatsApp,Landline
@@ -89,8 +89,6 @@ def customer_list_view(request):
             search_fields.append({'name':'source',
                                 'value':source_query})
             id = Source.objects.get(name=source_query)
-            #customers = customers.filter(source=id)
-
             customers = customers.filter(inquiry__source=id)
             
         search_counter = customers.count()
@@ -320,6 +318,13 @@ def add_customer_view(request):
                         )
                         inquiry.save()
 
+                        new = Status.objects.get(name = "new")
+                        inq_state = InquiryStatus(
+                            inquiry = inquiry,
+                            status= new
+                        )
+                        inq_state.save()
+
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         
                         for employee in all_employees:
@@ -341,6 +346,13 @@ def add_customer_view(request):
                         
                         )
                         inquiry.save()
+                        
+                        new = Status.objects.get(name = "new")
+                        inq_state = InquiryStatus(
+                            inquiry = inquiry,
+                            status= new
+                        )
+                        inq_state.save()
 
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         

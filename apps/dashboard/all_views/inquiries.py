@@ -8,7 +8,8 @@ from xhtml2pdf import pisa
 import io
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service
 from apps.authentication.models import Employee,Permission
-from apps.dashboard.models import Language, Nationality, QuotationNotify, Source
+from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, QuotationNotify,
+    Source, Status)
 from django.http import JsonResponse
 
 
@@ -149,14 +150,19 @@ def inquiries_list_view(request):
         except EmptyPage:
             inquiries = paginator.page(paginator.num_pages)
 
-
+    inquiry = []
+    for i in inquiries:
+        inquiry.append({'info':i,
+                        'state':InquiryStatus.objects.get(inquiry=i),
+                    })
 
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
-                'inquiries': inquiries,
+                #'inquiries': inquiries,
+                'inquiries': inquiry,
                 'notifications':notifications,
                 'notifications_counter':notifications_counter,
                 "search_counter":search_counter,
@@ -183,7 +189,7 @@ def inquiry_info_view(request, id):
     # delete the notification for this inquiry id
     try :
         this_notification = QuotationNotify.objects.get(inquiry=inquiry)
-        if this_notification:
+        if this_notification.employee.user == request.user:
             this_notification.delete()
     except :
         pass

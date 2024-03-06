@@ -1,6 +1,6 @@
 # fill.py
 
-from apps.dashboard.models import Language, Source, Nationality, Emirate, Service
+from apps.dashboard.models import Language, Source, Nationality, Emirate, Service, Status
 from apps.authentication.models import Position, Permission
 
 def run():
@@ -79,6 +79,18 @@ def run():
 
     ]
 
+    status = [
+        "new",
+        "connecting",
+        "pending",
+        "cancel",
+        "done",
+        "underproccess",
+        "send Q or B",
+        "complain",
+
+    ]
+
     # Create Languages
     for language in Languages:
         lang, created = Language.objects.get_or_create(name=language)
@@ -120,3 +132,9 @@ def run():
         prm, created = Permission.objects.get_or_create(name=permission)
         if created:
             prm.save()
+
+    # Create status
+    for state in status:
+        sts, created = Status.objects.get_or_create(name=state)
+        if created:
+            sts.save()

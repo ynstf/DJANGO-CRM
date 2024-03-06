@@ -93,6 +93,20 @@ class Inquiry(models.Model):
     def __str__(self):
         return f'{self.customer} - {self.address}'
 
+class Status(models.Model):
+    name = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
+class InquiryStatus(models.Model):
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.inquiry} is {self.status}'
+
+
 
 class Quotation(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
