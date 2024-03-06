@@ -152,9 +152,13 @@ def inquiries_list_view(request):
 
     inquiry = []
     for i in inquiries:
-        inquiry.append({'info':i,
-                        'state':InquiryStatus.objects.get(inquiry=i),
-                    })
+        try:
+            inquiry.append({'info':i,
+                            'state':InquiryStatus.objects.get(inquiry=i),
+                        })
+        except:
+            inquiry.append({'info':i,
+                        })
 
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})

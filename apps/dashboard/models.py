@@ -134,7 +134,7 @@ class QuotationForm(models.Model):
 
 class QuotationNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
-    inquiry = models.ForeignKey(Inquiry, on_delete=models.SET_NULL, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     # Add other fields as needed
 

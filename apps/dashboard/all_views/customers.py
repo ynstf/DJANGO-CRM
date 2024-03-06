@@ -150,9 +150,6 @@ def customer_list_view(request):
     nationality = Nationality.objects.all()
     sources = Source.objects.all()
 
-    
-
-
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'customers': customer,
@@ -346,7 +343,7 @@ def add_customer_view(request):
                         
                         )
                         inquiry.save()
-                        
+
                         new = Status.objects.get(name = "new")
                         inq_state = InquiryStatus(
                             inquiry = inquiry,
@@ -595,20 +592,23 @@ def edit_customer_view(request, id):
 
         # Iterate through the data and update Inquiry instances
         inqs = Inquiry.objects.filter(customer=customer)
+        states = []
+        for i in inqs:
+            states.append(InquiryStatus.objects.get(inquiry=i).status)
+        
+        for i in Inquiry.objects.filter(customer=customer):
+            QuotationNotify.objects.filter(inquiry=i).delete()
+        
         inqs.delete()
 
         q=0
         s = json.loads(inq_counters)
         print("debugging")
-
         print("counter")
         print(s)
         print("inquiries data")
         print(inq_date,inq_source,inq_number,inq_service,inq_desc)
 
-
-        
-        
         for i in range(1,len(s)+1):
             for _ in range(s[f"{i}"]):
                 print(f'lenth of inquiries in adress{i}',s[f"{i}"])
@@ -618,7 +618,6 @@ def edit_customer_view(request, id):
                     print(adress_name[i-1])
                     address = addresses[i-1]
                     services_set = Service.objects.get(id=inq_service[q])
-                    
                     inq_src = Source.objects.get(id=inq_source[q])
 
                     print(inq_src)
@@ -634,6 +633,25 @@ def edit_customer_view(request, id):
                             services=services_set
                         )
                         inquiry.save()
+
+                        try:
+                            new = states[q]
+                            inq_state = InquiryStatus(
+                                inquiry = inquiry,
+                                status= new
+                            )
+                            inq_state.save()
+                        except:
+                            pass
+
+                        all_employees = Employee.objects.filter(sp_service=services_set)
+                        for employee in all_employees:
+                            notification = QuotationNotify(
+                                employee = employee,
+                                inquiry = inquiry,
+                                service = services_set,
+                            )
+                            notification.save()
                         
                     else :
                         inquiry = Inquiry(
@@ -645,6 +663,26 @@ def edit_customer_view(request, id):
                         services=services_set
                         )
                         inquiry.save()
+
+                        try:
+                            new = states[q]
+                            inq_state = InquiryStatus(
+                                inquiry = inquiry,
+                                status= new
+                            )
+                            inq_state.save()
+                        except:
+                            pass
+
+                        all_employees = Employee.objects.filter(sp_service=services_set)
+                        for employee in all_employees:
+                            notification = QuotationNotify(
+                                employee = employee,
+                                inquiry = inquiry,
+                                service = services_set,
+                            )
+                            notification.save()
+
                     q+=1
                 else:
                     pass
