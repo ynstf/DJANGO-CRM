@@ -443,6 +443,8 @@
                                 <td style="background-color: rgb(96, 230, 96); color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "connecting" %}
                                 <td style="background-color: rgb(244, 225, 164); color: black;">{{ inquiry.info.id }}</td>
+                            {% elif inquiry.state.status.name == "send Q or B" %}
+                                <td style="background-color: rgb(55, 158, 231); color: black;">{{ inquiry.info.id }}</td>
                             {% else %}
                                 <td>{{ inquiry.info.id }}</td>
                             {% endif %}

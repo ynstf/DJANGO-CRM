@@ -52,9 +52,9 @@ def run():
     ]
 
     Services = [
-        "electric",
-        "climatisation",
-        "plumber",
+        {'name':"electric",'column':'details,price,quantity'},
+        {'name':"climatisation",'column':'details,price,quantity'},
+        {'name':"plumber",'column':'details,price,quantity'},
     ]
 
     Positions = [
@@ -117,7 +117,8 @@ def run():
 
     # Create Services
     for service in Services:
-        srv, created = Service.objects.get_or_create(name=service)
+        srv, created = Service.objects.get_or_create(name=service.name,
+                                                    columns=service.column)
         if created:
             srv.save()
 

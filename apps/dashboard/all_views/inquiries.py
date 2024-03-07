@@ -29,11 +29,17 @@ extract quotations
 
 def make_inq_connecting(request,inq_id):
     connecting = Status.objects.get(name = "connecting")
-
-
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = connecting
+    inq_state.save()
+    return redirect('inquiries_list')
+
+def make_inq_sendQ(request,inq_id):
+    sendQ  = Status.objects.get(name = "send Q or B")
+    inquiry = Inquiry.objects.get(id = inq_id)
+    inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.status = sendQ
     inq_state.save()
     return redirect('inquiries_list')
 
@@ -292,6 +298,8 @@ def make_quotation_view(request, id):
             quotation.save()
 
             print()
+        
+        return redirect('make_inq_sendQ', inq_id=id)
 
 
 
