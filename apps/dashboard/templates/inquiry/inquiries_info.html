@@ -27,7 +27,7 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
-    {% if inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
+    {% if user.employee.position.name == "admin" or inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
 
         {% if user.employee.position.name == "super provider" %}
             <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
@@ -128,6 +128,9 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% if user.employee.position.name == "admin" %}
+                    <a href="{% url 'make_inq_pending' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> quotaion has been sent to the client </a>
+                {% endif %}
 
                 <br>
                 <!-- Add other inquiry details as needed -->

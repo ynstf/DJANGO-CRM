@@ -445,11 +445,13 @@
                                 <td style="background-color: rgb(244, 225, 164); color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "send Q or B" %}
                                 <td style="background-color: rgb(55, 158, 231); color: black;">{{ inquiry.info.id }}</td>
+                            {% elif inquiry.state.status.name == "pending" %}
+                                <td style="background-color: rgb(229, 157, 22); color: black;">{{ inquiry.info.id }}</td>
                             {% else %}
                                 <td>{{ inquiry.info.id }}</td>
                             {% endif %}
                             <td>
-                                {% if user.employee.position.name == 'super provider' %}
+                                {% if user.employee.position.name == 'super provider' or user.employee.position.name == 'admin' %}
                                     <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
                                 {% else %}
                                     {{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}

@@ -43,6 +43,14 @@ def make_inq_sendQ(request,inq_id):
     inq_state.save()
     return redirect('inquiries_list')
 
+def make_inq_pending(request,inq_id):
+    pending  = Status.objects.get(name = "pending")
+    inquiry = Inquiry.objects.get(id = inq_id)
+    inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.status = pending
+    inq_state.save()
+    return redirect('inquiries_list')
+
 
 def get_notifications(request):
     notifications = QuotationNotify.objects.filter(employee=request.user.employee)
