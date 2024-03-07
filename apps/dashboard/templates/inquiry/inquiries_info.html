@@ -41,7 +41,7 @@
         <br>
         <div class="container">
             <br>
-            <center><h2>Customer Information</h2></center>
+            <center><h2>Inquiry Information</h2></center>
             <br>
 
             <h3>Customer Details</h3>
@@ -137,8 +137,34 @@
 
                 <br>
                 <!-- Add other inquiry details as needed -->
+            {% if booking_data %}
+                <hr>
+                <h3>Booking</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            {% for column in columns_list %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
 
-            
+                            <!-- Add other columns as needed -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in booking_data %}
+                            <tr>
+                                {% for case in line %}
+                                    <td>{{ case }}</td>
+                                {% endfor %}
+                                <!-- Add other columns as needed -->
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+
+
         </div>
 
     {% else %}

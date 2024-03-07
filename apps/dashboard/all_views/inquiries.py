@@ -6,7 +6,7 @@ from web_project.template_helpers.theme import TemplateHelper
 from web_project import TemplateLayout
 from xhtml2pdf import pisa
 import io
-from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service
+from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee,Permission
 from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, QuotationNotify,
     Source, Status)
@@ -50,7 +50,6 @@ def make_inq_pending(request,inq_id):
     inq_state.status = pending
     inq_state.save()
     return redirect('inquiries_list')
-
 
 def get_notifications(request):
     notifications = QuotationNotify.objects.filter(employee=request.user.employee)
@@ -233,12 +232,19 @@ def inquiry_info_view(request, id):
         columns_list = []
         pass
 
-    data = []
+    inquiry_data = []
     quotations = Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id))
     for quotation in quotations:
         line = quotation.data.split(',*,')
         print(line)
-        data.append(line)
+        inquiry_data.append(line)
+
+    booking_data = []
+    bookings = Booking.objects.filter(inquiry=Inquiry.objects.get(id=id))
+    for booking in bookings:
+        line = booking.data.split(',*,')
+        print(line)
+        booking_data.append(line)
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
@@ -248,7 +254,8 @@ def inquiry_info_view(request, id):
             'customer': customer,
             'inquiry': inquiry,
             'columns_list':columns_list,
-            'data':data,
+            'data':inquiry_data,
+            'booking_data':booking_data,
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
             'permissions_list':[p.name for p in request.user.employee.permissions.all()]
 
