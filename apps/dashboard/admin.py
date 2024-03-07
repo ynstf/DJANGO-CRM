@@ -2,13 +2,14 @@ from django.contrib import admin
 from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber, WhatsApp, Landline, Email
 from .models import Customer, Address, Inquiry, Quotation, Booking, QuotationNotify
 from .models import Status,InquiryStatus
+from .models import Service
 
 
 # Register your models here.
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name','columns')
 
 @admin.register(Emirate)
 class EmirateAdmin(admin.ModelAdmin):

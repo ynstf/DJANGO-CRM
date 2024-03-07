@@ -117,8 +117,9 @@ def run():
 
     # Create Services
     for service in Services:
-        srv, created = Service.objects.get_or_create(name=service.name,
-                                                    columns=service.column)
+        srv, created = Service.objects.get_or_create(name=service['name'],
+                                                    columns=service['column']
+                                                    )
         if created:
             srv.save()
 
