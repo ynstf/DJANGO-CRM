@@ -75,6 +75,9 @@
             <hr>
         
             <h3>Inquiry</h3>
+                {% if user.employee.position.name == "call center" %}
+                    <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
+                {% endif %}
                 <h4>inquiry address in: {{ inquiry.address.address_name }}</h4>
                 <p>Date Inq: {{ inquiry.date_inq }}</p>
                 <p>Inq Num: {{ inquiry.inq_num }}</p>
@@ -89,7 +92,7 @@
             <hr>
         
             <h3>Quotations 
-                {% if quotations and user.employee.position.name == "provider" %}
+                {% if quotations and user.employee.position.name == "super provider" %}
                     <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
                 {% endif %}
                 {% if quotations and user.employee.position.name == "admin" %}

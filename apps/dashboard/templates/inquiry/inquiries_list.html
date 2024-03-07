@@ -446,7 +446,9 @@
                             {% elif inquiry.state.status.name == "send Q or B" %}
                                 <td style="background-color: rgb(55, 158, 231); color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "pending" %}
-                                <td style="background-color: rgb(229, 157, 22); color: black;">{{ inquiry.info.id }}</td>
+                                <td style="background-color: rgb(235, 129, 113); color: black;">{{ inquiry.info.id }}</td>
+                            {% elif inquiry.state.status.name == "underproccess" %}
+                                <td style="background-color: rgb(228, 255, 94); color: black;">{{ inquiry.info.id }}</td>
                             {% else %}
                                 <td>{{ inquiry.info.id }}</td>
                             {% endif %}

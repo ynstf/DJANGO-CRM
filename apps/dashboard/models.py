@@ -3,7 +3,7 @@ from django.db import models
 from apps.authentication.models import Employee
 from .models_com import Service
 
-    
+
 class Emirate(models.Model):
     name = models.CharField(max_length=50)
 
@@ -114,9 +114,7 @@ class Quotation(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     quotation_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_date = models.DateField(blank=True, null=True)
-
     data = models.TextField(blank=True, null=True)
-
     total = models.CharField(max_length=50, blank=True, null=True)
     # Add other fields as needed
     def __str__(self):
@@ -144,12 +142,13 @@ class QuotationNotify(models.Model):
 
 
 class Booking(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
-    booking_num = models.CharField(max_length=50)
-    booking_date = models.DateField()
-    description = models.TextField()
-    # Add other fields as needed
+    booking_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    booking_date = models.DateField(blank=True, null=True)
+    data = models.TextField(blank=True, null=True)
+    total = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return f'{self.inquiry}'
-
+        return f'booking for {self.inquiry}'

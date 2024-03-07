@@ -32,6 +32,14 @@ add_service = add_service_view
 services_list = services_list_view
 
 
+
+
+
+################# inquiries ###################
+from .all_views.booking import (make_booking_view, make_inq_underproccess)
+make_booking = make_booking_view
+make_inq_underproccess = make_inq_underproccess
+
 ################# inquiries ###################
 from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
                                     inquiry_info_view, make_quotation_view, 

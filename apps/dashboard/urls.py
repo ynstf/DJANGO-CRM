@@ -4,6 +4,7 @@ from .views import delete_number, delete_whatsApp, delete_landline, delete_email
 from .views import get_languages, get_nationalities,get_sources,get_services, make_inq_connecting, make_inq_sendQ, make_inq_pending
 from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
 from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list
+from .views import make_booking, make_inq_underproccess
 
 urlpatterns = [
     path("dashboard/",dashboard,name="dashboard",),
@@ -37,6 +38,10 @@ urlpatterns = [
     path('make_inq_sendQ/<int:inq_id>', make_inq_sendQ, name='make_inq_sendQ'),
     path('make_inq_pending/<int:inq_id>', make_inq_pending, name='make_inq_pending'),
     path('generate_pdf/<int:id>/', generate_pdf, name='generate_pdf'),
+
+
+    path('make_booking/<int:id>', make_booking, name='make_booking'),
+    path('make_inq_underproccess/<int:inq_id>', make_inq_underproccess, name='make_inq_underproccess'),
 
 
     path('add_employee/', add_employee, name='add_employee'),

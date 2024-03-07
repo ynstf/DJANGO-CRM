@@ -1,0 +1,162 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Make Booking{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+            <center>
+                <h1>Make Booking</h1>
+                <br>
+                <h4>description</h4>
+                <p> {{ inquiry.description }}</p>
+            </center>
+            <br>
+
+            <form method="post" id="quotationForm" >
+                {% csrf_token %}
+                <!-- {{ quotation_form }} -->
+
+                <h3>Booking Details</h3>
+                <div>
+                    <div class="col-md-4">
+                        <label for="id_quotation-date" > Booking Date : </label>
+                        <input type="date" id="id_quotation-date" value="{{ date|date:'Y-m-d' }}" name="quotation-date" class="form-control" >
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="id_quotation-service">service :</label>
+                        <select id="id_quotation-service" name="quotation-service" class="form-control">
+                                <option value="{{ service.id }}" selected >{{ service.name }}</option>
+                                {% for srv in services %}
+                                    <option value="{{ srv.id }}">{{ srv }}</option>
+                                {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <br><br>
+
+
+
+                    <!-- add details forms -->
+                    <!-- edit details forms -->
+                    
+                    {% for q in quotations %}
+                        <div class="col-md-4">
+                            <label for="id_quotation-detail-{{ forloop.counter }}">Detail :</label>
+                            <textarea type="text" rows="3" id="id_quotation-detail-{{ forloop.counter }}" name="quotation-details" class="form-control" placeholder="Detail..." aria-label="detail">{{ q.detail }}</textarea>
+
+                            {% for d in q.result %}
+                                <label for="id_quotation-{{ d.column_name }}-{{ forloop.counter }}">{{ d.column_name }} :</label>
+                                <textarea type="text" rows="3" id="id_quotation-{{ d.column_name }}-{{ forloop.counter }}" name="quotation-{{ d.column_name }}" class="form-control" placeholder="{{ d.column_name }}..." aria-label="{{ d.column_name }}">{{ d.data }}</textarea>
+                            {% endfor %}
+
+                            <label for="id_quotation-price-{{ forloop.counter }}">Price :</label>
+                            <input type="number" id="id_quotation-price-{{ forloop.counter }}" value="{{ q.price }}" name="quotation-price" class="form-control" placeholder="Price..." aria-label="Price" oninput="updateTotal({{ forloop.counter }})">
+
+                            <label for="id_quotation-quantity-{{ forloop.counter }}">Quantity :</label>
+                            <input type="number" id="id_quotation-quantity-{{ forloop.counter }}" value="{{ q.quantity }}" name="quotation-quantity" class="form-control" placeholder="Quantity..." aria-label="Quantity" oninput="updateTotal({{ forloop.counter }})">
+
+                            <label for="Total">Total:</label>
+                            <span id="total-{{ forloop.counter }}" name="total">{{ q.total }}</span>
+
+                            <hr>
+                        </div>
+                    {% endfor %}
+
+                    <script>
+                        function updateTotal(quotationId) {
+                            var price = document.getElementById('id_quotation-price-' + quotationId).value;
+                            var quantity = document.getElementById('id_quotation-quantity-' + quotationId).value;
+
+                            // Calculate total
+                            var total = price * quantity;
+
+                            // Display the total
+                            document.getElementById('total-' + quotationId).innerHTML = total.toFixed(2); // You can format the total as needed
+                        }
+
+                    </script>
+
+                    <br><br>
+                </div>
+
+                <button class="btn btn-success" type="submit">Confirm Booking</button>
+            </form>
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}
+

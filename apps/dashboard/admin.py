@@ -73,4 +73,4 @@ class QuotationNotifyAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('inquiry', 'booking_num', 'booking_date', 'description')
+    list_display = ('customer', 'inquiry', 'booking_service', 'booking_date', 'data', 'total')
