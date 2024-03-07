@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from ..models import Language, Nationality, Source, Service
+from ..models import Language, Nationality, Source, Service, Status
 
 def get_languages_view(request):
     languages = [l.name for l in Language.objects.all()]
@@ -16,3 +16,7 @@ def get_sources_view(request):
 def get_services_view(request):
     services = [srv.name for srv in Service.objects.all()]
     return JsonResponse({'data': services})
+
+def get_status_view(request):
+    states = [stt.name for stt in Status.objects.all()]
+    return JsonResponse({'data': states})

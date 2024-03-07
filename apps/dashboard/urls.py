@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import dashboard,add_customer,customer_list,customer_info,edit_customer
 from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry,delete_number
-from .views import get_languages, get_nationalities,get_sources,get_services, make_inq_connecting, make_inq_sendQ, make_inq_pending
+from .views import get_languages, get_status, get_nationalities,get_sources,get_services, make_inq_connecting, make_inq_sendQ, make_inq_pending
 from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
 from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list
 from .views import make_booking, make_inq_underproccess
@@ -25,6 +25,7 @@ urlpatterns = [
     path('get_nationalities', get_nationalities, name='get_nationalities'),
     path('get_sources', get_sources, name='get_sources'),
     path('get_services', get_services, name='get_services'),
+    path('get_status', get_status, name='get_status'),
 
 
     

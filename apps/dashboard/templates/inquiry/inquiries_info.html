@@ -131,7 +131,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                {% if user.employee.position.name == "admin" %}
+                {% if user.employee.position.name == "admin" or user.employee.position.name == "call center" %}
                     <a href="{% url 'make_inq_pending' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> quotaion has been sent to the client </a>
                 {% endif %}
 

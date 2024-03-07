@@ -59,11 +59,14 @@ make_inq_pending = make_inq_pending
 
 
 ############### get infos ###########
-from .all_views.infos import get_languages_view, get_nationalities_view, get_sources_view, get_services_view
+from .all_views.infos import (get_languages_view, get_nationalities_view,
+                                get_sources_view, get_services_view,
+                                get_status_view)
 get_languages = get_languages_view
 get_nationalities = get_nationalities_view
 get_sources = get_sources_view
 get_services = get_services_view
+get_status = get_status_view
 
 
 ############### delete actions ###############

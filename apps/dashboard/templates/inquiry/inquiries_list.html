@@ -50,6 +50,7 @@
                                         <option value="language" {% if search_field.name == 'language' %}selected{% endif %}>Language</option>
                                         <option value="nationality" {% if search_field.name == 'nationality' %}selected{% endif %}>Nationality</option>
                                         <option value="source" {% if search_field.name == 'source' %}selected{% endif %}>Source</option>
+                                        <option value="status" {% if search_field.name == 'status' %}selected{% endif %}>Status</option>
                                     </select>
                                 </div>
                                 {% if search_field.name == "date" %}
@@ -97,6 +98,18 @@
                                     </select>
                                 </div>
 
+                                {% elif search_field.name  == "status" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="status" class="form-control">
+                                        <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% for state in states %}
+                                            <option value="{{ state.name }}">{{ state.name }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+
 
                                 {% else %}
                                 <div id="myinput" class="col-md-6">
@@ -117,6 +130,7 @@
                                     <option value="language" {% if search_field == 'language' %}selected{% endif %}>Language</option>
                                     <option value="nationality" {% if search_field == 'nationality' %}selected{% endif %}>Nationality</option>
                                     <option value="source" {% if search_field == 'source' %}selected{% endif %}>Source</option>
+                                    <option value="status" {% if search_field.name == 'status' %}selected{% endif %}>Status</option>
                                 </select>
                             </div>
 
@@ -159,7 +173,8 @@
                             'add_name': 'Enter Address Name...',
                             'language': 'Select Language...',
                             'nationality': 'Select Nationality...',
-                            'source': 'Enter Source...'
+                            'source': 'Enter Source...',
+                            'status': 'Select status...'
                         };
                         var names = {
                             'id': 'id',
@@ -170,6 +185,7 @@
                             'add_name': 'add_name',
                             'language': 'language',
                             'nationality': 'nationality',
+                            'status': 'status',
                             'source': 'source'
                         };
 
@@ -340,7 +356,40 @@
                             });
                         }
 
-                        // For other fields (not 'date', 'language', 'nationality', or 'source'), create a standard input field
+                        // Fetch data for the 'status' field using AJAX
+                        else if (searchField === 'status') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+                            $.get("{% url 'get_status' %}", function (data) {
+                                var options = '<option value="" selected>Select Status...</option>';
+                                data["data"].forEach(function (status) {
+                                    options += '<option value="' + status + '">' + status + '</option>';
+                                });
+
+                                var selection = document.createElement('select');
+                                selection.name = "status";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the status select element to the search container
+                                searchContainer.appendChild(selection);
+                            });
+                        }
+
+                        // For other fields (not 'date', 'language', 'nationality', or 'source', 'status'), create a standard input field
                         else {
                             var label = document.createElement('label');
                             label.htmlFor = 'search_field';

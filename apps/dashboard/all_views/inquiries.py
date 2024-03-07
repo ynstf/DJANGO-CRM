@@ -99,6 +99,7 @@ def inquiries_list_view(request):
         language_query = request.GET.get('language')
         nationality_query = request.GET.get('nationality')
         source_query = request.GET.get('source')
+        status_query = request.GET.get('status')
         #date_query = request.GET.get('date')
         add_name_query = request.GET.get('add_name')
         start_date = request.GET.get('start_date')
@@ -137,6 +138,13 @@ def inquiries_list_view(request):
                                 'value':source_query})
             id = Source.objects.get(name=source_query)
             inquiries = inquiries.filter(source=id)
+
+        if status_query:
+            search_fields.append({'name':'status',
+                                'value':status_query})
+            id = Status.objects.get(name=status_query)
+
+            inquiries = inquiries.filter(inquirystatus__status=id)
 
         if language_query:
             search_fields.append({'name':'language',
@@ -194,7 +202,7 @@ def inquiries_list_view(request):
                 'notifications':notifications,
                 'notifications_counter':notifications_counter,
                 "search_counter":search_counter,
-                
+                "states":Status.objects.all(),
 
                 'search_fields':search_fields,
                 }
