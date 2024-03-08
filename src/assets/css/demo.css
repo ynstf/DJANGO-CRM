@@ -16,6 +16,11 @@
   height: 24px;
 }
 
+.app-brand-logo.demo img {
+  width: 50px;
+  height: 30px;
+}
+
 .app-brand-text.demo {
   font-size: 1.25rem;
 }
