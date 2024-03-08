@@ -45,7 +45,8 @@ from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
                                     inquiry_info_view, make_quotation_view, 
                                     generate_pdf_view, notifications_view,
                                     get_notifications, make_inq_connecting,
-                                    make_inq_sendQ,make_inq_pending)
+                                    make_inq_sendQ,make_inq_pending,
+                                    make_inq_new)
 inquiries_list = inquiries_list_view
 edit_quotation = edit_quotation_view
 inquiry_info = inquiry_info_view
@@ -56,7 +57,7 @@ make_inq_connecting = make_inq_connecting
 get_notifications = get_notifications
 make_inq_sendQ=make_inq_sendQ
 make_inq_pending = make_inq_pending
-
+make_inq_new = make_inq_new
 
 ############### get infos ###########
 from .all_views.infos import (get_languages_view, get_nationalities_view,

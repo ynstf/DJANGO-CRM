@@ -29,14 +29,16 @@
 
     {% if user.employee.position.name == "admin" or inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
 
-        {% if user.employee.position.name == "super provider" %}
-            <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
-        {% elif user.employee.permissions.all %}
-            {% for permission in user.employee.permissions.all %}
-                {% if permission.name == "make quotation" %}
-                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
-                {% endif %}
-            {% endfor %}
+        {% if inquiry_state.status.name == "connecting" %}
+            {% if user.employee.position.name == "super provider" %}
+                <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
+            {% elif user.employee.permissions.all %}
+                {% for permission in user.employee.permissions.all %}
+                    {% if permission.name == "make quotation" %}
+                        <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         {% endif %}
         <br>
         <div class="container">
@@ -69,14 +71,20 @@
             <br>
 
             {% if user.employee.position.name == "super provider" %}
-                <a href="{% url 'make_inq_connecting' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Contact has been made with the client </a>
+                {% if inquiry_state.status.name == "new" %}
+                    <a href="{% url 'make_inq_connecting' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Contact has been made with the client </a>
+                {% elif inquiry_state.status.name ==  "connecting" %}
+                    <a href="{% url 'make_inq_new' inquiry.id %}" class="btn btn-primary" style="background-color: #e81010 ;"> Contact Canceling </a>
+                {% endif %}
             {% endif %}
 
             <hr>
         
             <h3>Inquiry</h3>
                 {% if user.employee.position.name == "call center" %}
-                    <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
+                    {% if inquiry_state.status.name ==  "pending" %}
+                        <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
+                    {% endif %}
                 {% endif %}
                 <h4>inquiry address in: {{ inquiry.address.address_name }}</h4>
                 <p>Date Inq: {{ inquiry.date_inq }}</p>
@@ -132,7 +140,9 @@
                     </tbody>
                 </table>
                 {% if user.employee.position.name == "admin" or user.employee.position.name == "call center" %}
-                    <a href="{% url 'make_inq_pending' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> quotaion has been sent to the client </a>
+                    {% if inquiry_state.status.name ==  "send Q or B" %}
+                        <a href="{% url 'make_inq_pending' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> quotation has been sent to the client </a>
+                    {% endif %}
                 {% endif %}
 
                 <br>

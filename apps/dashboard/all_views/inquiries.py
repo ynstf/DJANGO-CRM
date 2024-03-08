@@ -27,6 +27,14 @@ extract quotations
 ################# inquiries ###################
 
 
+def make_inq_new(request,inq_id):
+    new = Status.objects.get(name = "new")
+    inquiry = Inquiry.objects.get(id = inq_id)
+    inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.status = new
+    inq_state.save()
+    return redirect('inquiries_list')
+
 def make_inq_connecting(request,inq_id):
     connecting = Status.objects.get(name = "connecting")
     inquiry = Inquiry.objects.get(id = inq_id)
@@ -127,11 +135,6 @@ def inquiries_list_view(request):
                                 'value':add_name_query})
             inquiries = inquiries.filter(address__address_name__icontains=add_name_query)
         
-        """if service_query:
-            search_fields.append({'name':'service',
-                                'value':service_query})
-            id = Service.objects.get(name=service_query)
-            inquiries = inquiries.filter(services=id)"""
 
         if source_query:
             search_fields.append({'name':'source',
@@ -219,6 +222,7 @@ def inquiry_info_view(request, id):
     notifications = QuotationNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
     inquiry = Inquiry.objects.get(id=id)
+    inquiry_state = InquiryStatus.objects.get(inquiry=inquiry)
     customer = inquiry.customer
 
 
@@ -261,6 +265,7 @@ def inquiry_info_view(request, id):
             'notifications_counter':notifications_counter,
             'customer': customer,
             'inquiry': inquiry,
+            'inquiry_state':inquiry_state,
             'columns_list':columns_list,
             'data':inquiry_data,
             'booking_data':booking_data,
