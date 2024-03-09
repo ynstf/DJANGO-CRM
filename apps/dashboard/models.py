@@ -134,6 +134,12 @@ class QuotationNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    action = models.CharField(max_length=50, choices=[('new', 'new'),
+                                                    ('connecting', 'connecting'),
+                                                    ('send quotation', 'send quotation'),
+                                                    ('pending', 'pending'),
+                                                    ('underpreccess', 'underpreccess'),
+                                                    ], blank=True, null=True)
     # Add other fields as needed
 
     def __str__(self):

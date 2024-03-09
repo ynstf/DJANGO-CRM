@@ -489,15 +489,15 @@
                     {% for inquiry in inquiries %}
                         <tr>
                             {% if inquiry.state.status.name == "new" %}
-                                <td style="background-color: rgb(96, 230, 96); color: black;">{{ inquiry.info.id }}</td>
+                                <td style="background-color:  #abd08e ; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "connecting" %}
-                                <td style="background-color: rgb(244, 225, 164); color: black;">{{ inquiry.info.id }}</td>
+                                <td style="background-color:  #fce5d7 ; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "send Q or B" %}
-                                <td style="background-color: rgb(55, 158, 231); color: black;">{{ inquiry.info.id }}</td>
+                                <td style="background-color: #afc1ef; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "pending" %}
-                                <td style="background-color: rgb(235, 129, 113); color: black;">{{ inquiry.info.id }}</td>
+                                <td style="background-color: #f4af85; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "underproccess" %}
-                                <td style="background-color: rgb(228, 255, 94); color: black;">{{ inquiry.info.id }}</td>
+                                <td style="background-color: #ffe699; color: black;">{{ inquiry.info.id }}</td>
                             {% else %}
                                 <td>{{ inquiry.info.id }}</td>
                             {% endif %}

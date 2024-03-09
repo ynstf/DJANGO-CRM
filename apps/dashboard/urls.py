@@ -35,16 +35,16 @@ urlpatterns = [
     path('inquiry/<int:id>', inquiry_info, name='inquiry_info'),
     path('make_quotation/<int:id>', make_quotation, name='make_quotation'),
     path('edit_quotation/<int:id>', edit_quotation, name='edit_quotation'),
-    path('make_inq_connecting/<int:inq_id>', make_inq_connecting, name='make_inq_connecting'),
-    path('make_inq_sendQ/<int:inq_id>', make_inq_sendQ, name='make_inq_sendQ'),
-    path('make_inq_pending/<int:inq_id>', make_inq_pending, name='make_inq_pending'),
     path('generate_pdf/<int:id>/', generate_pdf, name='generate_pdf'),
 
 
     path('make_booking/<int:id>', make_booking, name='make_booking'),
     path('make_inq_underproccess/<int:inq_id>', make_inq_underproccess, name='make_inq_underproccess'),
     path('make_inq_new/<int:inq_id>', make_inq_new, name='make_inq_new'),
-
+    path('make_inq_connecting/<int:inq_id>', make_inq_connecting, name='make_inq_connecting'),
+    path('make_inq_sendQ/<int:inq_id>', make_inq_sendQ, name='make_inq_sendQ'),
+    path('make_inq_pending/<int:inq_id>', make_inq_pending, name='make_inq_pending'),
+    
 
     path('add_employee/', add_employee, name='add_employee'),
     path('employee_list/', employee_list, name='employee_list'),
