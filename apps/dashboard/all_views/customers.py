@@ -329,6 +329,7 @@ def add_customer_view(request):
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
+                                action = "new"
                             )
                             notification.save()
 
@@ -358,6 +359,7 @@ def add_customer_view(request):
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
+                                action = "new"
                             )
                             notification.save()
 
@@ -645,6 +647,7 @@ def edit_customer_view(request, id):
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
+                                action = "new"
                             )
                             notification.save()
                         
@@ -672,6 +675,7 @@ def edit_customer_view(request, id):
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
+                                action = "new"
                             )
                             notification.save()
 

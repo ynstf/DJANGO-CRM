@@ -102,6 +102,7 @@ class Status(models.Model):
 class InquiryStatus(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    update = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     def __str__(self):
         return f'{self.inquiry} is {self.status}'

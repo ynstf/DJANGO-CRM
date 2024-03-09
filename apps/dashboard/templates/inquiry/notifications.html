@@ -35,7 +35,7 @@
             {% if notifications %}
             <ul>
                 {% for notification in notifications %}
-                    <li>new {{notification.action}} <a href="{% url 'inquiry_info' notification.inquiry.id %}">{{notification.inquiry.address}}</a></li>
+                    <li>new {% if notification.action == 'new' %} inquiry {% else %} {{ notification.action }} {% endif %} <a href="{% url 'inquiry_info' notification.inquiry.id %}">{{notification.inquiry.address}}</a></li>
                     <hr>
                 {% endfor %}
             </ul>

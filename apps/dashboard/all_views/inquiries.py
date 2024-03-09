@@ -208,6 +208,9 @@ def inquiries_list_view(request):
 
         search_counter = inquiries.count()
 
+        #order inquiries by last updated
+        inquiries = inquiries.order_by('-inquirystatus__update')
+
         # Pagination
         page = request.GET.get('page', 1)
         paginator = Paginator(inquiries, 40)  # Show 40 customers per page
