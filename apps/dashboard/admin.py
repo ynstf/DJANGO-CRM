@@ -70,7 +70,7 @@ class QuotationAdmin(admin.ModelAdmin):
 
 @admin.register(InquiryNotify)
 class InquiryNotifyAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'inquiry', 'service')
+    list_display = ('employee', 'inquiry', 'service','action')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):

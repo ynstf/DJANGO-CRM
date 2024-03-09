@@ -7,7 +7,7 @@ from web_project import TemplateLayout
 from xhtml2pdf import pisa
 import io
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
-from apps.authentication.models import Employee,Permission
+from apps.authentication.models import Employee, Permission, Position
 from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, InquiryNotify,
     Source, Status)
 from django.http import JsonResponse
@@ -41,6 +41,18 @@ def make_inq_connecting(request,inq_id):
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = connecting
     inq_state.save()
+
+    cc = Position.objects.get(name="call center")
+    all_employees = Employee.objects.filter(position=cc)
+                        
+    for employee in all_employees:
+        notification = InquiryNotify(
+            employee = employee,
+            inquiry = inquiry,
+            service = inquiry.services,
+            action = "connecting"
+        )
+        notification.save()
     return redirect('inquiries_list')
 
 def make_inq_sendQ(request,inq_id):
@@ -49,6 +61,17 @@ def make_inq_sendQ(request,inq_id):
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = sendQ
     inq_state.save()
+
+    cc = Position.objects.get(name="call center")
+    all_employees = Employee.objects.filter(position=cc)
+    for employee in all_employees:
+        notification = InquiryNotify(
+            employee = employee,
+            inquiry = inquiry,
+            service = inquiry.services,
+            action = "send quotation"
+        )
+        notification.save()
     return redirect('inquiries_list')
 
 def make_inq_pending(request,inq_id):
@@ -57,6 +80,17 @@ def make_inq_pending(request,inq_id):
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = pending
     inq_state.save()
+
+    all_employees = Employee.objects.filter(sp_service=inquiry.services)
+    for employee in all_employees:
+        notification = InquiryNotify(
+            employee = employee,
+            inquiry = inquiry,
+            service = inquiry.services,
+            action = "pending"
+        )
+        notification.save()
+
     return redirect('inquiries_list')
 
 def get_notifications(request):
@@ -228,9 +262,10 @@ def inquiry_info_view(request, id):
 
     # delete the notification for this inquiry id
     try :
-        this_notification = InquiryNotify.objects.get(inquiry=inquiry)
-        if this_notification.employee.user == request.user:
-            this_notification.delete()
+        the_notifications = InquiryNotify.objects.filter(inquiry=inquiry)
+        for notify in the_notifications:
+            if notify.employee.user == request.user:
+                notify.delete()
     except :
         pass
 

@@ -17,6 +17,16 @@ def make_inq_underproccess(request,inq_id):
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = underproccess
     inq_state.save()
+    all_employees = Employee.objects.filter(sp_service=inquiry.services)
+    
+    for employee in all_employees:
+        notification = InquiryNotify(
+            employee = employee,
+            inquiry = inquiry,
+            service = inquiry.services,
+            action = "underproccess"
+        )
+        notification.save()
     return redirect('inquiries_list')
 
 
