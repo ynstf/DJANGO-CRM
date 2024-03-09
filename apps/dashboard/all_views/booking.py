@@ -6,7 +6,7 @@ from web_project import TemplateLayout
 
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee,Permission
-from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, QuotationNotify,
+from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, InquiryNotify,
     Source, Status)
 from django.http import JsonResponse
 
@@ -23,7 +23,7 @@ def make_inq_underproccess(request,inq_id):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
 def make_booking_view(request,id):
-    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
 
     inquiry = Inquiry.objects.get(id = id)

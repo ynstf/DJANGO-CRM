@@ -1,12 +1,12 @@
 from web_project import TemplateLayout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from apps.dashboard.models import QuotationNotify
+from apps.dashboard.models import InquiryNotify
 
 
 @login_required(login_url='/')
 def dashboard(request):
-    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
     # Add the employee's position to the context
     context = {'position': request.user.employee.position,

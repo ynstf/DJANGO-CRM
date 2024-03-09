@@ -6,7 +6,7 @@ from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotatio
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
 from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
-from ..models import Customer, Nationality, QuotationNotify, Status, InquiryStatus
+from ..models import Customer, Nationality, InquiryNotify, Status, InquiryStatus
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ..models import Email,PhoneNumber,WhatsApp,Landline
@@ -325,7 +325,7 @@ def add_customer_view(request):
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         
                         for employee in all_employees:
-                            notification = QuotationNotify(
+                            notification = InquiryNotify(
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
@@ -354,7 +354,7 @@ def add_customer_view(request):
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         
                         for employee in all_employees:
-                            notification = QuotationNotify(
+                            notification = InquiryNotify(
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
@@ -594,7 +594,7 @@ def edit_customer_view(request, id):
         inqs = Inquiry.objects.filter(customer=customer)
         
         for i in Inquiry.objects.filter(customer=customer):
-            QuotationNotify.objects.filter(inquiry=i).delete()
+            InquiryNotify.objects.filter(inquiry=i).delete()
         
         inqs.delete()
 
@@ -641,7 +641,7 @@ def edit_customer_view(request, id):
 
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         for employee in all_employees:
-                            notification = QuotationNotify(
+                            notification = InquiryNotify(
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
@@ -668,7 +668,7 @@ def edit_customer_view(request, id):
 
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         for employee in all_employees:
-                            notification = QuotationNotify(
+                            notification = InquiryNotify(
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,

@@ -8,7 +8,7 @@ from xhtml2pdf import pisa
 import io
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee,Permission
-from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, QuotationNotify,
+from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, InquiryNotify,
     Source, Status)
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -60,7 +60,7 @@ def make_inq_pending(request,inq_id):
     return redirect('inquiries_list')
 
 def get_notifications(request):
-    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
     notifications_data = [{'message': str(notification)} for notification in notifications]
     return JsonResponse({'notifications': notifications_data, 'notifications_counter': notifications_counter}, safe=False)
@@ -68,7 +68,7 @@ def get_notifications(request):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
 def notifications_view(request):
-    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
@@ -87,7 +87,7 @@ def notifications_view(request):
 def inquiries_list_view(request):
     inquiries = Inquiry.objects.all()
 
-    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
     print("teest")
     print(notifications)
@@ -219,7 +219,7 @@ def inquiries_list_view(request):
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
 def inquiry_info_view(request, id):
 
-    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
     inquiry = Inquiry.objects.get(id=id)
     inquiry_state = InquiryStatus.objects.get(inquiry=inquiry)
@@ -228,7 +228,7 @@ def inquiry_info_view(request, id):
 
     # delete the notification for this inquiry id
     try :
-        this_notification = QuotationNotify.objects.get(inquiry=inquiry)
+        this_notification = InquiryNotify.objects.get(inquiry=inquiry)
         if this_notification.employee.user == request.user:
             this_notification.delete()
     except :
@@ -280,7 +280,7 @@ def inquiry_info_view(request, id):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="make quotation") in u.employee.permissions.all()) )
 def make_quotation_view(request, id):
-    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
 
     if request.method == 'POST':
@@ -355,7 +355,7 @@ def make_quotation_view(request, id):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
 def edit_quotation_view(request,id):
-    notifications = QuotationNotify.objects.filter(employee=request.user.employee)
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
     inquiry = Inquiry.objects.get(id = id)
 

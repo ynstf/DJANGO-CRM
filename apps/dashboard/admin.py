@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber, WhatsApp, Landline, Email
-from .models import Customer, Address, Inquiry, Quotation, Booking, QuotationNotify
+from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
 from .models import Status,InquiryStatus
 from .models import Service
 
@@ -68,8 +68,8 @@ class InquiryStatusAdmin(admin.ModelAdmin):
 class QuotationAdmin(admin.ModelAdmin):
     list_display = ('customer', 'inquiry', 'quotation_service', 'quotation_date', 'total')
 
-@admin.register(QuotationNotify)
-class QuotationNotifyAdmin(admin.ModelAdmin):
+@admin.register(InquiryNotify)
+class InquiryNotifyAdmin(admin.ModelAdmin):
     list_display = ('employee', 'inquiry', 'service')
 
 @admin.register(Booking)
