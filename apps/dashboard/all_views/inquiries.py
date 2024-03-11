@@ -8,8 +8,8 @@ from xhtml2pdf import pisa
 import io
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee, Permission, Position
-from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, InquiryNotify,
-    Source, Status)
+from apps.dashboard.models import (Inquiry, InquiryNotify, InquiryStatus, Language, Nationality,
+    Quotation, Source, Status)
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -439,11 +439,6 @@ def edit_quotation_view(request,id):
 
         return redirect('inquiry/inquiry_info', id=id)
 
-
-
-
-
-
     
     date=quotations[0].quotation_date
     service=quotations[0].quotation_service
@@ -490,6 +485,22 @@ def generate_pdf_view(request, id):
     # Create a PDF template using Django template
     template_path = 'pdf_template.html'  # Create a template for your PDF
     template = get_template(template_path)
+
+
+    # Retrieve the Service instance
+    service_instance = inquiry.services
+    # Convert the comma-separated string back to a list
+    columns_list = service_instance.columns.split(',')
+    columns_list.append('Total')
+
+    data = []
+    for quotation in quotations:
+        datas = quotation.data.split(',*,')
+        datas.append(quotation.total)
+        data.append(datas)
+    
+
+
     context = {'inquiry': inquiry,
                 'quotations': quotations,
                 'date':date,
@@ -499,7 +510,8 @@ def generate_pdf_view(request, id):
                 'email':email,
                 'total':total,
                 'form':form,
-
+                'columns_list':columns_list,
+                'data':data
                 }
     html_content = template.render(context)
 

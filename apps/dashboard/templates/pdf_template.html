@@ -80,20 +80,18 @@
 <table class="table">
     <thead>
         <tr class="tr">
-            <th class="th">Details</th>
-            <th class="th">Prices</th>
-            <th class="th">Quantities</th>
-            <th class="th">Cost (SAR)</th>
+            {% for column in columns_list %}
+                <th class="th">{{column}}</th>
+            {% endfor %}
             <!-- Add other columns as needed -->
         </tr>
     </thead>
     <tbody>
-        {% for q in quotations %}
+        {% for line in data %}
             <tr class="tr">
-                <td class="td">{{ q.detail }}</td>
-                <td class="td">{{ q.price }}</td>
-                <td class="td">{{ q.quantity }}</td>
-                <td class="td">{{ q.total }}</td>
+                {% for case in line %}
+                    <td class="td">{{ case }}</td>
+                {% endfor %}
                 <!-- Add other columns as needed -->
             </tr>
         {% endfor %}
