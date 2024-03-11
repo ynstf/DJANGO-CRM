@@ -78,7 +78,6 @@ def run():
             customer=customer,
             address=address,
             date_inq=fake.date_this_year(),
-            inq_num=fake.uuid4(),
             services_id=service_id,
             source_id=source_id,
             description=fake.text(),

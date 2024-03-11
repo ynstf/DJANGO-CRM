@@ -85,7 +85,6 @@ class Inquiry(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, blank=True, null=True)
     date_inq = models.DateField(blank=True, null=True)
-    inq_num = models.CharField(max_length=50, blank=True, null=True)
     services = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     source = models.ForeignKey(Source, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Source model
     description = models.TextField(blank=True, null=True)
@@ -98,7 +97,7 @@ class Status(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class InquiryStatus(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
@@ -107,12 +106,10 @@ class InquiryStatus(models.Model):
     def __str__(self):
         return f'{self.inquiry} is {self.status}'
 
-
-
 class Quotation(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
-    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_date = models.DateField(blank=True, null=True)
     data = models.TextField(blank=True, null=True)
@@ -120,7 +117,7 @@ class Quotation(models.Model):
     # Add other fields as needed
     def __str__(self):
         return f'{self.customer} - {self.inquiry}'
-    
+
 class QuotationForm(models.Model):
     title = models.CharField(max_length=50, blank=True, null=True)
     image = models.TextField( blank=True, null=True)
@@ -128,8 +125,6 @@ class QuotationForm(models.Model):
     # Add other fields as needed
     def __str__(self):
         return self.title
-
-
 
 class InquiryNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
@@ -145,8 +140,6 @@ class InquiryNotify(models.Model):
 
     def __str__(self):
         return f'employee :{self.employee} with {self.inquiry} inquiry'
-
-
 
 class Booking(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)

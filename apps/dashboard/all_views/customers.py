@@ -202,7 +202,6 @@ def add_customer_view(request):
         #inquiry fields
         inq_date = request.POST.getlist('inquiry-date_inq')
         inq_source = request.POST.getlist('customer-source')
-        inq_number = request.POST.getlist('inquiry-inq_num')
         inq_service = request.POST.getlist('inquiry-services')
         inq_desc = request.POST.getlist('inquiry-description')
 
@@ -213,7 +212,7 @@ def add_customer_view(request):
 
         print(adress_name,adress_type,emarate,adress_desc,location)
 
-        print(inq_date,inq_number,inq_source,inq_service,inq_desc)
+        print(inq_date,inq_source,inq_service,inq_desc)
 
         # Save the customer
         customer = customer_form.save(commit=False)
@@ -308,7 +307,6 @@ def add_customer_view(request):
                             address=address,
                             date_inq=inq_date[q],
                             source = current_inq_source,
-                            inq_num=inq_number[q],
                             services=services_set,
                             description=inq_desc[q]
                             
@@ -338,7 +336,6 @@ def add_customer_view(request):
                         customer=customer,
                         address=address,
                         source = current_inq_source,
-                        inq_num=inq_number[q],
                         services=services_set,
                         description=inq_desc[q]
                         
@@ -478,7 +475,6 @@ def edit_customer_view(request, id):
         #inquiry fields
         inq_date = request.POST.getlist('inquiry-date_inq')
         inq_source = request.POST.getlist('customer-source')
-        inq_number = request.POST.getlist('inquiry-inq_num')
         inq_service = request.POST.getlist('inquiry-services')
         inq_desc = request.POST.getlist('inquiry-description')
 
@@ -606,7 +602,7 @@ def edit_customer_view(request, id):
         print("counter")
         print(s)
         print("inquiries data")
-        print(inq_date,inq_source,inq_number,inq_service,inq_desc)
+        print(inq_date,inq_source,inq_service,inq_desc)
 
         for i in range(1,len(s)+1):
             for _ in range(s[f"{i}"]):
@@ -627,7 +623,6 @@ def edit_customer_view(request, id):
                             address=address,
                             date_inq=inq_date[q],
                             source = inq_src,
-                            inq_num=inq_number[q],
                             description=inq_desc[q],
                             services=services_set
                         )
@@ -656,7 +651,6 @@ def edit_customer_view(request, id):
                         customer=customer,
                         address=address,
                         source = inq_src,
-                        inq_num=inq_number[q],
                         description=inq_desc[q],
                         services=services_set
                         )

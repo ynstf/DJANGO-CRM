@@ -53,7 +53,7 @@ class AddressAdmin(admin.ModelAdmin):
 
 @admin.register(Inquiry)
 class InquiryAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'address', 'date_inq', 'source', 'inq_num', 'description')
+    list_display = ('customer', 'address', 'date_inq', 'source', 'description')
 
 
 @admin.register(Status)
