@@ -473,6 +473,7 @@ def edit_customer_view(request, id):
 
 
         #inquiry fields
+        inq_id = request.POST.getlist('inquiry-id')
         inq_date = request.POST.getlist('inquiry-date_inq')
         inq_source = request.POST.getlist('customer-source')
         inq_service = request.POST.getlist('inquiry-services')
@@ -594,7 +595,7 @@ def edit_customer_view(request, id):
         for i in Inquiry.objects.filter(customer=customer):
             InquiryNotify.objects.filter(inquiry=i).delete()
         
-        inqs.delete()
+        #inqs.delete()
 
         q=0
         s = json.loads(inq_counters)
@@ -609,6 +610,7 @@ def edit_customer_view(request, id):
                 print(f'lenth of inquiries in adress{i}',s[f"{i}"])
                 print("i: ",i)
                 print("q: ",q)
+                print(inq_id[q])
                 if s[f"{i}"]>0:
                     print(adress_name[i-1])
                     address = addresses[i-1]
@@ -618,22 +620,20 @@ def edit_customer_view(request, id):
                     print(inq_src)
 
                     if inq_date[q]:
-                        inquiry = Inquiry(
-                            customer=customer,
-                            address=address,
-                            date_inq=inq_date[q],
-                            source = inq_src,
-                            description=inq_desc[q],
-                            services=services_set
-                        )
+                        inquiry = Inquiry.objects.get(id=inq_id[q])
+
+                        inquiry.customer = customer
+                        inquiry.address = address
+                        inquiry.date_inq = inq_date[q]
+                        inquiry.source = inq_src
+                        inquiry.description = inq_desc[q]
+                        inquiry.services = services_set
+
                         inquiry.save()
 
                         new = Status.objects.get(name = "new")
-                        inq_state = InquiryStatus(
-                            inquiry = inquiry,
-                            status= new
-                        )
-                        inq_state.save()
+                        inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+                        #inq_state.status = new
 
 
                         all_employees = Employee.objects.filter(sp_service=services_set)
@@ -642,26 +642,25 @@ def edit_customer_view(request, id):
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
-                                action = "new"
+                                action = "updated"
                             )
                             notification.save()
                         
                     else :
-                        inquiry = Inquiry(
-                        customer=customer,
-                        address=address,
-                        source = inq_src,
-                        description=inq_desc[q],
-                        services=services_set
-                        )
+                        inquiry = Inquiry.objects.get(id=inq_id[q])
+
+                        inquiry.customer = customer
+                        inquiry.address = address
+                        inquiry.date_inq = inq_date[q]
+                        inquiry.source = inq_src
+                        inquiry.description = inq_desc[q]
+                        inquiry.services = services_set
+
                         inquiry.save()
 
                         new = Status.objects.get(name = "new")
-                        inq_state = InquiryStatus(
-                            inquiry = inquiry,
-                            status= new
-                        )
-                        inq_state.save()
+                        inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+                        #inq_state.status = new
 
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         for employee in all_employees:
@@ -669,7 +668,7 @@ def edit_customer_view(request, id):
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
-                                action = "new"
+                                action =  "updated"
                             )
                             notification.save()
 
