@@ -8,8 +8,9 @@ from xhtml2pdf import pisa
 import io
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee, Permission, Position
-from apps.dashboard.models import (Inquiry, InquiryNotify, InquiryStatus, Language, Nationality,
-    Quotation, Source, Status)
+from apps.dashboard.models import (Inquiry, InquiryNotify, 
+                                InquiryStatus, Language, Nationality,
+                                Quotation, Source, Status, EmployeeAction)
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -33,6 +34,15 @@ def make_inq_new(request,inq_id):
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = new
     inq_state.save()
+
+    #create action
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
+    )
+    action.save()
+
     return redirect('inquiries_list')
 
 def make_inq_connecting(request,inq_id):
@@ -42,9 +52,19 @@ def make_inq_connecting(request,inq_id):
     inq_state.status = connecting
     inq_state.save()
 
+
+    #create action
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
+    )
+    action.save()
+
     cc = Position.objects.get(name="call center")
     all_employees = Employee.objects.filter(position=cc)
-                        
+
+    #create notification
     for employee in all_employees:
         notification = InquiryNotify(
             employee = employee,
@@ -62,6 +82,15 @@ def make_inq_sendQ(request,inq_id):
     inq_state.status = sendQ
     inq_state.save()
 
+    #create action
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry)
+    )
+    action.save()
+
+    #create notification
     cc = Position.objects.get(name="call center")
     all_employees = Employee.objects.filter(position=cc)
     for employee in all_employees:
@@ -81,6 +110,16 @@ def make_inq_pending(request,inq_id):
     inq_state.status = pending
     inq_state.save()
 
+    #create action
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry)
+    )
+    action.save()
+
+
+    #create notification
     all_employees = Employee.objects.filter(sp_service=inquiry.services)
     for employee in all_employees:
         notification = InquiryNotify(

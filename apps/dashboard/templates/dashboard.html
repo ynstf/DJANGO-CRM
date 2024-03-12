@@ -34,11 +34,21 @@
             
             <!-- Display user information if available -->
             {% if user.is_authenticated %}
-            <p>Hello, {{ user.employee.first_name }} {{ user.employee.last_name }}!</p>
-            <p>Email: {{ user.employee.email }}</p>
-            <p>Phone Number: {{ user.employee.phone_number }}</p>
-            <p>Position: {{ user.employee.position }}</p>
+            <h4>Hello, {{ user.employee.first_name }} {{ user.employee.last_name }}!</h4>
+            <h4>Email: {{ user.employee.email }}</h4>
+            <h4>Phone Number: {{ user.employee.phone_number }}</h4>
+            <h4>Position: {{ user.employee.position }}</h4>
+
+            <br><br>
     
+            <h2>Last History</h2>
+            <ul>
+                {% for action in actions %}
+                    <li><h6>i maked {{ action.status.name }} action to <a href="{% url 'inquiry_info' action.inquiry.id %}">{{ action.inquiry.address }}</a> </h6> </li>
+                {% endfor %}
+            </ul>
+
+
             {% else %}
             <p>You are not logged in.</p>
             {% endif %}

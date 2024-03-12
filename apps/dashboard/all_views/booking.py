@@ -6,8 +6,9 @@ from web_project import TemplateLayout
 
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee,Permission
-from apps.dashboard.models import (Inquiry, InquiryStatus, Language, Nationality, InquiryNotify,
-    Source, Status)
+from apps.dashboard.models import (Inquiry, InquiryStatus, Language, 
+                                Nationality, InquiryNotify,
+                                Source, Status, EmployeeAction)
 from django.http import JsonResponse
 
 
@@ -18,7 +19,17 @@ def make_inq_underproccess(request,inq_id):
     inq_state.status = underproccess
     inq_state.save()
     all_employees = Employee.objects.filter(sp_service=inquiry.services)
-    
+
+    #create action
+    inq = Inquiry.objects.get(inquiry=inquiry)
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inq,
+        status = InquiryStatus.objects.get(inquiry = inquiry)
+    )
+    action.save()
+
+    #craete notifications
     for employee in all_employees:
         notification = InquiryNotify(
             employee = employee,

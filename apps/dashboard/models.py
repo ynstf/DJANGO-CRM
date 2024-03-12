@@ -106,6 +106,17 @@ class InquiryStatus(models.Model):
     def __str__(self):
         return f'{self.inquiry} is {self.status}'
 
+class EmployeeAction(models.Model):
+    from_employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    update = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.inquiry} is {self.status}'
+
+
+
 class Quotation(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)

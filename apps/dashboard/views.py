@@ -1,17 +1,21 @@
 from web_project import TemplateLayout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from apps.dashboard.models import InquiryNotify
+from apps.dashboard.models import InquiryNotify, EmployeeAction
 
 
 @login_required(login_url='/')
 def dashboard(request):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
+
+    actions = EmployeeAction.objects.filter(from_employee=request.user.employee)
+
     # Add the employee's position to the context
     context = {'position': request.user.employee.position,
             'notifications':notifications,
             'notifications_counter':notifications_counter,
+            'actions':actions,
             }
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
