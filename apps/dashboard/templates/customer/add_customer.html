@@ -41,267 +41,270 @@
 
                 <h3>Customer Details</h3>
                 <div>
-                    <div class="col-md-4">
-                        <label for="id_customer-first_name" > First name : </label>
-                        <input type="text" id="id_customer-first_name" name="customer-first_name" class="form-control" placeholder="First name..." aria-label="First name" required>
-                    </div>
-                    
+                    <ul>
+                        <div class="col-md-4">
+                            <label for="id_customer-first_name" > First name : </label>
+                            <input type="text" id="id_customer-first_name" name="customer-first_name" class="form-control" placeholder="First name..." aria-label="First name" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="id_customer-last_name" > Last name : </label>
+                            <input type="text" id="id_customer-last_name" name="customer-last_name" class="form-control" placeholder="Last name..." aria-label="First name" required>
+                        </div>
 
-                    <div class="col-md-4">
-                        <label for="id_customer-last_name" > Last name : </label>
-                        <input type="text" id="id_customer-last_name" name="customer-last_name" class="form-control" placeholder="Last name..." aria-label="First name" required>
-                    </div>
+                        <div class="col-md-4">
+                            <label for="id_customer-gender">Gender :</label>
+                            <select id="id_customer-gender" name="customer-gender" class="form-control">
+                                    <option value="" selected disabled>Select gender...</option>
+                                    {% for gender in Genders %}
+                                        <option value="{{ gender.id }}">{{ gender.gender }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
 
-                    <div class="col-md-4">
-                        <label for="id_customer-gender">Gender :</label>
-                        <select id="id_customer-gender" name="customer-gender" class="form-control">
-                                <option value="" selected disabled>Select gender...</option>
-                                {% for gender in Genders %}
-                                    <option value="{{ gender.id }}">{{ gender.gender }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
+                        <div class="col-md-4">
+                            <label for="id_customer-nationality">Nationality :</label>
+                            <select id="id_customer-nationality" name="customer-nationality" class="form-control">
+                                    <option value="" selected disabled>Select Nationality...</option>
+                                    {% for Nationality in Nationalities  %}
+                                        <option value="{{ Nationality.id }}">{{ Nationality }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
 
-                    <div class="col-md-4">
-                        <label for="id_customer-nationality">Nationality :</label>
-                        <select id="id_customer-nationality" name="customer-nationality" class="form-control">
-                                <option value="" selected disabled>Select Nationality...</option>
-                                {% for Nationality in Nationalities  %}
-                                    <option value="{{ Nationality.id }}">{{ Nationality }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
+                        <div class="col-md-4">
+                            <label for="id_customer-language">Language :</label>
+                            <select id="id_customer-language" name="customer-language" class="form-control">
+                                    <option value="" selected disabled>Select Language...</option>
+                                    {% for Language in Languages %}
+                                        <option value="{{ Language.id }}">{{ Language }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
 
-                    <div class="col-md-4">
-                        <label for="id_customer-language">Language :</label>
-                        <select id="id_customer-language" name="customer-language" class="form-control">
-                                <option value="" selected disabled>Select Language...</option>
-                                {% for Language in Languages %}
-                                    <option value="{{ Language.id }}">{{ Language }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
+                        <div class="col-md-4">
+                            <label for="id_customer-trn" > TRN : </label>
+                            <input type="text" id="id_customer-trn" name="customer-trn" class="form-control" placeholder="TRN..." aria-label="TRN">
+                        </div>
+                    </ul>
 
+                    <br>
 
-                    <div class="col-md-4">
-                        <label for="id_customer-trn" > TRN : </label>
-                        <input type="text" id="id_customer-trn" name="customer-trn" class="form-control" placeholder="TRN..." aria-label="TRN">
-                    </div>
-
-
-
+                    <h3>Contact Information</h3>
                     <!-- add Phone Number forms -->
-                    <div class="col-md-4">
-                        <label for="id_customer-whats_apps" > Phone Number : </label>
-                        <input type="text" id="id_customer-phone_numbers" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
-                    </div>
-                    <div id="additional-phone-numbers"></div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addNewPhoneNumber()">Add New Phone Number</button>
-                    <script>
-                        var phoneNumberCounter = 2;
-                        function addNewPhoneNumber() {
-                            var container = document.createElement('div');
-                            container.className = 'col-md-4';
+                    <ul>
+                        <div class="col-md-4">
+                            <label for="id_customer-whats_apps" > Phone Number : </label>
+                            <input type="text" id="id_customer-phone_numbers" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
+                        </div>
+                        <div id="additional-phone-numbers"></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewPhoneNumber()">Add New Phone Number</button>
+                        <script>
+                            var phoneNumberCounter = 2;
+                            function addNewPhoneNumber() {
+                                var container = document.createElement('div');
+                                container.className = 'col-md-4';
 
-                            var label = document.createElement('label');
-                            label.setAttribute('for', 'id_customer-phone-number-' + phoneNumberCounter);
-                            label.textContent = 'Phone Number ' + phoneNumberCounter + ' :';
-                    
-                            var input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = 'id_customer-phone-number-' + phoneNumberCounter;
-                            input.name = 'customer-phone_numbers';
-                            input.className = 'form-control';
-                            input.placeholder = 'Phone Number ' + phoneNumberCounter + '...';
-                            input.setAttribute('aria-label', 'Phone Number ' + phoneNumberCounter);
-                    
-                            container.appendChild(label);
-                            container.appendChild(input);
-                    
-                            var button = document.createElement('button');
-                            button.type = 'button';
-                            button.className = 'btn btn-danger btn-sm';
-                            button.textContent = 'Remove';
-                            button.onclick = function () {
-                                container.remove();
-                            };
-                    
-                            container.appendChild(button);
-                    
-                            document.getElementById('additional-phone-numbers').appendChild(container);
-                    
-                            // Optionally, you can clear the value of the new input
-                            input.value = '';
-                    
-                            phoneNumberCounter++;
-                        }
-                    </script>
-                    
-                    <br><br>
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_customer-phone-number-' + phoneNumberCounter);
+                                label.textContent = 'Phone Number ' + phoneNumberCounter + ' :';
+                        
+                                var input = document.createElement('input');
+                                input.type = 'text';
+                                input.id = 'id_customer-phone-number-' + phoneNumberCounter;
+                                input.name = 'customer-phone_numbers';
+                                input.className = 'form-control';
+                                input.placeholder = 'Phone Number ' + phoneNumberCounter + '...';
+                                input.setAttribute('aria-label', 'Phone Number ' + phoneNumberCounter);
+                        
+                                container.appendChild(label);
+                                container.appendChild(input);
+                        
+                                var button = document.createElement('button');
+                                button.type = 'button';
+                                button.className = 'btn btn-danger btn-sm';
+                                button.textContent = 'Remove';
+                                button.onclick = function () {
+                                    container.remove();
+                                };
+                        
+                                container.appendChild(button);
+                        
+                                document.getElementById('additional-phone-numbers').appendChild(container);
+                        
+                                // Optionally, you can clear the value of the new input
+                                input.value = '';
+                        
+                                phoneNumberCounter++;
+                            }
+                        </script>
+                        
+                        <br><br>
 
-                    <!-- add Landlines forms -->
-                    <div class="col-md-4">
-                        <label for="id_customer-landlines">Landlines :</label>
-                        <input type="text" id="id_customer-landlines" name="customer-landlines" class="form-control" placeholder="Landlines..." aria-label="Landlines">
-                    </div>
-                    <div id="additional-landlines"></div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addNewLandline()">Add New Landline</button>
-                    <script>
-                        var landlineCounter = 2;
-                    
-                        function addNewLandline() {
-                            var container = document.createElement('div');
-                            container.className = 'col-md-4';
-                    
-                            var label = document.createElement('label');
-                            label.setAttribute('for', 'id_customer-landline-' + landlineCounter);
-                            label.textContent = 'Landline ' + landlineCounter + ' :';
-                    
-                            var input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = 'id_customer-landline-' + landlineCounter;
-                            input.name = 'customer-landlines';
-                            input.className = 'form-control';
-                            input.placeholder = 'Landline ' + landlineCounter + '...';
-                            input.setAttribute('aria-label', 'Landline ' + landlineCounter);
-                    
-                            container.appendChild(label);
-                            container.appendChild(input);
-                    
-                            var button = document.createElement('button');
-                            button.type = 'button';
-                            button.className = 'btn btn-danger btn-sm';
-                            button.textContent = 'Remove';
-                            button.onclick = function () {
-                                container.remove();
-                            };
-                    
-                            container.appendChild(button);
-                    
-                            document.getElementById('additional-landlines').appendChild(container);
-                    
-                            // Optionally, you can clear the value of the new input
-                            input.value = '';
-                    
-                            landlineCounter++;
-                        }
-                    </script>
-                    
-                    <br><br>
+                        <!-- add Landlines forms -->
+                        <div class="col-md-4">
+                            <label for="id_customer-landlines">Landlines :</label>
+                            <input type="text" id="id_customer-landlines" name="customer-landlines" class="form-control" placeholder="Landlines..." aria-label="Landlines">
+                        </div>
+                        <div id="additional-landlines"></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewLandline()">Add New Landline</button>
+                        <script>
+                            var landlineCounter = 2;
+                        
+                            function addNewLandline() {
+                                var container = document.createElement('div');
+                                container.className = 'col-md-4';
+                        
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_customer-landline-' + landlineCounter);
+                                label.textContent = 'Landline ' + landlineCounter + ' :';
+                        
+                                var input = document.createElement('input');
+                                input.type = 'text';
+                                input.id = 'id_customer-landline-' + landlineCounter;
+                                input.name = 'customer-landlines';
+                                input.className = 'form-control';
+                                input.placeholder = 'Landline ' + landlineCounter + '...';
+                                input.setAttribute('aria-label', 'Landline ' + landlineCounter);
+                        
+                                container.appendChild(label);
+                                container.appendChild(input);
+                        
+                                var button = document.createElement('button');
+                                button.type = 'button';
+                                button.className = 'btn btn-danger btn-sm';
+                                button.textContent = 'Remove';
+                                button.onclick = function () {
+                                    container.remove();
+                                };
+                        
+                                container.appendChild(button);
+                        
+                                document.getElementById('additional-landlines').appendChild(container);
+                        
+                                // Optionally, you can clear the value of the new input
+                                input.value = '';
+                        
+                                landlineCounter++;
+                            }
+                        </script>
 
+                        <br><br>
 
-                    <!-- add WhatsApp forms -->
-                    <div class="col-md-4">
-                        <label for="id_customer-whats_apps">WhatsApp :</label>
-                        <input type="text" id="id_customer-whats_apps" name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
-                    </div>
-                    <div id="additional-whatsapps"></div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addNewWhatsapp()">Add New WhatsApp</button>
-                    <script>
-                        var whatsappCounter = 2;
-                    
-                        function addNewWhatsapp() {
-                            var container = document.createElement('div');
-                            container.className = 'col-md-4';
-                    
-                            var label = document.createElement('label');
-                            label.setAttribute('for', 'id_customer-whatsapp-' + whatsappCounter);
-                            label.textContent = 'WhatsApp ' + whatsappCounter + ' :';
-                    
-                            var input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = 'id_customer-whatsapp-' + whatsappCounter;
-                            input.name = 'customer-whats_apps';
-                            input.className = 'form-control';
-                            input.placeholder = 'WhatsApp ' + whatsappCounter + '...';
-                            input.setAttribute('aria-label', 'WhatsApp ' + whatsappCounter);
-                    
-                            container.appendChild(label);
-                            container.appendChild(input);
-                    
-                            var button = document.createElement('button');
-                            button.type = 'button';
-                            button.className = 'btn btn-danger btn-sm';
-                            button.textContent = 'Remove';
-                            button.onclick = function () {
-                                container.remove();
-                            };
-                    
-                            container.appendChild(button);
-                    
-                            document.getElementById('additional-whatsapps').appendChild(container);
-                    
-                            // Optionally, you can clear the value of the new input
-                            input.value = '';
-                    
-                            whatsappCounter++;
-                        }
-                    </script>
-                    
-                    <br><br>
+                        <!-- add WhatsApp forms -->
+                        <div class="col-md-4">
+                            <label for="id_customer-whats_apps">WhatsApp :</label>
+                            <input type="text" id="id_customer-whats_apps" name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
+                        </div>
+                        <div id="additional-whatsapps"></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewWhatsapp()">Add New WhatsApp</button>
+                        <script>
+                            var whatsappCounter = 2;
+                        
+                            function addNewWhatsapp() {
+                                var container = document.createElement('div');
+                                container.className = 'col-md-4';
+                        
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_customer-whatsapp-' + whatsappCounter);
+                                label.textContent = 'WhatsApp ' + whatsappCounter + ' :';
+                        
+                                var input = document.createElement('input');
+                                input.type = 'text';
+                                input.id = 'id_customer-whatsapp-' + whatsappCounter;
+                                input.name = 'customer-whats_apps';
+                                input.className = 'form-control';
+                                input.placeholder = 'WhatsApp ' + whatsappCounter + '...';
+                                input.setAttribute('aria-label', 'WhatsApp ' + whatsappCounter);
+                        
+                                container.appendChild(label);
+                                container.appendChild(input);
+                        
+                                var button = document.createElement('button');
+                                button.type = 'button';
+                                button.className = 'btn btn-danger btn-sm';
+                                button.textContent = 'Remove';
+                                button.onclick = function () {
+                                    container.remove();
+                                };
+                        
+                                container.appendChild(button);
+                        
+                                document.getElementById('additional-whatsapps').appendChild(container);
+                        
+                                // Optionally, you can clear the value of the new input
+                                input.value = '';
+                        
+                                whatsappCounter++;
+                            }
+                        </script>
+                        
+                        <br><br>
 
-
-                    <!-- add Emails forms -->
-                    <div class="col-md-4">
-                        <label for="id_customer-emails">Email :</label>
-                        <input type="text" id="id_customer-emails" name="customer-emails" class="form-control" placeholder="Email..." aria-label="Email">
-                    </div>
-                    <div id="additional-emails"></div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addNewEmail()">Add New Email</button>
-                    <script>
-                        var emailCounter = 2;
-                    
-                        function addNewEmail() {
-                            var container = document.createElement('div');
-                            container.className = 'col-md-4';
-                    
-                            var label = document.createElement('label');
-                            label.setAttribute('for', 'id_customer-email-' + emailCounter);
-                            label.textContent = 'Email ' + emailCounter + ' :';
-                    
-                            var input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = 'id_customer-email-' + emailCounter;
-                            input.name = 'customer-emails';
-                            input.className = 'form-control';
-                            input.placeholder = 'Email ' + emailCounter + '...';
-                            input.setAttribute('aria-label', 'Email ' + emailCounter);
-                    
-                            container.appendChild(label);
-                            container.appendChild(input);
-                    
-                            var button = document.createElement('button');
-                            button.type = 'button';
-                            button.className = 'btn btn-danger btn-sm';
-                            button.textContent = 'Remove';
-                            button.onclick = function () {
-                                container.remove();
-                            };
-                    
-                            container.appendChild(button);
-                    
-                            document.getElementById('additional-emails').appendChild(container);
-                    
-                            // Optionally, you can clear the value of the new input
-                            input.value = '';
-                    
-                            emailCounter++;
-                        }
-                    </script>
-                    
-                    <br><br>
+                        <!-- add Emails forms -->
+                        <div class="col-md-4">
+                            <label for="id_customer-emails">Email :</label>
+                            <input type="text" id="id_customer-emails" name="customer-emails" class="form-control" placeholder="Email..." aria-label="Email">
+                        </div>
+                        <div id="additional-emails"></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewEmail()">Add New Email</button>
+                        <script>
+                            var emailCounter = 2;
+                        
+                            function addNewEmail() {
+                                var container = document.createElement('div');
+                                container.className = 'col-md-4';
+                        
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_customer-email-' + emailCounter);
+                                label.textContent = 'Email ' + emailCounter + ' :';
+                        
+                                var input = document.createElement('input');
+                                input.type = 'text';
+                                input.id = 'id_customer-email-' + emailCounter;
+                                input.name = 'customer-emails';
+                                input.className = 'form-control';
+                                input.placeholder = 'Email ' + emailCounter + '...';
+                                input.setAttribute('aria-label', 'Email ' + emailCounter);
+                        
+                                container.appendChild(label);
+                                container.appendChild(input);
+                        
+                                var button = document.createElement('button');
+                                button.type = 'button';
+                                button.className = 'btn btn-danger btn-sm';
+                                button.textContent = 'Remove';
+                                button.onclick = function () {
+                                    container.remove();
+                                };
+                        
+                                container.appendChild(button);
+                        
+                                document.getElementById('additional-emails').appendChild(container);
+                        
+                                // Optionally, you can clear the value of the new input
+                                input.value = '';
+                        
+                                emailCounter++;
+                            }
+                        </script>
+                        
+                        <br><br>
+                    </ul>
                 </div>
 
                 <br>
+                <h3>Addresses Details</h3>
                 <div class="col-md-4"></div>
 
                     <div id="newaddressSection" class="address-form" >
                     </div>
 
                     <!-- Add new address button -->
-                    <button class="btn btn-secondary btn-sm"  type="button" onclick="addNewAddress()">Add New Address</button>
+                    <button class="btn btn-dark btn-sm"  type="button" onclick="addNewAddress()">Add New Address</button>
                     <input type="hidden" name="inq_counters" id="inqCountersInput" value="">
 
+                    
                     <br>
                 
 
@@ -323,7 +326,16 @@
 
                         // Append the HTML for the address section
                         newAddressSection.innerHTML = `
-                            <h3>Address</h3>
+                        <ul>
+                            <h3>Address
+                            
+                                <button type="button" class="btn btn-danger btn-sm" onclick="
+                                deleteButton = document.getElementById('delete_id_${addressCounter}')
+                                deleteButton.click();
+                            ">Remove Address</button>
+
+                            </h3>
+
                             <div class="col-md-4">
                                 <label for="id_address-address_name"> Address Name :</label>
                                 <input type="text" value='${addressCounter}' name="address-address_name" class="form-control" placeholder="Address name..." aria-label="Address name">
@@ -361,29 +373,33 @@
                             <ul class="inq-container" id="inqContainer_${addressCounter}"></ul>
 
                             <!-- Add new inquiry button for this address -->
-                            <button class="btn btn-secondary btn-sm" type="button" onclick="addNewInq(${addressCounter})">Add New Inquiry</button>
+                            <button class="btn btn-primary btn-sm" type="button" onclick="addNewInq(${addressCounter})">Add New Inquiry</button>
 
                             <!-- Display the number of inquiries for this address -->
                             <p>Total Inquiries: <span id="inqCount_${addressIndex}">0</span></p>
-                            
+                        
+                        </ul>
                         `;
                         
                         
                         newAddressSection.appendChild(br);
-                        newAddressSection.appendChild(br);
+                        
                         // Add a delete button
                         var deleteButton = document.createElement('button');
                         deleteButton.type = 'button';
+                        deleteButton.id = 'delete_id_'+addressCounter;
                         deleteButton.className = 'btn btn-danger btn-sm';
                         deleteButton.textContent = 'Remove Address';
+                        deleteButton.style.visibility = 'hidden'; // Set visibility to hidden
+
                         deleteButton.onclick = function () {
                             newAddressSection.remove();
                             updateInqCountersInput()
                             addressCounter--
                             delete inqCounters[addressIndex];  // Remove the counter for this address
                         };
-
                         newAddressSection.appendChild(deleteButton);
+                        
                         // Increment the counter for the next address
                         addressCounter++;
 
@@ -409,7 +425,14 @@
 
                         // Append the HTML for the inquiry section
                         newInqSection.innerHTML = `
-                                <h3>Inquiry</h3>
+                                <h3>Inquiry
+                                    
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="
+                                        deleteButton_inq = document.getElementById('inquiry_id_'+${addressIndex}+'_'+${inqCounters[addressIndex]})
+                                        deleteButton_inq.click();
+                                    ">Remove Address</button>
+                                    
+                                </h3>
 
                                     
                                     <div class="col-md-4">
@@ -451,6 +474,8 @@
                         deleteInqButton.type = 'button';
                         deleteInqButton.className = 'btn btn-danger btn-sm';
                         deleteInqButton.textContent = 'Remove Inquiry';
+                        deleteInqButton.id = 'inquiry_id_'+addressIndex+'_'+inqCounters[addressIndex];
+                        deleteInqButton.style.visibility = 'hidden'; // Set visibility to hidden
                         deleteInqButton.onclick = function () {
                             newInqSection.remove();
 
@@ -481,7 +506,11 @@
 
 
                 <br><br>
-                <button class="btn btn-success" type="submit">Add Customer</button>
+                
+                <div style="text-align: center;">
+                    <br><br>
+                    <button class="btn btn-success" type="submit">Add Customer</button>
+                </div>
             </form>
             <!--<button class="btn btn-primary" type="button" onclick="showInquirySection()">Add Inquiry</button>-->
 

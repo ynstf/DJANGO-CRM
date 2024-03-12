@@ -27,15 +27,7 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
-        {% if user.employee.position.name == "call center" %}
-            <a style="text-align: right;" href="{% url 'edit_customer' customer.id %}" class="btn btn-primary">Edit Customer</a>
-        {% elif user.employee.permissions.all %}
-            {% for permission in user.employee.permissions.all %}
-                {% if permission.name == "edit customer" %}
-                <a style="text-align: right;" href="{% url 'edit_customer' customer.id %}" class="btn btn-primary">Edit Customer</a>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+        
         <br>
         <div class="container">
             <br>
@@ -43,67 +35,91 @@
             <br>
 
             <h3>Customer Details</h3>
-            <p>First Name: {{ customer.first_name }}</p>
-            <p>Last Name: {{ customer.last_name }}</p>
-            <p>Gender: {{ customer.gender }}</p>
-            <p>Nationality: {{ customer.nationality }}</p>
-            <p>Language: {{ customer.language }}</p>
-            <p>Trn: {{ customer.trn }}</p>
-            <!-- Add other customer details as needed -->
+            <ul>
+                <h6>First Name: {{ customer.first_name }}</h6>
+                <h6>Last Name: {{ customer.last_name }}</h6>
+                <h6>Gender: {{ customer.gender }}</h6>
+                <h6>Nationality: {{ customer.nationality }}</h6>
+                <h6>Language: {{ customer.language }}</h6>
+                <h6>Trn: {{ customer.trn }}</h6>
+                <!-- Add other customer details as needed -->
+            </ul>
 
             <hr>
         
             <h3>Contact Information</h3>
-            
-            {% for number in customer.landline_set.all %}
-            <p>Landlines: {{ number.landline }}</p>
-            {% endfor %}
-            {% for number in customer.phonenumber_set.all %}
-                <p>Phone Numbers: {{ number.number }}</p>
-            {% endfor %}
-            {% for whatsApp in customer.whatsapp_set.all %}
-                <p>WhatsApp Numbers: {{ whatsApp.whatsapp }}</p>
-            {% endfor %}
-            {% for email in customer.email_set.all %}
-                <p>Emails: {{ email.email }}</p>
-            {% endfor %}
-
-            <hr>
-        
-            <h3>Addresses</h3>
-            {% for address in addresses %}
-                <h4>Address: {{ address.address_name }}</h4>
-                <p>Type: {{ address.type }}</p>
-                <p>Emirate: {{ address.emirate }}</p>
-                <p>Description Location: {{ address.description_location }}</p>
-                <p>Location: {{ address.location }}</p>
-                <!-- Add other address details as needed -->
-                <br>
-            {% endfor %}
-            <hr>
-        
-            <h3>Inquiries</h3>
-            {% for inquiry in inquiries %}
-
-                <h4>inquiry address in: {{ inquiry.address.address_name }}</h4>
-                <p>Date Inq: {{ inquiry.date_inq }}</p>
-                <p>Source: {{ inquiry.source }}</p>
-                <p>Services: {{ inquiry.services }}</p>
-                <p>Description: {{ inquiry.description }}</p>
-
-                {% if inquiry.has_quotations and user.employee.position.name == "admin"  %}
-                    <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
-                {% endif %}
-                {% for permission in user.employee.permissions.all %}
-                    {% if permission.name == "extract quotations" %}
-                        <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
-                    {% endif %}
+            <ul>
+                {% for number in customer.landline_set.all %}
+                    <h6>Landlines: {{ number.landline }}</h6>
                 {% endfor %}
+                {% for number in customer.phonenumber_set.all %}
+                    <h6>Phone Numbers: {{ number.number }}</h6>
+                {% endfor %}
+                {% for whatsApp in customer.whatsapp_set.all %}
+                    <h6>WhatsApp Numbers: {{ whatsApp.whatsapp }}</h6>
+                {% endfor %}
+                {% for email in customer.email_set.all %}
+                    <h6>Emails: {{ email.email }}</h6>
+                {% endfor %}
+            </ul>
+            <hr>
+        
+            <h3 style="color: #083b67;">Addresses</h3>
+            <ul>
+                {% for address in addresses %}
+                    <li>
+                        <h6>Address: {{ address.address_name }}</h6>
+                        <h6>Type: {{ address.type }}</h6>
+                        <h6>Emirate: {{ address.emirate }}</h6>
+                        <h6>Description Location: {{ address.description_location }}</h6>
+                        <h6>Location: {{ address.location }}</h6>
+                        <!-- Add other address details as needed -->
+                    </li>
+                    <br>
+                {% endfor %}
+            </ul>
+            <hr>
+        
+            <h3 style="color:#3c7621;">Inquiries</h3>
+            <ul>
+                {% for inquiry in inquiries %}
+                    <li>
+                        <h6>inquiry address in: {{ inquiry.address.address_name }}</h6>
+                        <h6>Date Inq: {{ inquiry.date_inq }}</h6>
+                        <h6>Source: {{ inquiry.source }}</h6>
+                        <h6>Services: {{ inquiry.services }}</h6>
+                        <h6>Description: {{ inquiry.description }}</h6>
 
-                <br>
-                <!-- Add other inquiry details as needed -->
-            {% endfor %}
+                        {% if inquiry.has_quotations and user.employee.position.name == "admin"  %}
+                            <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
+                        {% endif %}
+                        {% for permission in user.employee.permissions.all %}
+                            {% if permission.name == "extract quotations" %}
+                                <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
+                            {% endif %}
+                        {% endfor %}
+                        <br>
+                    </li>
+                    <!-- Add other inquiry details as needed -->
+                {% endfor %}
+            </ul>
+
+            <br>
+            
         </div>
+        {% if user.employee.position.name == "call center" %}
+            <div style="text-align: center;">
+                <a href="{% url 'edit_customer' customer.id %}" class="btn btn-primary">Edit Customer</a>
+            </div>        
+        {% elif user.employee.permissions.all %}
+            {% for permission in user.employee.permissions.all %}
+                {% if permission.name == "edit customer" %}
+                <div style="text-align: center;">
+                    <a href="{% url 'edit_customer' customer.id %}" class="btn btn-primary">Edit Customer</a>
+                </div>  
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
 
 <!-- ######################################################################### -->
