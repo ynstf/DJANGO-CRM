@@ -456,7 +456,6 @@ def edit_quotation_view(request,id):
                 'services':Service.objects.all(),
                 }
     
-
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiry/edit_quotation.html',context)
 

@@ -326,7 +326,7 @@
                             <h3>Address</h3>
                             <div class="col-md-4">
                                 <label for="id_address-address_name"> Address Name :</label>
-                                <input type="text" name="address-address_name" class="form-control" placeholder="Address name..." aria-label="Address name">
+                                <input type="text" value='${addressCounter}' name="address-address_name" class="form-control" placeholder="Address name..." aria-label="Address name">
                             </div>
                             <div class="col-md-4">
                                 <label for="id_address-type"> Type :</label>
@@ -379,6 +379,7 @@
                         deleteButton.onclick = function () {
                             newAddressSection.remove();
                             updateInqCountersInput()
+                            addressCounter--
                             delete inqCounters[addressIndex];  // Remove the counter for this address
                         };
 
@@ -455,6 +456,7 @@
 
                             // Decrement the inquiry counter for this address when an inquiry is removed
                             inqCounters[addressIndex]--;
+
                             updateInqCountersInput()
                             document.getElementById(`inqCount_${addressIndex}`).textContent = inqCounters[addressIndex];
                         };

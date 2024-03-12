@@ -21,9 +21,7 @@
       <button id="notificationButton" style="display: none;"></button>
     </audio>
 
-
-    
-    
+  
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
       // Check if there are new notifications (you can customize this based on your logic)
@@ -49,7 +47,6 @@
               NotificationsChange = data.notifications_counter;
               hasNewNotifications = true;
             }
-            
             playNotificationSound();
             updateNotificationCounter(data.notifications_counter);
           }

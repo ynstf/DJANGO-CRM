@@ -291,79 +291,82 @@ def add_customer_view(request):
             q=0
             s = json.loads(inq_counters)
             for i in range(1,len(s)+1):
-                for _ in range(s[f"{i}"]):
-                    print(adress_name[i-1])
-                    address = addresses[i-1]
-                    services_set = Service.objects.get(id=inq_service[q])
-                    print(inq_source[q])
-                    current_inq_source_id = inq_source[q]
-                    current_inq_source = Source.objects.get(id=current_inq_source_id)
-                    print(current_inq_source)
-                    print(inq_source)
+                try:
+                    print('dkheeeeeeeeeeeeeelt')
+                    for _ in range(s[f"{i}"]):
+                        print(adress_name[i-1])
+                        address = addresses[i-1]
+                        services_set = Service.objects.get(id=inq_service[q])
+                        print(inq_source[q])
+                        current_inq_source_id = inq_source[q]
+                        current_inq_source = Source.objects.get(id=current_inq_source_id)
+                        print(current_inq_source)
+                        print(inq_source)
 
-                    if inq_date[q]:
-                        inquiry = Inquiry(
+                        if inq_date[q]:
+                            inquiry = Inquiry(
+                                customer=customer,
+                                address=address,
+                                date_inq=inq_date[q],
+                                source = current_inq_source,
+                                services=services_set,
+                                description=inq_desc[q]
+                                
+                            )
+                            inquiry.save()
+
+                            new = Status.objects.get(name = "new")
+                            inq_state = InquiryStatus(
+                                inquiry = inquiry,
+                                status= new
+                            )
+                            inq_state.save()
+
+                            all_employees = Employee.objects.filter(sp_service=services_set)
+                            
+                            for employee in all_employees:
+                                notification = InquiryNotify(
+                                    employee = employee,
+                                    inquiry = inquiry,
+                                    service = services_set,
+                                    action = "new"
+                                )
+                                notification.save()
+
+                        else :
+                            inquiry = Inquiry(
                             customer=customer,
                             address=address,
-                            date_inq=inq_date[q],
                             source = current_inq_source,
                             services=services_set,
                             description=inq_desc[q]
                             
-                        )
-                        inquiry.save()
-
-                        new = Status.objects.get(name = "new")
-                        inq_state = InquiryStatus(
-                            inquiry = inquiry,
-                            status= new
-                        )
-                        inq_state.save()
-
-                        all_employees = Employee.objects.filter(sp_service=services_set)
-                        
-                        for employee in all_employees:
-                            notification = InquiryNotify(
-                                employee = employee,
-                                inquiry = inquiry,
-                                service = services_set,
-                                action = "new"
                             )
-                            notification.save()
+                            inquiry.save()
 
-                    else :
-                        inquiry = Inquiry(
-                        customer=customer,
-                        address=address,
-                        source = current_inq_source,
-                        services=services_set,
-                        description=inq_desc[q]
-                        
-                        )
-                        inquiry.save()
-
-                        new = Status.objects.get(name = "new")
-                        inq_state = InquiryStatus(
-                            inquiry = inquiry,
-                            status= new
-                        )
-                        inq_state.save()
-
-                        all_employees = Employee.objects.filter(sp_service=services_set)
-                        
-                        for employee in all_employees:
-                            notification = InquiryNotify(
-                                employee = employee,
+                            new = Status.objects.get(name = "new")
+                            inq_state = InquiryStatus(
                                 inquiry = inquiry,
-                                service = services_set,
-                                action = "new"
+                                status= new
                             )
-                            notification.save()
+                            inq_state.save()
+
+                            all_employees = Employee.objects.filter(sp_service=services_set)
+                            
+                            for employee in all_employees:
+                                notification = InquiryNotify(
+                                    employee = employee,
+                                    inquiry = inquiry,
+                                    service = services_set,
+                                    action = "new"
+                                )
+                                notification.save()
 
 
-                    q+=1
+                        q+=1
 
-
+                except:
+                    pass
 
 
         return redirect('customer_list')  # Redirect to the customer list page
