@@ -159,8 +159,8 @@ class Booking(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     booking_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     booking_date = models.DateField(blank=True, null=True)
-    data = models.TextField(blank=True, null=True)
-    total = models.CharField(max_length=50, blank=True, null=True)
+    details = models.TextField(blank=True, null=True)
+    booking_number = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return f'booking for {self.inquiry}'

@@ -27,9 +27,8 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
-    {% if user.employee.position.name == "admin" or inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
+    {% if user.employee.position.name == "call center" or user.employee.position.name == "admin" or inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
 
-        {% if inquiry_state.status.name == "connecting" %}
             {% if user.employee.position.name == "super provider" %}
                 <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
             {% elif user.employee.permissions.all %}
@@ -39,7 +38,7 @@
                     {% endif %}
                 {% endfor %}
             {% endif %}
-        {% endif %}
+
         <br>
         <div class="container">
             <br>
@@ -80,12 +79,13 @@
 
             <hr>
         
-            <h3>Inquiry</h3>
+            <h3>Inquiry
                 {% if user.employee.position.name == "call center" %}
-                    {% if inquiry_state.status.name ==  "pending" %}
+                    {% if not booking_number %}
                         <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
                     {% endif %}
                 {% endif %}
+            </h3>
                 <h4>inquiry address in: {{ inquiry.address.address_name }}</h4>
                 <p>Date Inq: {{ inquiry.date_inq }}</p>
                 <p>Source: {{ inquiry.source }}</p>
@@ -97,7 +97,7 @@
 
             
             <hr>
-        
+        {% if quotations %}
             <h3>Quotations 
                 {% if quotations and user.employee.position.name == "super provider" %}
                     <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
@@ -107,13 +107,14 @@
                     <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Generate PDF</a>
                 {% endif %}
                 {% for permission in user.employee.permissions.all %}
-                    {% if quotations and permission.name == "extract quotations" %}
+                    {% if quotations and permission.name == "extract quotations" or user.employee.position.name == "call center" %}
                         <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
                     {% endif %}
                     {% if quotations and permission.name == "edit quotation" %}
                         <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
                     {% endif %}
                 {% endfor %}
+        
                 
             </h3> 
                 
@@ -138,36 +139,32 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                {% if user.employee.position.name == "admin" or user.employee.position.name == "call center" %}
+                {% if quotations or user.employee.position.name == "admin" or user.employee.position.name == "call center" %}
                     {% if inquiry_state.status.name ==  "send Q or B" %}
                         <a href="{% url 'make_inq_pending' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> quotation has been sent to the client </a>
                     {% endif %}
                 {% endif %}
+        {% endif %}
 
                 <br>
                 <!-- Add other inquiry details as needed -->
-            {% if booking_data %}
+            {% if booking_number %}
                 <hr>
                 <h3>Booking</h3>
                 <table class="table">
                     <thead>
                         <tr>
-                            {% for column in columns_list %}
-                                <th>{{ column }}</th>
-                            {% endfor %}
-
+                            <th>Details</th>
+                            <th>Booking Number</th>
                             <!-- Add other columns as needed -->
                         </tr>
                     </thead>
                     <tbody>
-                        {% for line in booking_data %}
                             <tr>
-                                {% for case in line %}
-                                    <td>{{ case }}</td>
-                                {% endfor %}
+                                <td>{{ booking_detail }}</td>
+                                <td>{{ booking_number }}</td>
                                 <!-- Add other columns as needed -->
                             </tr>
-                        {% endfor %}
                     </tbody>
                 </table>
             {% endif %}

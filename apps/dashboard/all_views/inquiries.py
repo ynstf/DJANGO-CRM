@@ -86,7 +86,7 @@ def make_inq_sendQ(request,inq_id):
     action = EmployeeAction(
         from_employee=request.user.employee,
         inquiry = inquiry,
-        status = InquiryStatus.objects.get(inquiry = inquiry)
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
     )
     action.save()
 
@@ -114,7 +114,7 @@ def make_inq_pending(request,inq_id):
     action = EmployeeAction(
         from_employee=request.user.employee,
         inquiry = inquiry,
-        status = InquiryStatus.objects.get(inquiry = inquiry)
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
     )
     action.save()
 
@@ -156,7 +156,7 @@ def notifications_view(request):
 
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin','team_leader']).exists() or (Permission.objects.get(name="inquiry list") in u.employee.permissions.all()) )
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center','provider', 'admin','team_leader']).exists() or (Permission.objects.get(name="inquiry list") in u.employee.permissions.all()) )
 def inquiries_list_view(request):
     inquiries = Inquiry.objects.all()
 
@@ -292,7 +292,7 @@ def inquiries_list_view(request):
 
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center','provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
 def inquiry_info_view(request, id):
 
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
@@ -328,12 +328,20 @@ def inquiry_info_view(request, id):
         print(line)
         inquiry_data.append(line)
 
-    booking_data = []
+    """booking_data = []
     bookings = Booking.objects.filter(inquiry=Inquiry.objects.get(id=id))
     for booking in bookings:
         line = booking.data.split(',*,')
         print(line)
-        booking_data.append(line)
+        booking_data.append(line)"""
+    
+    
+    try:
+        booking_detail = Booking.objects.get(inquiry=inquiry).details 
+        booking_number = Booking.objects.get(inquiry=inquiry).booking_number
+    except:
+        booking_detail = None
+        booking_number = None
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
@@ -345,7 +353,8 @@ def inquiry_info_view(request, id):
             'inquiry_state':inquiry_state,
             'columns_list':columns_list,
             'data':inquiry_data,
-            'booking_data':booking_data,
+            'booking_detail':booking_detail,
+            'booking_number':booking_number,
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
             'permissions_list':[p.name for p in request.user.employee.permissions.all()]
 
@@ -501,7 +510,7 @@ def edit_quotation_view(request,id):
 
 @login_required(login_url='/')
 #@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
-@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists() or (Permission.objects.get(name="extract quotations") in u.employee.permissions.all()))
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center','admin']).exists() or (Permission.objects.get(name="extract quotations") in u.employee.permissions.all()))
 def generate_pdf_view(request, id):
     # Retrieve the inquiry and associated quotations
     inquiry = Inquiry.objects.get(id=id)

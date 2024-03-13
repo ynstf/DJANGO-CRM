@@ -21,11 +21,10 @@ def make_inq_underproccess(request,inq_id):
     all_employees = Employee.objects.filter(sp_service=inquiry.services)
 
     #create action
-    inq = Inquiry.objects.get(inquiry=inquiry)
     action = EmployeeAction(
         from_employee=request.user.employee,
-        inquiry = inq,
-        status = InquiryStatus.objects.get(inquiry = inquiry)
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
     )
     action.save()
 
@@ -54,12 +53,9 @@ def make_booking_view(request,id):
 
         quotation_service = request.POST.get('quotation-service')
         quotation_date = request.POST.get('quotation-date')
+        booking_details = request.POST.get('booking-details')
+        booking_number = request.POST.get('booking-number')
 
-        print('quotation-detail',request.POST.getlist('quotation-detail'))
-        print('quotation-a ',request.POST.getlist('quotation-a'))
-        print('quotation-b',request.POST.getlist('quotation-b'))
-        print('quotation-price',request.POST.getlist('quotation-price'))
-        print('quotation-quantity',request.POST.getlist('quotation-quantity'))
 
         inquiry = Inquiry.objects.get(id=id)
         customer_id = inquiry.customer.id
@@ -67,39 +63,25 @@ def make_booking_view(request,id):
         employee_id = request.user.employee.id
         employee = Employee.objects.get(id=employee_id)
 
-        # Retrieve the Service instance
-        service_instance = inquiry.services
-        # Convert the comma-separated string back to a list
-        columns_list = service_instance.columns.split(',')
-        print('columns : ',columns_list)
+
 
         srv_id = quotation_service
         quotation_service = Service.objects.get(id=srv_id)
 
-        lent = request.POST.getlist('quotation-price')
-        print("lent : ",lent)
-        for i in range(len(lent)):
-            data = []
-            for field in columns_list:
-                print(f'quotation-{field}')
-                details = request.POST.getlist(f'quotation-{field}')[i]
-                data.append(details)
-            total = float(data[-1])*float(data[-2])
-            columns_str = ",*,".join(data)
-            print(columns_str)
-            
-            booking = Booking(
-                employee=employee,
-                customer=customer,
-                inquiry=inquiry,
-                booking_service=quotation_service,
-                booking_date=quotation_date,
-                data = columns_str,
-                total=total
-            )
-            booking.save()
 
-            print()
+            
+        booking = Booking(
+            employee=employee,
+            customer=customer,
+            inquiry=inquiry,
+            booking_service=quotation_service,
+            booking_date=quotation_date,
+            details = booking_details,
+            booking_number=booking_number
+        )
+        booking.save()
+
+        print()
         
         return redirect('make_inq_underproccess', inq_id=id)
 

@@ -502,7 +502,7 @@
                                 <td>{{ inquiry.info.id }}</td>
                             {% endif %}
                             <td>
-                                {% if user.employee.position.name == 'super provider' or user.employee.position.name == 'admin' %}
+                                {% if user.employee.position.name == 'call center' or user.employee.position.name == 'super provider' or user.employee.position.name == 'admin' %}
                                     <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
                                 {% else %}
                                     {{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}

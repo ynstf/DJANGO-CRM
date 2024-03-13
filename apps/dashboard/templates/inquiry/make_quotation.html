@@ -50,7 +50,7 @@
                     <div class="col-md-4">
                         <label for="id_quotation-service">service :</label>
                         <select id="id_quotation-service" name="quotation-service" class="form-control">
-                                <option value="" selected disabled>Select Service...</option>
+                                <option value="{{ user.employee.sp_service.id }}" selected >{{ user.employee.sp_service.name }}</option>
                                 {% for service in services %}
                                     <option value="{{ service.id }}">{{ service }}</option>
                                 {% endfor %}
@@ -68,7 +68,7 @@
                         {% for column in columns_list %}
                             {% if column == "price" or column == "quantity" %}
                             <label for="id_quotation-{{column}}-1">{{ column }} :</label>
-                            <input type="number" id="id_quotation-{{column}}-1" name="quotation-{{column}}" class="form-control" placeholder="{{column}}..." aria-label="column" oninput="updateTotal(1)">
+                            <input type="number" id="id_quotation-{{column}}-1" name="quotation-{{column}}" class="form-control" placeholder="{{column}}..." aria-label="column" oninput="updateTotal(1)" required>
                             {% else %}
                             <label for="id_quotation-{{column}}-1">{{ column }} :</label>
                             <input type="text" id="id_quotation-{{column}}-1" name="quotation-{{column}}" class="form-control" placeholder="{{column}}..." aria-label="column" oninput="updateTotal(1)">

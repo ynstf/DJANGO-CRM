@@ -74,4 +74,4 @@ class InquiryNotifyAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'inquiry', 'booking_service', 'booking_date', 'data', 'total')
+    list_display = ('customer', 'inquiry', 'booking_service', 'booking_date', 'details', 'booking_number')

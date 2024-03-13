@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label for="id_quotation-service">service :</label>
+                        <label for="id_quotation-service">SP service :</label>
                         <select id="id_quotation-service" name="quotation-service" class="form-control">
                                 <option value="{{ service.id }}" selected >{{ service.name }}</option>
                                 {% for srv in services %}
@@ -57,35 +57,25 @@
                         </select>
                     </div>
                     
-                    <br><br>
+                    <br>
+                    
+                    <div class="col-md-4">
+                        <label for="id_booking-details" > Booking Details : </label>
+                        <textarea id="id_booking-details"  name="booking-details" class="form-control" ></textarea>
+                    </div>
+
+                    <br>
+                    <div class="col-md-4">
+                        <label for="id_booking-number" > Booking Number : </label>
+                        <input id="id_booking-number" name="booking-number" class="form-control" >
+                    </div>
 
 
 
                     <!-- add details forms -->
                     <!-- edit details forms -->
                     
-                    {% for q in quotations %}
-                        <div class="col-md-4">
-                            <label for="id_quotation-detail-{{ forloop.counter }}">Detail :</label>
-                            <textarea type="text" rows="3" id="id_quotation-detail-{{ forloop.counter }}" name="quotation-details" class="form-control" placeholder="Detail..." aria-label="detail">{{ q.detail }}</textarea>
-
-                            {% for d in q.result %}
-                                <label for="id_quotation-{{ d.column_name }}-{{ forloop.counter }}">{{ d.column_name }} :</label>
-                                <textarea type="text" rows="3" id="id_quotation-{{ d.column_name }}-{{ forloop.counter }}" name="quotation-{{ d.column_name }}" class="form-control" placeholder="{{ d.column_name }}..." aria-label="{{ d.column_name }}">{{ d.data }}</textarea>
-                            {% endfor %}
-
-                            <label for="id_quotation-price-{{ forloop.counter }}">Price :</label>
-                            <input type="number" id="id_quotation-price-{{ forloop.counter }}" value="{{ q.price }}" name="quotation-price" class="form-control" placeholder="Price..." aria-label="Price" oninput="updateTotal({{ forloop.counter }})">
-
-                            <label for="id_quotation-quantity-{{ forloop.counter }}">Quantity :</label>
-                            <input type="number" id="id_quotation-quantity-{{ forloop.counter }}" value="{{ q.quantity }}" name="quotation-quantity" class="form-control" placeholder="Quantity..." aria-label="Quantity" oninput="updateTotal({{ forloop.counter }})">
-
-                            <label for="Total">Total:</label>
-                            <span id="total-{{ forloop.counter }}" name="total">{{ q.total }}</span>
-
-                            <hr>
-                        </div>
-                    {% endfor %}
+                    
 
                     <script>
                         function updateTotal(quotationId) {
