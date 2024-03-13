@@ -29,15 +29,7 @@
 
     {% if user.employee.position.name == "call center" or user.employee.position.name == "admin" or inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
 
-            {% if user.employee.position.name == "super provider" %}
-                <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
-            {% elif user.employee.permissions.all %}
-                {% for permission in user.employee.permissions.all %}
-                    {% if permission.name == "make quotation" %}
-                        <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-primary">Add Quotations</a>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
+            
 
         <br>
         <div class="container">
@@ -45,27 +37,44 @@
             <center><h2>Inquiry Information</h2></center>
             <br>
 
-            <h3>Customer Details</h3>
-            <p>First Name: {{ customer.first_name }}</p>
-            <p>Last Name: {{ customer.last_name }}</p>
-            <p>Nationality: {{ customer.nationality }}</p>
-            <br>
-            <hr>
+            <h3 style="color: #105794;">Customer Details</h3>
+            <ul>
+                <h6>First Name: {{ customer.first_name }}</h6>
+                <h6>Last Name: {{ customer.last_name }}</h6>
+                <h6>Nationality: {{ customer.nationality }}</h6>
+            </ul>
+
+            <br><hr>
         
-            <h3>Contact Information</h3>
+            <h3 style="color: #105794;">Contact Information</h3>
+
+            <ul>
             
-            {% for number in customer.landline_set.all %}
-            <p>Landlines: {{ number.landline }}</p>
-            {% endfor %}
-            {% for number in customer.phonenumber_set.all %}
-                <p>Phone Numbers: {{ number.number }}</p>
-            {% endfor %}
-            {% for whatsApp in customer.whatsapp_set.all %}
-                <p>WhatsApp Numbers: {{ whatsApp.whatsapp }}</p>
-            {% endfor %}
-            {% for email in customer.email_set.all %}
-                <p>Emails: {{ email.email }}</p>
-            {% endfor %}
+                {% for number in customer.landline_set.all %}
+                    {% if number.landline %}
+                        <h6>Landlines: {{ number.landline }}</h6>
+                    {% endif %}
+                {% endfor %}
+
+                {% for number in customer.phonenumber_set.all %}
+                    {% if number.number %}
+                        <h6>Phone Numbers: {{ number.number }}</h6>
+                    {% endif %}
+                {% endfor %}
+
+                {% for whatsApp in customer.whatsapp_set.all %}
+                    {% if whatsApp.whatsapp %}
+                        <h6>WhatsApp Numbers: {{ whatsApp.whatsapp }}</h6>
+                    {% endif %}
+                {% endfor %}
+
+                {% for email in customer.email_set.all %}
+                    {% if email.email %}
+                        <h6>Emails: {{ email.email }}</h6>
+                    {% endif %}
+                {% endfor %}
+
+            </ul>
 
             <br>
 
@@ -79,26 +88,42 @@
 
             <hr>
         
-            <h3>Inquiry
+            <h3 style="color:#479d1f;">Inquiry
                 {% if user.employee.position.name == "call center" %}
                     {% if not booking_number %}
                         <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
                     {% endif %}
                 {% endif %}
             </h3>
-                <h4>inquiry address in: {{ inquiry.address.address_name }}</h4>
-                <p>Date Inq: {{ inquiry.date_inq }}</p>
-                <p>Source: {{ inquiry.source }}</p>
-                <p>Services: {{ inquiry.services.name }}</p>
-                <p>Description: {{ inquiry.description }}</p>
+                <ul>
+                    <h4>inquiry address of: {{ inquiry.address.address_name }}</h4>
+                    <h6>Date Inq: {{ inquiry.date_inq }}</h6>
+                    <h6>Source: {{ inquiry.source }}</h6>
+                    <h6>Services: {{ inquiry.services.name }}</h6>
+                    <h6>Description: {{ inquiry.description }}</h6>
+                </ul>
                 
+                <br>
+                {% if user.employee.position.name == "super provider" %}
+                    <div style="text-align: center;">
+                        <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations</a>
+                    </div>  
+                {% elif user.employee.permissions.all %}
+                    {% for permission in user.employee.permissions.all %}
+                        {% if permission.name == "make quotation" %}
+                            <div style="text-align: center;">
+                                <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations</a>
+                            </div>                      
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 <br>
                 <!-- Add other inquiry details as needed -->
 
             
             <hr>
         {% if quotations %}
-            <h3>Quotations 
+            <h3 style="color:#264f13;">Quotations 
                 {% if quotations and user.employee.position.name == "super provider" %}
                     <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
                 {% endif %}
@@ -150,7 +175,7 @@
                 <!-- Add other inquiry details as needed -->
             {% if booking_number %}
                 <hr>
-                <h3>Booking</h3>
+                <h3 style="color:#264f13;">Booking</h3>
                 <table class="table">
                     <thead>
                         <tr>
