@@ -1,4 +1,5 @@
 from django.contrib import admin
+from apps.dashboard.models import Invoice
 from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber, WhatsApp, Landline, Email
 from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
 from .models import Status,InquiryStatus
@@ -66,7 +67,7 @@ class InquiryStatusAdmin(admin.ModelAdmin):
 
 @admin.register(Quotation)
 class QuotationAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'inquiry', 'quotation_service', 'quotation_date', 'total')
+    list_display = ('customer', 'inquiry', 'quotation_service', 'quotation_date', 'data', 'total')
 
 @admin.register(InquiryNotify)
 class InquiryNotifyAdmin(admin.ModelAdmin):
@@ -75,3 +76,7 @@ class InquiryNotifyAdmin(admin.ModelAdmin):
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     list_display = ('customer', 'inquiry', 'booking_service', 'booking_date', 'details', 'booking_number')
+
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'inquiry', 'quotation_service', 'quotation_date', 'data', 'total')

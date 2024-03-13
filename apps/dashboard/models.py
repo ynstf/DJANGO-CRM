@@ -164,3 +164,15 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'booking for {self.inquiry}'
+    
+class Invoice(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.SET_NULL, blank=True, null=True)
+    quotation_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    quotation_date = models.DateField(blank=True, null=True)
+    data = models.TextField(blank=True, null=True)
+    total = models.CharField(max_length=50, blank=True, null=True)
+    # Add other fields as needed
+    def __str__(self):
+        return f'{self.customer} - {self.inquiry}'

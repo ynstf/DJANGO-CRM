@@ -139,7 +139,7 @@ def get_notifications(request):
     return JsonResponse({'notifications': notifications_data, 'notifications_counter': notifications_counter}, safe=False)
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center','provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
 def notifications_view(request):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
