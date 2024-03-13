@@ -46,6 +46,7 @@
                         <label for="id_quotation-date" > Booking Date : </label>
                         <input type="date" id="id_quotation-date" value="{{ date|date:'Y-m-d' }}" name="quotation-date" class="form-control" >
                     </div>
+                    
 
                     <div class="col-md-4">
                         <label for="id_quotation-service">SP service :</label>
@@ -65,6 +66,11 @@
                     </div>
 
                     <br>
+                    <div class="col-md-4">
+                        <label for="id_schedule-time" > scheduling next review : </label>
+                        <input type="date" id="id_schedule-time" value="{{ date|date:'Y-m-d' }}" name="schedule-time" class="form-control" >
+                    </div>
+
                     <div class="col-md-4">
                         <label for="id_booking-number" > Booking Number : </label>
                         <input id="id_booking-number" name="booking-number" class="form-control" >

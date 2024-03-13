@@ -9,7 +9,7 @@ from apps.authentication.models import Employee,Permission
 from apps.dashboard.models import (Inquiry, InquiryStatus, Language, 
                                 Nationality, InquiryNotify,
                                 Source, Status, EmployeeAction,
-                                IsEmployeeNotified)
+                                IsEmployeeNotified,InquiryReminder)
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 import io
@@ -64,6 +64,9 @@ def make_booking_view(request,id):
         booking_details = request.POST.get('booking-details')
         booking_number = request.POST.get('booking-number')
         ref_number = request.POST.get('ref-number')
+        schedule_time = request.POST.get('schedule-time')
+
+        
 
 
         inquiry = Inquiry.objects.get(id=id)
@@ -90,6 +93,14 @@ def make_booking_view(request,id):
             ref_number=ref_number
         )
         booking.save()
+
+        reminder = InquiryReminder(
+            employee = employee,
+            inquiry=inquiry,
+            service=quotation_service,
+            schedule=schedule_time
+        )
+        reminder.save()
 
         print()
         

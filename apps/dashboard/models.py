@@ -162,6 +162,19 @@ class IsEmployeeNotified(models.Model):
         return f'employee :{self.employee}'
 
 
+class InquiryReminder(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
+    service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    schedule = models.DateField(blank=True, null=True)
+
+    # Add other fields as needed
+
+    def __str__(self):
+        return f'employee :{self.employee} with {self.inquiry} inquiry and scheduled in {self.schedule}'
+
+
+
 class Booking(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
