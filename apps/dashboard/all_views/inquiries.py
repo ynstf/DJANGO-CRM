@@ -402,14 +402,17 @@ def inquiry_info_view(request, id):
 
     # Assuming you want to include a predefined message
     phone_number = customer.whatsapp_set.all().first().whatsapp
-    message = "Hello, how can I assist you?"
+    message = "Your Quotations ready, check the link"
     # Replace 'https://example.com/path/to/your/document.pdf' with the actual URL to your hosted PDF document
     pdf_url = reverse('generate_pdf', args=[id])
-
     absolute_pdf_url = request.build_absolute_uri(pdf_url)
-
     # Construct the WhatsApp link with the PDF document link
     whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
+
+    message = "Your Invoice ready, check the link"
+    pdf_url = reverse('generate_invoice', args=[id])
+    absolute_pdf_url = request.build_absolute_uri(pdf_url)
+    whatsapp_link_invoice = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
@@ -426,6 +429,7 @@ def inquiry_info_view(request, id):
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
             'permissions_list':[p.name for p in request.user.employee.permissions.all()],
             'whatsapp_link':whatsapp_link,
+            'whatsapp_link_invoice':whatsapp_link_invoice
 
             }
     context = TemplateLayout.init(request, context)
@@ -577,9 +581,6 @@ def edit_quotation_view(request,id):
     return render(request, 'inquiry/edit_quotation.html',context)
 
 
-@login_required(login_url='/')
-#@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center','admin']).exists() or (Permission.objects.get(name="extract quotations") in u.employee.permissions.all()))
 def generate_pdf_view(request, id):
     # Retrieve the inquiry and associated quotations
     inquiry = Inquiry.objects.get(id=id)

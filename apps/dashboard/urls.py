@@ -5,7 +5,6 @@ from .views import get_languages, get_status, get_nationalities,get_sources,get_
 from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
 from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list
 from .views import make_booking, make_inq_underproccess, make_inq_new,generate_invoice,get_notify_state,make_employee_notified
-from .views import whatsapp_conversation
 
 urlpatterns = [
     path("dashboard/",dashboard,name="dashboard",),
@@ -60,7 +59,4 @@ urlpatterns = [
     path('add_service/', add_service, name='add_service'),
     path('services_list/', services_list, name='services_list'),
 
-
-
-    path('whatsapp_conversation/<str:phone_number>/<int:inq>/', whatsapp_conversation, name='whatsapp_conversation'),
 ]
