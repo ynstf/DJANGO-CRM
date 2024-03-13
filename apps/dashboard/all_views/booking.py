@@ -158,7 +158,6 @@ def make_booking_view(request,id):
     return render(request, 'booking/make_booking.html',context)
 
 
-
 @login_required(login_url='/')
 #@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center','admin']).exists() or (Permission.objects.get(name="extract quotations") in u.employee.permissions.all()))
@@ -226,4 +225,5 @@ def generate_invoice_view(request, id):
     response['Content-Disposition'] = f'inline; filename="{inquiry.customer.first_name}_{inquiry.customer.last_name}_quotation{inquiry.id}.pdf"'
 
     return response
+
 

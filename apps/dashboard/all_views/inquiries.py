@@ -12,10 +12,10 @@ from apps.authentication.models import Employee, Permission, Position
 from apps.dashboard.models import (Inquiry, InquiryNotify, 
                                 InquiryStatus, Language, Nationality,
                                 Quotation, Source, Status, EmployeeAction,
-                                IsEmployeeNotified)
+                                IsEmployeeNotified,InquiryReminder)
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from django.utils import timezone
 
 ################# permissions ############
 """
@@ -150,6 +150,20 @@ def make_inq_pending(request,inq_id):
     return redirect('inquiries_list')
 
 def get_notifications(request):
+    current_date = timezone.now().date()
+    reminders = InquiryReminder.objects.filter(employee=request.user.employee, schedule__lte=current_date)
+    for reminder in reminders:
+        notification = InquiryNotify(
+            employee = reminder.employee,
+            inquiry = reminder.inquiry,
+            service = reminder.service,
+            action = "review"
+        )
+        notification.save()
+        reminder.delete()
+
+
+
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
     notifications_data = [{'message': str(notification)} for notification in notifications]

@@ -88,6 +88,7 @@ def run():
         "underproccess",
         "send Q or B",
         "complain",
+        'review'
 
     ]
 

@@ -146,6 +146,7 @@ class InquiryNotify(models.Model):
                                                     ('pending', 'pending'),
                                                     ('underpreccess', 'underpreccess'),
                                                     ('updated', 'updated'),
+                                                    ('review', 'review'),
                                                     ], blank=True, null=True)
     # Add other fields as needed
 
