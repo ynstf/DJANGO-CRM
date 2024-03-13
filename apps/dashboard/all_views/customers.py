@@ -6,7 +6,7 @@ from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotatio
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
 from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
-from ..models import Customer, Nationality, InquiryNotify, Status, InquiryStatus
+from ..models import Customer, Nationality, InquiryNotify, Status, InquiryStatus, IsEmployeeNotified
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ..models import Email,PhoneNumber,WhatsApp,Landline
@@ -333,6 +333,12 @@ def add_customer_view(request):
                                 )
                                 notification.save()
 
+                                isnotify = IsEmployeeNotified(
+                                    employee = employee,
+                                    notified = False
+                                )
+                                isnotify.save()
+
                         else :
                             inquiry = Inquiry(
                             customer=customer,
@@ -648,6 +654,12 @@ def edit_customer_view(request, id):
                                 action = "updated"
                             )
                             notification.save()
+
+                            isnotify = IsEmployeeNotified(
+                                employee = employee,
+                                notified = False
+                            )
+                            isnotify.save()
                         
                     else :
                         inquiry = Inquiry.objects.get(id=inq_id[q])
@@ -674,6 +686,11 @@ def edit_customer_view(request, id):
                                 action =  "updated"
                             )
                             notification.save()
+                            isnotify = IsEmployeeNotified(
+                                employee = employee,
+                                notified = False
+                            )
+                            isnotify.save()
 
                     q+=1
                 else:

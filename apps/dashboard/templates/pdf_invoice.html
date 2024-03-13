@@ -32,7 +32,7 @@
         </td>
         <td id="logo">
             <img src="https://res.cloudinary.com/dbhawzisa/image/upload/v1708538372/eajvxoib61qbzfxbrftk.png" width="100">
-            <h2 style="color: #78d64c;">QUOTATION</h2>
+            <h2 style="color: #ba2525;">TAX INVOICE</h2>
         </td>
         <td id="company-info">
             <br>
@@ -40,7 +40,7 @@
             <center>
                 <h4>www.technical-24.com</h4>
                 <h4>Date : {{date}}</h4>
-                <h4>Inquiry number : {{ inquiry.id }}</h4>
+                <h4>BOOKING NUMBER : {{ booking.booking_number }}</h4>
             </center>
         </td>
     </tr>
@@ -55,7 +55,7 @@
         <li><p>customer TRN : {{ inquiry.customer.trn }} </p></li>
     {% endif %}
     <li><p>Phone number : {{ phone }} </p></li>
-    <li><p>Address : {{ address }} </p></li>
+    <li><p>Address : {{ address.address_name }} - {{ address.location }} - {{ address.emirate }} </p></li>
     <li><p>Email : {{ email }} </p></li>
 </ul>
 
@@ -129,7 +129,7 @@
 <hr>
 <br>
 <ul>
-
+    <li><h3> Reference Number : {{ booking.ref_number }}</h3></li>
     <li><h3> service mail : @</h3></li>
     <li><h3> service number : +</h3></li>
 </ul>

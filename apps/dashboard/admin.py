@@ -2,7 +2,7 @@ from django.contrib import admin
 from apps.dashboard.models import Invoice
 from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber, WhatsApp, Landline, Email
 from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
-from .models import Status,InquiryStatus
+from .models import Status,InquiryStatus, IsEmployeeNotified
 from .models import Service
 
 
@@ -72,6 +72,10 @@ class QuotationAdmin(admin.ModelAdmin):
 @admin.register(InquiryNotify)
 class InquiryNotifyAdmin(admin.ModelAdmin):
     list_display = ('employee', 'inquiry', 'service','action')
+
+@admin.register(IsEmployeeNotified)
+class IsEmployeeNotifiedAdmin(admin.ModelAdmin):
+    list_display = ('employee','notified')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):

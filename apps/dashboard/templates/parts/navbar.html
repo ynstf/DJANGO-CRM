@@ -47,7 +47,37 @@
               NotificationsChange = data.notifications_counter;
               hasNewNotifications = true;
             }
-            playNotificationSound();
+            $.ajax({
+                url: '/get_notify_state/',  // URL for the get_notify_state view
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    // If the notification state is false, play the notification sound
+                    if (data.notify_info === false) {
+                        console.log(data.notify_info)
+                        playNotificationSound();
+                        console.log("sound played")
+                        
+
+                        $.ajax({
+                            url: '/make_employee_notified/',  // URL for the make_employee_notified view
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(data) {
+                                // Handle success response if needed
+                                console.log('Employee notified:', data.resp);
+                            },
+                            error: function(error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    }
+                    // Add any other logic based on the response if needed
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
             updateNotificationCounter(data.notifications_counter);
           }
         });
@@ -99,6 +129,7 @@
       });
     </script>
     
+
 
 
     <ul class="navbar-nav flex-row align-items-center ms-auto" id="clickonmer">

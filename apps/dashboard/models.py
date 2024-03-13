@@ -1,6 +1,7 @@
 # models.py
 from django.db import models
 from apps.authentication.models import Employee
+from base.settings import DEFAULT_AUTO_FIELD
 from .models_com import Service
 
 
@@ -115,8 +116,6 @@ class EmployeeAction(models.Model):
     def __str__(self):
         return f'{self.inquiry} is {self.status}'
 
-
-
 class Quotation(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
@@ -153,6 +152,16 @@ class InquiryNotify(models.Model):
     def __str__(self):
         return f'employee :{self.employee} with {self.inquiry} inquiry'
 
+class IsEmployeeNotified(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    notified = models.BooleanField(default=False)
+
+    # Add other fields as needed
+
+    def __str__(self):
+        return f'employee :{self.employee}'
+
+
 class Booking(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
@@ -161,6 +170,7 @@ class Booking(models.Model):
     booking_date = models.DateField(blank=True, null=True)
     details = models.TextField(blank=True, null=True)
     booking_number = models.CharField(max_length=50, blank=True, null=True)
+    ref_number = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return f'booking for {self.inquiry}'

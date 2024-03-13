@@ -6,11 +6,13 @@ from web_project.template_helpers.theme import TemplateHelper
 from web_project import TemplateLayout
 from xhtml2pdf import pisa
 import io
+from apps.dashboard.views import employee_info
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee, Permission, Position
 from apps.dashboard.models import (Inquiry, InquiryNotify, 
                                 InquiryStatus, Language, Nationality,
-                                Quotation, Source, Status, EmployeeAction)
+                                Quotation, Source, Status, EmployeeAction,
+                                IsEmployeeNotified)
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -73,6 +75,11 @@ def make_inq_connecting(request,inq_id):
             action = "connecting"
         )
         notification.save()
+        isnotify = IsEmployeeNotified(
+            employee = employee,
+            notified = False
+        )
+        isnotify.save()
     return redirect('inquiries_list')
 
 def make_inq_sendQ(request,inq_id):
@@ -101,6 +108,11 @@ def make_inq_sendQ(request,inq_id):
             action = "send quotation"
         )
         notification.save()
+        isnotify = IsEmployeeNotified(
+            employee = employee,
+            notified = False
+        )
+        isnotify.save()
     return redirect('inquiries_list')
 
 def make_inq_pending(request,inq_id):
@@ -129,6 +141,11 @@ def make_inq_pending(request,inq_id):
             action = "pending"
         )
         notification.save()
+        isnotify = IsEmployeeNotified(
+            employee = employee,
+            notified = False
+        )
+        isnotify.save()
 
     return redirect('inquiries_list')
 
@@ -137,6 +154,27 @@ def get_notifications(request):
     notifications_counter = notifications.count()
     notifications_data = [{'message': str(notification)} for notification in notifications]
     return JsonResponse({'notifications': notifications_data, 'notifications_counter': notifications_counter}, safe=False)
+
+
+
+def get_notify_state_view(request):
+    print(request.user.employee)
+    
+    notify_info = IsEmployeeNotified.objects.get(employee = request.user.employee)
+
+    print(notify_info.notified)
+
+    return JsonResponse({'notify_info': notify_info.notified}, safe=False)
+
+
+def make_employee_notified_view(request):
+    notify_info = IsEmployeeNotified.objects.get(employee = request.user.employee)
+    notify_info.notified = True
+    notify_info.save()
+    print(notify_info.notified)
+    return JsonResponse({'resp': True})
+
+
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center','provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
@@ -308,6 +346,8 @@ def inquiry_info_view(request, id):
         for notify in the_notifications:
             if notify.employee.user == request.user:
                 notify.delete()
+                notify_info = IsEmployeeNotified.objects.filter(employee = request.user.employee)
+                notify_info.delete()
     except :
         pass
 

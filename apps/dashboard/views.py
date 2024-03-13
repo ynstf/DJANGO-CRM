@@ -39,10 +39,12 @@ services_list = services_list_view
 
 
 
-################# inquiries ###################
-from .all_views.booking import (make_booking_view, make_inq_underproccess)
+################# booking ###################
+from .all_views.booking import (make_booking_view, make_inq_underproccess,
+                                generate_invoice_view)
 make_booking = make_booking_view
 make_inq_underproccess = make_inq_underproccess
+generate_invoice = generate_invoice_view
 
 ################# inquiries ###################
 from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
@@ -50,7 +52,8 @@ from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
                                     generate_pdf_view, notifications_view,
                                     get_notifications, make_inq_connecting,
                                     make_inq_sendQ,make_inq_pending,
-                                    make_inq_new)
+                                    make_inq_new,get_notify_state_view,
+                                    make_employee_notified_view)
 inquiries_list = inquiries_list_view
 edit_quotation = edit_quotation_view
 inquiry_info = inquiry_info_view
@@ -62,6 +65,9 @@ get_notifications = get_notifications
 make_inq_sendQ=make_inq_sendQ
 make_inq_pending = make_inq_pending
 make_inq_new = make_inq_new
+get_notify_state = get_notify_state_view
+make_employee_notified = make_employee_notified_view
+
 
 ############### get infos ###########
 from .all_views.infos import (get_languages_view, get_nationalities_view,
