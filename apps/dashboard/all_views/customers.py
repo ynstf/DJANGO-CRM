@@ -135,13 +135,15 @@ def customer_list_view(request):
             customer.append({'info':c,
                             'number':PhoneNumber.objects.filter(customer=c).first(),
                             'email':Email.objects.filter(customer=c).first(),
-                            'source':Inquiry.objects.filter(customer=c).first().source
+                            'source':Inquiry.objects.filter(customer=c).first().source,
+                            'inquiries':Inquiry.objects.filter(customer=c)
                         })
         except:
             customer.append({'info':c,
                             'number':PhoneNumber.objects.filter(customer=c).first(),
                             'email':Email.objects.filter(customer=c).first(),
-                            'source':"None"
+                            'source':"None",
+                            'inquiries':Inquiry.objects.filter(customer=c)
                         })
             
 

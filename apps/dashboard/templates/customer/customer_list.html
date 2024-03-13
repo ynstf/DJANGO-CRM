@@ -395,6 +395,8 @@
                     <tr>
 
                         <th>ID</th>
+                        <th>Inquiries IDs</th>
+
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Gender</th>
@@ -413,6 +415,10 @@
                     {% for customer in customers %}
                         <tr>
                             <td>{{ customer.info.id }}</td>
+                            <td>{% for inquiry in customer.inquiries %}
+                                    {{ inquiry.id }} 
+                                {% endfor %}
+                            </td>
                             <td> 
 
                                 {% if user.employee.position.name == 'call center' %}
