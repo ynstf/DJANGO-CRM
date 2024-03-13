@@ -16,6 +16,8 @@ from apps.dashboard.models import (Inquiry, InquiryNotify,
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
+from django.urls import reverse
+from urllib.parse import quote
 
 ################# permissions ############
 """
@@ -397,6 +399,18 @@ def inquiry_info_view(request, id):
         booking_detail = None
         booking_number = None
 
+
+    # Assuming you want to include a predefined message
+    phone_number = customer.whatsapp_set.all().first().whatsapp
+    message = "Hello, how can I assist you?"
+    # Replace 'https://example.com/path/to/your/document.pdf' with the actual URL to your hosted PDF document
+    pdf_url = reverse('generate_pdf', args=[id])
+
+    absolute_pdf_url = request.build_absolute_uri(pdf_url)
+
+    # Construct the WhatsApp link with the PDF document link
+    whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
@@ -410,7 +424,8 @@ def inquiry_info_view(request, id):
             'booking_detail':booking_detail,
             'booking_number':booking_number,
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
-            'permissions_list':[p.name for p in request.user.employee.permissions.all()]
+            'permissions_list':[p.name for p in request.user.employee.permissions.all()],
+            'whatsapp_link':whatsapp_link,
 
             }
     context = TemplateLayout.init(request, context)

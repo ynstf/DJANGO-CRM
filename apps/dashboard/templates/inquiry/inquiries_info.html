@@ -30,7 +30,7 @@
     {% if user.employee.position.name == "call center" or user.employee.position.name == "admin" or inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
 
             
-
+        
         <br>
         <div class="container">
             <br>
@@ -65,6 +65,7 @@
                 {% for whatsApp in customer.whatsapp_set.all %}
                     {% if whatsApp.whatsapp %}
                         <h6>WhatsApp Numbers: {{ whatsApp.whatsapp }}</h6>
+                        <a href="{{ whatsapp_link }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> Open WhatsApp Conversation</a>
                     {% endif %}
                 {% endfor %}
 
@@ -90,7 +91,7 @@
         
             <h3 style="color:#479d1f;">Inquiry
                 {% if user.employee.position.name == "call center" %}
-                    {% if not booking_number %}
+                    {% if not booking_number and quotations %}
                         <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
                     {% endif %}
                 {% endif %}

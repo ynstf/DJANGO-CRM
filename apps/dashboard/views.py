@@ -1,7 +1,11 @@
+import django.urls
 from web_project import TemplateLayout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from apps.dashboard.models import InquiryNotify, EmployeeAction
+from django.shortcuts import render
+
+
 
 
 @login_required(login_url='/')
