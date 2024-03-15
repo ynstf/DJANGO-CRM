@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import dashboard,add_customer,customer_list,customer_info,edit_customer
+from .views import dashboard,merge_customer,add_customer,customer_list,customer_info,edit_customer
 from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry,delete_number
 from .views import get_languages, get_status, get_nationalities,get_sources,get_services, make_inq_connecting, make_inq_sendQ, make_inq_pending
 from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
@@ -11,6 +11,7 @@ urlpatterns = [
     path('add_customers/', add_customer, name='add_customer'),
     path('customer_list/', customer_list, name='customer_list'),
     path('customer/<int:id>', customer_info, name='customer_info'),
+    path('merge_customer/<int:id>', merge_customer, name='merge_customer'),
     path('customer/<int:id>/edit/', edit_customer, name='edit_customer'),
 
     path('delete_number/<int:id_number>', delete_number, name='delete_number'),

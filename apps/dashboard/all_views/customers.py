@@ -1,3 +1,5 @@
+import django.urls
+from django.urls import reverse
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Permission
@@ -12,6 +14,8 @@ from django.http import JsonResponse
 from ..models import Email,PhoneNumber,WhatsApp,Landline
 import json
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
+
 
 ######### permissions #########
 """
@@ -210,36 +214,50 @@ def add_customer_view(request):
         # counter to know inquiries of each address
         inq_counters = request.POST.get('inq_counters')
 
+
+        user_already_exist = False
+        common_element = set(phone_form) & set(list(PhoneNumber.objects.values_list('number',flat=True)))
+        if common_element :
+            phone = list(common_element)[0]
+            print('already exist :',phone)
+            customer = PhoneNumber.objects.get(number = phone).customer
+            user_already_exist = True
+            print(customer.first_name)
+        else:
+            # Save the customer
+            customer = customer_form.save(commit=False)
+            customer.employee = Employee.objects.get(user=request.user)
+            customer.save()
+
+            # Save the emails
+            for e in email_form:
+                email = Email(customer=customer,email=e)
+                email = email.save() 
+
+            # Save the phones
+            for p in phone_form:
+                phone = PhoneNumber(customer=customer,number=p)
+                phone = phone.save()
+
+            # Save the whatsapps
+            for w in whatsapp_form:
+                whatsapp = WhatsApp(customer=customer,whatsapp=w)
+                whatsapp = whatsapp.save()
+
+            # Save the landlines
+            for l in landline_form:
+                landline = Landline(customer=customer,landline=l)
+                landline = landline.save()
+
+
         print(inq_counters)
 
         print(adress_name,adress_type,emarate,adress_desc,location)
 
         print(inq_date,inq_source,inq_service,inq_desc)
 
-        # Save the customer
-        customer = customer_form.save(commit=False)
-        customer.employee = Employee.objects.get(user=request.user)
-        customer.save()
 
-        # Save the emails
-        for e in email_form:
-            email = Email(customer=customer,email=e)
-            email = email.save() 
 
-        # Save the phones
-        for p in phone_form:
-            phone = PhoneNumber(customer=customer,number=p)
-            phone = phone.save()
-
-        # Save the whatsapps
-        for w in whatsapp_form:
-            whatsapp = WhatsApp(customer=customer,whatsapp=w)
-            whatsapp = whatsapp.save()
-
-        # Save the landlines
-        for l in landline_form:
-            landline = Landline(customer=customer,landline=l)
-            landline = landline.save()
 
         # Iterate through the data and create Address instances
         
@@ -376,8 +394,11 @@ def add_customer_view(request):
                 except:
                     pass
 
-
-        return redirect('customer_list')  # Redirect to the customer list page
+                    
+        if not user_already_exist:
+            return redirect('customer_list')  # Redirect to the customer list page
+        else:
+            return redirect('merge_customer' ,id=customer.id)
     else:
         # Creating instances of forms with prefixes
         customer_form = CustomerForm(prefix='customer')
@@ -427,6 +448,11 @@ def add_customer_view(request):
     
     context = TemplateLayout.init(request, context)
     return render(request, 'customer/add_customer.html', context)
+
+def merge_customer(request,id):
+    messages.success(request, "this number user already exist so we merge the two customer successfully")
+    return redirect("customer_info" , id=id)
+
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="see customer info") in u.employee.permissions.all()) )
