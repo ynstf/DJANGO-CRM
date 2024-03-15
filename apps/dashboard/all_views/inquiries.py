@@ -159,7 +159,7 @@ def get_notifications(request):
             employee = reminder.employee,
             inquiry = reminder.inquiry,
             service = reminder.service,
-            action = "review"
+            action = "reminder"
         )
         notification.save()
         reminder.delete()
