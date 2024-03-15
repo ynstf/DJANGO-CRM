@@ -29,7 +29,7 @@ def dashboard(request):
 ################# admin ################
 from .all_views.admin import (add_employee_view,employee_list_view,delete_user_view,
                             employee_info_view,edit_employee_view,add_service_view,
-                            services_list_view
+                            services_list_view,add_sp_view,sp_list_view
                             )
 add_employee = add_employee_view
 employee_list = employee_list_view
@@ -38,6 +38,8 @@ employee_info = employee_info_view
 edit_employee = edit_employee_view
 add_service = add_service_view
 services_list = services_list_view
+add_sp = add_sp_view
+sp_list = sp_list_view
 
 
 

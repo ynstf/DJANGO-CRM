@@ -143,6 +143,11 @@
                 <div class="text-truncate" data-i18n="Without menu">Services</div>
                 </a>
             </li>
+            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                <a href="{% url 'sp_list' %}" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Super Providers</div>
+                </a>
+            </li>
         {% endif %}
 
     </ul>
@@ -172,6 +177,11 @@
               <div class="text-truncate" data-i18n="Basic Inputs">Add Service</div>
             </a>
           </li>
+          <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+            <a href="{% url 'add_sp' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Add Super Providers</div>
+            </a>
+        </li>
         {% endif %}
         
         {% if position.name == 'call center' or position.name == 'admin' %}

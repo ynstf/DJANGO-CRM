@@ -15,7 +15,7 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Position, Permission
 from django.http import JsonResponse
-from apps.dashboard.models import Service
+from apps.dashboard.models import Service, SuperProvider
 
 
 @login_required(login_url='/')
@@ -84,6 +84,58 @@ def add_employee_view(request):
     
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/add_employee.html', context)
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def add_sp_view(request):
+
+    if request.method == 'POST':
+        # Handle form submission
+        sp_name = request.POST.get('sp-name')
+        email = request.POST.get('sp-email')
+        phone_number = request.POST.get('sp-phone_number')
+        sp_service = request.POST.get('sp-service')
+
+        service = Service.objects.get(id=sp_service)
+        new_sp = SuperProvider(
+            name = sp_name,
+            service = service,
+            phone = phone_number,
+            email = email
+        )
+        new_sp.save()
+
+        return redirect('sp_list')  # Redirect to the employee list page
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'services':Service.objects.all(),
+                'permissions':Permission.objects.all(),
+                }
+    
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/add_sp.html', context)
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def sp_list_view(request):
+    all_sp = SuperProvider.objects.all()
+
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'services':Service.objects.all(),
+                'permissions':Permission.objects.all(),
+                'all_sp':all_sp
+                }
+    
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/sp_list.html', context)
 
 
 @login_required(login_url='/')
@@ -213,6 +265,7 @@ def edit_employee_view(request, id):
 def add_service_view(request):
     if request.method == 'POST':
         service_name = request.POST.get('service-name')
+        reminder = request.POST.get('service-reminder')
         columns = request.POST.getlist('service-column')
         
         # Convert the list to a comma-separated string
@@ -224,7 +277,7 @@ def add_service_view(request):
         columns_str = ",".join(not_empty)
 
         # Save the Service instance
-        service_instance = Service.objects.create(name=service_name, columns=columns_str)
+        service_instance = Service.objects.create(name=service_name, columns=columns_str, reminder_time=reminder)
         service_instance.save()
 
         return redirect('services_list')

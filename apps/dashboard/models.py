@@ -5,6 +5,15 @@ from base.settings import DEFAULT_AUTO_FIELD
 from .models_com import Service
 
 
+class SuperProvider(models.Model):
+    name = models.CharField(max_length=50)
+    service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
 class Emirate(models.Model):
     name = models.CharField(max_length=50)
 
@@ -162,7 +171,6 @@ class IsEmployeeNotified(models.Model):
     def __str__(self):
         return f'employee :{self.employee}'
 
-
 class InquiryReminder(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
@@ -173,8 +181,6 @@ class InquiryReminder(models.Model):
 
     def __str__(self):
         return f'employee :{self.employee} with {self.inquiry} inquiry and scheduled in {self.schedule}'
-
-
 
 class Booking(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
@@ -188,7 +194,7 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'booking for {self.inquiry}'
-    
+
 class Invoice(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)

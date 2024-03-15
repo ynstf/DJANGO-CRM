@@ -1,0 +1,118 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Add Super Provider{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            <br>
+            <center><h2>Add Employee</h2></center>
+            <br>
+        
+            <form method="post" id="employeeForm">
+                {% csrf_token %}
+        
+                <h3>Super Provider Details</h3>
+        
+                <div class="col-md-4">
+                    <label for="id_name">name :</label>
+                    <input type="text" id="id_name" name="sp-name" class="form-control" placeholder="First name..." aria-label="First name">
+                </div>
+        
+        
+                <div class="col-md-4">
+                    <label for="id_employee-email">Email :</label>
+                    <input type="email" id="id_employee-email" name="sp-email" class="form-control" placeholder="Email..." aria-label="Email">
+                </div>
+        
+                <div class="col-md-4">
+                    <label for="id_employee-phone_number">Phone Number :</label>
+                    <input type="text" id="id_employee-phone_number" name="sp-phone_number" class="form-control" placeholder="Phone Number..." aria-label="Phone Number">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_employee-permissions">Services:</label>
+                    <select name="sp-service" class="form-control">
+                        <option value="">Chose a service</option>
+                        {% for service in services %}
+                            <option value="{{service.id}}">{{ service.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                
+        
+                <!-- Add more fields as needed -->
+        
+                <br><br>
+                <button class="btn btn-success" type="submit">Add Employee</button>
+            </form>
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}
