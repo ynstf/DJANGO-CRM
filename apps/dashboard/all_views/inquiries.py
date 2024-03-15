@@ -9,10 +9,9 @@ import io
 from apps.dashboard.views import employee_info
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee, Permission, Position
-from apps.dashboard.models import (Inquiry, InquiryNotify, 
-                                InquiryStatus, Language, Nationality,
-                                Quotation, Source, Status, EmployeeAction,
-                                IsEmployeeNotified,InquiryReminder)
+from apps.dashboard.models import (EmployeeAction, Inquiry, InquiryNotify, InquiryReminder,
+    InquiryStatus, IsEmployeeNotified, Language, Nationality, Quotation, Source, Status,
+    SuperProvider)
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
@@ -461,9 +460,12 @@ def make_quotation_view(request, id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
 
+
+
     if request.method == 'POST':
 
         quotation_service = request.POST.get('quotation-service')
+        sp = request.POST.get('quotation-sp')
         quotation_date = request.POST.get('quotation-date')
 
 
@@ -492,11 +494,13 @@ def make_quotation_view(request, id):
             columns_str = ",*,".join(data)
             print(columns_str)
             
+            sp = SuperProvider.objects.get(id=sp)
             quotation = Quotation(
                 employee=employee,
                 customer=customer,
                 inquiry=inquiry,
                 quotation_service=quotation_service,
+                quotation_sp=sp,
                 quotation_date=quotation_date,
                 data = columns_str,
                 total=total
@@ -524,6 +528,7 @@ def make_quotation_view(request, id):
             'customer': Inquiry.objects.get(id=id).customer,
             'inquiry': Inquiry.objects.get(id=id),
             'services':Service.objects.all(),
+            'all_sp':SuperProvider.objects.all(),
             'columns_list':columns_list,
             }
     context = TemplateLayout.init(request, context)
@@ -615,7 +620,7 @@ def generate_pdf_view(request, id):
 
 
     date=quotations[0].quotation_date
-    service=quotations[0].quotation_service
+    sp=quotations[0].quotation_sp
 
     form = QuotationForm.objects.all().first()
     # Create a PDF template using Django template
@@ -640,14 +645,16 @@ def generate_pdf_view(request, id):
     context = {'inquiry': inquiry,
                 'quotations': quotations,
                 'date':date,
-                'service':service,
+                'service':sp,
                 'phone':phone,
                 'address':address,
                 'email':email,
                 'total':total,
                 'form':form,
                 'columns_list':columns_list,
-                'data':data
+                'data':data,
+                'sp_email':sp.email,
+                'sp_phone':sp.phone
                 }
     html_content = template.render(context)
 

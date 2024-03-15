@@ -10,6 +10,7 @@ class SuperProvider(models.Model):
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
+    trn = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -130,6 +131,7 @@ class Quotation(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    quotation_sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_date = models.DateField(blank=True, null=True)
     data = models.TextField(blank=True, null=True)
     total = models.CharField(max_length=50, blank=True, null=True)

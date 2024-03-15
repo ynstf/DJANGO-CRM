@@ -265,6 +265,7 @@ def edit_employee_view(request, id):
 def add_service_view(request):
     if request.method == 'POST':
         service_name = request.POST.get('service-name')
+        trn = request.POST.get('sp-trn')
         reminder = request.POST.get('service-reminder')
         columns = request.POST.getlist('service-column')
         
@@ -277,7 +278,7 @@ def add_service_view(request):
         columns_str = ",".join(not_empty)
 
         # Save the Service instance
-        service_instance = Service.objects.create(name=service_name, columns=columns_str, reminder_time=reminder)
+        service_instance = Service.objects.create(name=service_name, columns=columns_str, reminder_time=reminder, trn=trn)
         service_instance.save()
 
         return redirect('services_list')

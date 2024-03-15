@@ -3,7 +3,7 @@ from apps.dashboard.models import Invoice
 from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber, WhatsApp, Landline, Email
 from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
 from .models import Status,InquiryStatus, IsEmployeeNotified
-from .models import Service, InquiryReminder
+from .models import Service, InquiryReminder,SuperProvider
 
 
 # Register your models here.
@@ -55,6 +55,10 @@ class AddressAdmin(admin.ModelAdmin):
 @admin.register(Inquiry)
 class InquiryAdmin(admin.ModelAdmin):
     list_display = ('customer', 'address', 'date_inq', 'source', 'description')
+
+@admin.register(SuperProvider)
+class SuperProviderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'service', 'email', 'phone', 'trn')
 
 
 @admin.register(Status)
