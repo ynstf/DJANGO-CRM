@@ -81,7 +81,24 @@
 
             {% if user.employee.position.name == "super provider" %}
                 {% if inquiry_state.status.name == "new" %}
-                    <a href="{% url 'make_inq_connecting' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Contact has been made with the client </a>
+                    <!--<a id="connect_via_whatsapp" href="{{ connect_with_customer_whatsapp_link }}" class="btn btn-success" style="background-color: #146fba ;">  </a>
+                    <a id="make_inq_connect" href="{% url 'make_inq_connecting' inquiry.id %}" > <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> Contact has been made with the client via whatsapp </a>-->
+                    <a href="{{ connect_with_customer_whatsapp_link }}" target="_blank">
+                    <button id="connect_via_whatsapp_and_make_inq_connect" class="btn btn-success" >
+                        <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon"> Contact via WhatsApp and Make Inquiry Connection
+                    </button>
+                    </a>
+                    
+                    <script>
+                    document.getElementById("connect_via_whatsapp_and_make_inq_connect").addEventListener("click", function() {
+                        // Perform action to connect via WhatsApp
+                        window.location.href = "{{ connect_with_customer_whatsapp_link }}";
+                    
+                        // Perform action to make inquiry connection
+                        window.location.href = "{% url 'make_inq_connecting' inquiry.id %}";
+                    });
+                    </script>
+                    
                 {% elif inquiry_state.status.name ==  "connecting" %}
                     <a href="{% url 'make_inq_new' inquiry.id %}" class="btn btn-primary" style="background-color: #e81010 ;"> Contact Canceling </a>
                 {% endif %}
