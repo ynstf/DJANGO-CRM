@@ -17,6 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
 from django.urls import reverse
 from urllib.parse import quote
+from datetime import timedelta
 
 ################# permissions ############
 """
@@ -171,7 +172,6 @@ def get_notifications(request):
     return JsonResponse({'notifications': notifications_data, 'notifications_counter': notifications_counter}, safe=False)
 
 
-
 def get_notify_state_view(request):
     print(request.user.employee)
     
@@ -238,6 +238,7 @@ def inquiries_list_view(request):
         add_name_query = request.GET.get('add_name')
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
+        reminder = request.GET.get('reminder')
 
 
         search_fields = []
@@ -286,6 +287,40 @@ def inquiries_list_view(request):
                                 'value':nationality_query})
             id = Nationality.objects.get(name=nationality_query)
             inquiries = inquiries.filter(customer__nationality=id)
+
+        # Get today's date
+        today = timezone.now().date()
+
+        if reminder:
+            
+
+            if reminder == '1':
+                # Reminder today or tomorrow
+                end_date = today + timedelta(days=1)
+                reminder = 'Reminder today or tomorrow'
+            elif reminder == '2':
+                # Reminder next 1 month
+                end_date = today + timedelta(days=30)
+                reminder = "Reminder next 1 month"
+            elif reminder == '3':
+                # Reminder next 3 months
+                end_date = today + timedelta(days=90)
+                reminder = "Reminder next 3 months"
+            elif reminder == '4':
+                # Reminder next 6 months
+                end_date = today + timedelta(days=180)
+                reminder = "Reminder next 6 months"
+            elif reminder == '5':
+                # Reminder next 12 months
+                end_date = today + timedelta(days=365)
+                reminder = "Reminder next 12 months"
+
+            search_fields.append({'name':'reminder',
+                                'value':reminder})
+
+            # Filter Inquiry objects based on the related InquiryReminder objects
+            inquiries = Inquiry.objects.filter(inquiryreminder__schedule__range=[today, end_date])
+            
 
         
 

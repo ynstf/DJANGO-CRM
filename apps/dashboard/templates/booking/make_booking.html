@@ -41,6 +41,14 @@
                 <!-- {{ quotation_form }} -->
 
                 <h3>Booking Details</h3>
+                <br>
+                    <div class="col-md-4">
+                        <h6 for="id_quotation-service">Service : {{ service.name }} </h6>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 for="id_quotation-service">Super Provider : {{ sp.name }} </h6>
+                    </div>
+
                 <div>
                     <div class="col-md-4">
                         <label for="id_quotation-date" > Booking Date : </label>
@@ -48,15 +56,8 @@
                     </div>
                     
 
-                    <div class="col-md-4">
-                        <label for="id_quotation-service">SP service :</label>
-                        <select id="id_quotation-service" name="quotation-service" class="form-control">
-                                <option value="{{ service.id }}" selected >{{ service.name }}</option>
-                                {% for srv in services %}
-                                    <option value="{{ srv.id }}">{{ srv }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
+                    
+
                     
                     <br>
                     
@@ -67,8 +68,8 @@
 
                     <br>
                     <div class="col-md-4">
-                        <label for="id_schedule-time" > scheduling next review : </label>
-                        <input type="date" id="id_schedule-time" value="{{ date|date:'Y-m-d' }}" name="schedule-time" class="form-control" >
+                        <label for="id_schedule-time" > scheduling next review in {{reminder_time}} month : </label>
+                        <input type="date" id="id_schedule-time" value="{{ scheduling|date:'Y-m-d' }}" name="schedule-time" class="form-control" >
                     </div>
 
                     <div class="col-md-4">

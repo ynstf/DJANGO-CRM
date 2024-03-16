@@ -13,6 +13,7 @@ from apps.dashboard.models import (Inquiry, InquiryStatus, Language,
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 import io
+from datetime import datetime, timedelta
 
 def make_inq_underproccess(request,inq_id):
     underproccess = Status.objects.get(name = "underproccess")
@@ -77,7 +78,7 @@ def make_booking_view(request,id):
 
 
 
-        srv_id = quotation_service
+        srv_id = inquiry.services.id
         quotation_service = Service.objects.get(id=srv_id)
 
 
@@ -111,6 +112,14 @@ def make_booking_view(request,id):
     
     date=quotations[0].quotation_date
     service=quotations[0].quotation_service
+    sp=quotations[0].quotation_sp
+
+    # monthly reminnder
+    reminder_time = service.reminder_time
+    # Get today's date
+    today = datetime.now()
+    # Add 5 months to today's date
+    scheduling = today + timedelta(days=reminder_time*30)
 
     quotations=[]
     for q in Quotation.objects.filter(inquiry=Inquiry.objects.get(id = id)):
@@ -152,6 +161,9 @@ def make_booking_view(request,id):
                 'service' : service,
                 'quotations':defult_data,
                 'services':Service.objects.all(),
+                'sp':sp,
+                'scheduling':scheduling,
+                'reminder_time':reminder_time,
                 }
     
     context = TemplateLayout.init(request, context)
@@ -177,7 +189,7 @@ def generate_invoice_view(request, id):
     template_path = 'pdf_invoice.html'  # Create a template for your PDF
     template = get_template(template_path)
 
-
+    sp=quotations[0].quotation_sp
     # Retrieve the Service instance
     service_instance = inquiry.services
     # Convert the comma-separated string back to a list
@@ -199,7 +211,7 @@ def generate_invoice_view(request, id):
     context = {'inquiry': inquiry,
                 'quotations': quotations,
                 'date':date,
-                'service':service,
+                'service':sp,
                 'phone':phone,
                 'address':address,
                 'email':email,
@@ -207,7 +219,9 @@ def generate_invoice_view(request, id):
                 'form':form,
                 'columns_list':columns_list,
                 'data':data,
-                'booking':booking
+                'booking':booking,
+                'sp_email':sp.email,
+                'sp_phone':sp.phone
                 }
     html_content = template.render(context)
 

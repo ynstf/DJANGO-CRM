@@ -42,21 +42,15 @@
 
                 <h3>quotation Details</h3>
                 <div>
+                    
+                    <div class="col-md-4">
+                        <h6 for="id_quotation-service">Service : {{ user.employee.sp_service.name }} </h6>
+                    </div>
                     <div class="col-md-4">
                         <label for="id_quotation-date" > Quotation Date : </label>
                         <input type="date" id="id_quotation-date" name="quotation-date" class="form-control" required >
                     </div>
 
-                
-                    <div class="col-md-4">
-                        <label for="id_quotation-service">service :</label>
-                        <select id="id_quotation-service" name="quotation-service" class="form-control">
-                                <option value="{{ user.employee.sp_service.id }}" selected >{{ user.employee.sp_service.name }}</option>
-                                {% for service in services %}
-                                    <option value="{{ service.id }}">{{ service }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
                 
                     <div class="col-md-4">
                         <label for="id_quotation-sp">super provider :</label>

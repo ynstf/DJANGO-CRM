@@ -51,6 +51,7 @@
                                         <option value="nationality" {% if search_field.name == 'nationality' %}selected{% endif %}>Nationality</option>
                                         <option value="source" {% if search_field.name == 'source' %}selected{% endif %}>Source</option>
                                         <option value="status" {% if search_field.name == 'status' %}selected{% endif %}>Status</option>
+                                        <option value="reminder" {% if search_field.name == 'reminder' %}selected{% endif %}>reminder</option>
                                     </select>
                                 </div>
                                 {% if search_field.name == "date" %}
@@ -70,6 +71,23 @@
                                         {% for language in languages %}
                                             <option value="{{ language.name }}">{{ language.name }}</option>
                                         {% endfor %}
+
+                                    </select>
+                                </div>
+                                {% elif search_field.name  == "reminder" %}
+                                <div id="myinput" class="col-md-6">
+                                    <label for="search_field">Search By:</label>
+                                    <select name="reminder" class="form-control">
+                                        {% if search_field.value %}
+                                            <option value="{{ search_field.value }}" selected="">{{ search_field.value }}</option>
+                                        {% endif %}
+
+                                        <option value="1">Reminder today or tomorrow</option>
+                                        <option value="2">Reminder next 1 months</option>
+                                        <option value="3">Reminder next 3 months</option>
+                                        <option value="4">Reminder next 6 months</option>
+                                        <option value="5">Reminder next 12 months</option>
+
 
                                     </select>
                                 </div>
@@ -131,6 +149,7 @@
                                     <option value="nationality" {% if search_field == 'nationality' %}selected{% endif %}>Nationality</option>
                                     <option value="source" {% if search_field == 'source' %}selected{% endif %}>Source</option>
                                     <option value="status" {% if search_field.name == 'status' %}selected{% endif %}>Status</option>
+                                    <option value="reminder" {% if search_field.name == 'reminder' %}selected{% endif %}>reminder</option>
                                 </select>
                             </div>
 
@@ -174,7 +193,8 @@
                             'language': 'Select Language...',
                             'nationality': 'Select Nationality...',
                             'source': 'Enter Source...',
-                            'status': 'Select status...'
+                            'status': 'Select status...',
+                            'reminder': 'Select reminder...'
                         };
                         var names = {
                             'id': 'id',
@@ -186,7 +206,8 @@
                             'language': 'language',
                             'nationality': 'nationality',
                             'status': 'status',
-                            'source': 'source'
+                            'source': 'source',
+                            'reminder': 'reminder'
                         };
 
                         // Set the placeholder based on the selected search field
@@ -257,6 +278,7 @@
                                 searchContainer.appendChild(selection);
                             });
                         }
+                        
                         // Fetch data for the 'service' field using AJAX
                         else if (searchField === 'service') {
                             var label = document.createElement('label');
@@ -288,6 +310,43 @@
                                 // Append the service select element to the search container
                                 searchContainer.appendChild(selection);
                             });
+                        }
+                        
+                        // Fetch data for the 'reminder' field using AJAX
+                        else if (searchField === 'reminder') {
+                            var label = document.createElement('label');
+                            label.htmlFor = 'search_field';
+                            label.textContent = 'Search By:';
+
+                            var input = document.createElement('input');
+                            input.id = 'search_field';
+                            input.className = 'form-control';
+                            input.setAttribute('onchange', 'updatePlaceholder(this)');
+                            input.placeholder = placeholders[searchField];
+                            input.name = names[searchField];
+
+                            // Append the new row inside the search container
+                            searchContainer.appendChild(label);
+                            //searchContainer.appendChild(input);
+
+
+                                var options = '<option value="" selected>Select Reminder intervale ...</option>';
+
+                                    options += '<option value="' + 1 + '">' + 'Reminder today or tomorrow' + '</option>';
+                                    options += '<option value="' + 2 + '">' + 'Reminder next 1 months' + '</option>';
+                                    options += '<option value="' + 3 + '">' + 'Reminder next 3 months' + '</option>';
+                                    options += '<option value="' + 4 + '">' + 'Reminder next 6 months' + '</option>';
+                                    options += '<option value="' + 5 + '">' + 'Reminder next 12 months' + '</option>';
+
+
+                                var selection = document.createElement('select');
+                                selection.name = "reminder";
+                                selection.className = 'form-control';
+                                selection.innerHTML = options;
+
+                                // Append the reminder select element to the search container
+                                searchContainer.appendChild(selection);
+
                         }
 
                         // Fetch data for the 'nationality' field using AJAX
