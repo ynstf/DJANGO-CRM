@@ -516,7 +516,7 @@ def make_quotation_view(request, id):
         columns_list = service_instance.columns.split(',')
 
 
-        srv_id = quotation_service
+        srv_id = service_instance.id
         quotation_service = Service.objects.get(id=srv_id)
 
         lent = request.POST.getlist('quotation-price')

@@ -96,13 +96,15 @@ def add_sp_view(request):
         email = request.POST.get('sp-email')
         phone_number = request.POST.get('sp-phone_number')
         sp_service = request.POST.get('sp-service')
+        trn = request.POST.get('sp-trn')
 
         service = Service.objects.get(id=sp_service)
         new_sp = SuperProvider(
             name = sp_name,
             service = service,
             phone = phone_number,
-            email = email
+            email = email,
+            trn=trn
         )
         new_sp.save()
 
@@ -265,7 +267,7 @@ def edit_employee_view(request, id):
 def add_service_view(request):
     if request.method == 'POST':
         service_name = request.POST.get('service-name')
-        trn = request.POST.get('sp-trn')
+        
         reminder = request.POST.get('service-reminder')
         columns = request.POST.getlist('service-column')
         
@@ -278,7 +280,7 @@ def add_service_view(request):
         columns_str = ",".join(not_empty)
 
         # Save the Service instance
-        service_instance = Service.objects.create(name=service_name, columns=columns_str, reminder_time=reminder, trn=trn)
+        service_instance = Service.objects.create(name=service_name, columns=columns_str, reminder_time=reminder)
         service_instance.save()
 
         return redirect('services_list')
