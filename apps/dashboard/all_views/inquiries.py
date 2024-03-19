@@ -32,6 +32,27 @@ extract quotations
 ################# inquiries ###################
 
 
+def make_inq_cancel(request,inq_id):
+    if request.method == 'POST':
+        canceling_causes = request.POST.get('canceling_causes')
+
+    cancel = Status.objects.get(name = "cancel")
+    inquiry = Inquiry.objects.get(id = inq_id)
+    inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.status = cancel
+    inq_state.canceling_causes = canceling_causes
+    inq_state.save()
+
+    #create action
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
+    )
+    action.save()
+
+    return redirect('inquiries_list')
+
 def make_inq_new(request,inq_id):
     new = Status.objects.get(name = "new")
     inquiry = Inquiry.objects.get(id = inq_id)
@@ -488,7 +509,8 @@ def inquiry_info_view(request, id):
             'permissions_list':[p.name for p in request.user.employee.permissions.all()],
             'whatsapp_link':whatsapp_link,
             'whatsapp_link_invoice':whatsapp_link_invoice,
-            'connect_with_customer_whatsapp_link':connect_with_customer_whatsapp_link
+            'connect_with_customer_whatsapp_link':connect_with_customer_whatsapp_link,
+            'canceling_cause': inquiry_state.canceling_causes
 
             }
     context = TemplateLayout.init(request, context)

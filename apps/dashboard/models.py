@@ -112,6 +112,7 @@ class Status(models.Model):
 class InquiryStatus(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    canceling_causes = models.CharField(max_length=200, blank=True, null=True)
     update = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     def __str__(self):
@@ -153,6 +154,7 @@ class InquiryNotify(models.Model):
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     action = models.CharField(max_length=50, choices=[('new', 'new'),
                                                     ('connecting', 'connecting'),
+                                                    ('cancel', 'cancel'),
                                                     ('send quotation', 'send quotation'),
                                                     ('pending', 'pending'),
                                                     ('underpreccess', 'underpreccess'),

@@ -540,6 +540,7 @@
                         <th>services</th>
                         <th>source</th>
                         <th>state</th>
+                        <th>canceling causes</th>
 
 
                         <!-- Add other columns as needed -->
@@ -558,6 +559,8 @@
                                 <td style="background-color: #f4af85; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "underproccess" %}
                                 <td style="background-color: #ffe699; color: black;">{{ inquiry.info.id }}</td>
+                            {% elif inquiry.state.status.name == "cancel" %}
+                                <td style="background-color: #ffffff; color: rgb(224, 20, 20);">{{ inquiry.info.id }}</td>
                             {% else %}
                                 <td>{{ inquiry.info.id }}</td>
                             {% endif %}
@@ -581,6 +584,7 @@
                             <td>{{ inquiry.info.services }}</td>
                             <td>{{ inquiry.info.source }}</td>
                             <td>{{ inquiry.state.status }}</td>
+                            <td>{{ inquiry.state.canceling_causes }}</td>
 
 
 

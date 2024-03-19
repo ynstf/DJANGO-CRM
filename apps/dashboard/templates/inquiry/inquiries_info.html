@@ -43,6 +43,12 @@
             <br>
             <center><h2>Inquiry Information</h2></center>
             <br>
+            <center>
+                {% if inquiry_state.status.name ==  "cancel" %}
+                    <h4 style="color: #941515;">this inquiry canceled</h4>
+                    <h6>canceling causes: {{ canceling_cause }}</h6>
+                {% endif %}
+            </center>
 
             <h3 style="color: #105794;">Customer Details</h3>
             <ul>
@@ -115,12 +121,41 @@
                     {% endif %}
                 {% endif %}
             </h3>
+
+            <form id="cancel_form" method="post" action="{% url 'make_inq_cancel' inquiry.id %}">
+                {% csrf_token %}
+                <a id="cancel_button" class="btn btn-dark btn-sm">Cancel</a>
+                <div class="col-md-4" id="causes_form" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out;">
+                    <label for="cause">Canceling causes:</label>
+                    <textarea name="canceling_causes" id="cause" cols="30" rows="5" class="form-control"></textarea>
+                    <button type="submit" class="btn btn-dark btn-sm">Confirm Canceling</button>
+                </div>
+            </form>
+            <!-- Add your JavaScript code here -->
+            <script>
+                document.getElementById('cancel_button').addEventListener('click', function() {
+                    var causesForm = document.getElementById('causes_form');
+                    var cancelButton = document.getElementById('cancel_button');
+                    
+                    if (causesForm.style.maxHeight === '0px' || causesForm.style.maxHeight === '') {
+                        // If the form is hidden, show it
+                        causesForm.style.maxHeight = '200px'; // Adjust the max-height value as needed
+                        cancelButton.style.display = 'none';
+                    } else {
+                        // If the form is visible, hide it
+                        causesForm.style.maxHeight = '0';
+                        cancelButton.style.display = 'block';
+                    }
+                });
+            </script>
+
                 <ul>
                     <h4>inquiry address of: {{ inquiry.address.address_name }}</h4>
                     <h6>Date Inq: {{ inquiry.date_inq }}</h6>
                     <h6>Source: {{ inquiry.source }}</h6>
                     <h6>Services: {{ inquiry.services.name }}</h6>
                     <h6>Description: {{ inquiry.description }}</h6>
+                    
                 </ul>
                 
                 <br>

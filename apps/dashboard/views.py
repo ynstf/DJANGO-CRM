@@ -59,7 +59,7 @@ from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
                                     get_notifications, make_inq_connecting,
                                     make_inq_sendQ,make_inq_pending,
                                     make_inq_new,get_notify_state_view,
-                                    make_employee_notified_view)
+                                    make_employee_notified_view, make_inq_cancel)
 inquiries_list = inquiries_list_view
 edit_quotation = edit_quotation_view
 inquiry_info = inquiry_info_view
@@ -73,6 +73,7 @@ make_inq_pending = make_inq_pending
 make_inq_new = make_inq_new
 get_notify_state = get_notify_state_view
 make_employee_notified = make_employee_notified_view
+make_inq_cancel = make_inq_cancel
 
 
 ############### get infos ###########
