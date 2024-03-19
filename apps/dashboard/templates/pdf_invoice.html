@@ -31,7 +31,8 @@
             </center>
         </td>
         <td id="logo">
-            <img src="https://res.cloudinary.com/dbhawzisa/image/upload/v1708538372/eajvxoib61qbzfxbrftk.png" width="100">
+        
+            <img src="{{sp.image}}" width="100">
             <h2 style="color: #ba2525;">TAX INVOICE</h2>
         </td>
         <td id="company-info">
@@ -130,8 +131,8 @@
 <br>
 <ul>
     <li><h3> Reference Number : {{ booking.ref_number }}</h3></li>
-    <li><h3> service mail : {{sp_email}}</h3></li>
-    <li><h3> service number : {{ sp_phone }}</h3></li>
+    <li><h3> service mail : {{sp.email}}</h3></li>
+    <li><h3> service number : {{ sp.phone }}</h3></li>
 </ul>
 
 

@@ -15,7 +15,7 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Position, Permission
 from django.http import JsonResponse
-from apps.dashboard.models import Service, SuperProvider
+from apps.dashboard.models import InvoiceForm, Quotation, QuotationForm, Service, SuperProvider
 
 
 @login_required(login_url='/')
@@ -299,6 +299,86 @@ def add_service_view(request):
     }
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/add_service.html',context)
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def edit_invoice_doc_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('invoive-name')
+        image = request.POST.get('invoive-img')
+        email = request.POST.get('invoive-email')
+        phone = request.POST.get('invoive-phone')
+
+        form, created = InvoiceForm.objects.get_or_create(
+            title = name)
+        if created :
+            form.image = image
+            form.email = email
+            form.phone = phone
+            form.save()
+        else :
+            form.image = image
+            form.email = email
+            form.phone = phone
+            form.save()
+
+
+        return redirect('dashboard')
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    try:
+        invoice = InvoiceForm.objects.get(title = 'Invoice1')
+    except:
+        invoice = ""
+
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'invoice':invoice
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/edit_invoice.html',context)
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def edit_quotation_doc_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('quotaion-name')
+        image = request.POST.get('quotaion-img')
+        email = request.POST.get('quotaion-email')
+        phone = request.POST.get('quotaion-phone')
+
+
+        form, created = QuotationForm.objects.get_or_create(
+            title = name)
+        if created :
+            form.image = image
+            form.email = email
+            form.phone = phone
+            form.save()
+        else :
+            form.image = image
+            form.email = email
+            form.phone = phone
+            form.save()
+
+        
+
+        return redirect('dashboard')
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    try:
+        quotation = QuotationForm.objects.get(title = 'Quotation1')
+    except:
+        quotation = ''
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'quotation':quotation
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/edit_quotation.html',context)
 
 
 

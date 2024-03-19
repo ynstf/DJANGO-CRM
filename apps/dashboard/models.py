@@ -143,10 +143,23 @@ class Quotation(models.Model):
 class QuotationForm(models.Model):
     title = models.CharField(max_length=50, blank=True, null=True)
     image = models.TextField( blank=True, null=True)
-    
+    email = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=50, blank=True, null=True)
+
     # Add other fields as needed
     def __str__(self):
         return self.title
+
+class InvoiceForm(models.Model):
+    title = models.CharField(max_length=50, blank=True, null=True)
+    image = models.TextField( blank=True, null=True)
+    email = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=50, blank=True, null=True)
+
+    # Add other fields as needed
+    def __str__(self):
+        return self.title
+
 
 class InquiryNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)

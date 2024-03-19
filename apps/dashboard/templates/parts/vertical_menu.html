@@ -206,6 +206,34 @@
     </li>
 
 
+        <!-- Form -->
+        {% if position.name == 'admin' %}
+          <li class="menu-item {% if '/forms/' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0)" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons mdi mdi-file"></i>
+
+
+              <div class="text-truncate" data-i18n="Form Elements">Document</div>
+            </a>
+            <ul class="menu-sub">
+      
+                <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+                  <a href="{% url 'edit_quotation_doc' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Basic Inputs">Edit Quotations</div>
+                  </a>
+                </li>
+                <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+                  <a href="{% url 'edit_invoice_doc' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Basic Inputs">Edit Invoices</div>
+                  </a>
+                </li>
+            
+      
+            </ul>
+          </li>
+        {% endif %}
+    
+
   </ul>
 
 

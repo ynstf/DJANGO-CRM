@@ -15,6 +15,7 @@ from xhtml2pdf import pisa
 import io
 from datetime import datetime, timedelta
 from django.contrib import messages
+from apps.dashboard.models import InvoiceForm
 
 def make_inq_underproccess(request,inq_id):
     underproccess = Status.objects.get(name = "underproccess")
@@ -194,7 +195,12 @@ def generate_invoice_view(request, id):
     template_path = 'pdf_invoice.html'  # Create a template for your PDF
     template = get_template(template_path)
 
-    sp=quotations[0].quotation_sp
+    sp_inv=quotations[0].quotation_sp
+    try:
+        sp = InvoiceForm.objects.get(title = 'Invoice1')
+    except:
+        sp = ''
+
     # Retrieve the Service instance
     service_instance = inquiry.services
     # Convert the comma-separated string back to a list
@@ -216,7 +222,7 @@ def generate_invoice_view(request, id):
     context = {'inquiry': inquiry,
                 'quotations': quotations,
                 'date':date,
-                'service':sp,
+                'service':sp_inv,
                 'phone':phone,
                 'address':address,
                 'email':email,
@@ -225,8 +231,8 @@ def generate_invoice_view(request, id):
                 'columns_list':columns_list,
                 'data':data,
                 'booking':booking,
-                'sp_email':sp.email,
-                'sp_phone':sp.phone
+                'sp':sp,
+
                 }
     html_content = template.render(context)
 

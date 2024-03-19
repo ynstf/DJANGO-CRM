@@ -5,7 +5,7 @@ from .views import get_languages, get_status, get_nationalities,get_sources,get_
 from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
 from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list
 from .views import make_booking, make_inq_underproccess, make_inq_new,generate_invoice,get_notify_state,make_employee_notified, make_inq_cancel
-from .views import add_sp,sp_list
+from .views import add_sp,sp_list, edit_invoice_doc, edit_quotation_doc
 urlpatterns = [
     path("dashboard/",dashboard,name="dashboard",),
     path('add_customers/', add_customer, name='add_customer'),
@@ -59,8 +59,10 @@ urlpatterns = [
     path('delete_user/<int:id_user>', delete_user, name='delete_user'),
     path('employee_info/<int:id>', employee_info, name='employee_info'),
     path('employee_info/<int:id>/edit', edit_employee, name='edit_employee'),
-
     path('add_service/', add_service, name='add_service'),
     path('services_list/', services_list, name='services_list'),
+    path('edit_invoice_doc/', edit_invoice_doc, name='edit_invoice_doc'),
+    path('edit_quotation_doc/', edit_quotation_doc, name='edit_quotation_doc'),
+
 
 ]

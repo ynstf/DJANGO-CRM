@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.urls import reverse
 from urllib.parse import quote
 from datetime import timedelta
+from apps.dashboard.models import QuotationForm
 
 ################# permissions ############
 """
@@ -683,7 +684,11 @@ def generate_pdf_view(request, id):
 
 
     date=quotations[0].quotation_date
-    sp=quotations[0].quotation_sp
+    sp_quot=quotations[0].quotation_sp
+    try:
+        sp = QuotationForm.objects.get(title = 'Quotation1')
+    except:
+        sp = ''
 
     form = QuotationForm.objects.all().first()
     # Create a PDF template using Django template
@@ -708,7 +713,7 @@ def generate_pdf_view(request, id):
     context = {'inquiry': inquiry,
                 'quotations': quotations,
                 'date':date,
-                'service':sp,
+                'service':sp_quot,
                 'phone':phone,
                 'address':address,
                 'email':email,
@@ -716,8 +721,8 @@ def generate_pdf_view(request, id):
                 'form':form,
                 'columns_list':columns_list,
                 'data':data,
-                'sp_email':sp.email,
-                'sp_phone':sp.phone
+                'sp':sp,
+
                 }
     html_content = template.render(context)
 
