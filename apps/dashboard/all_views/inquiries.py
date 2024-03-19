@@ -424,7 +424,7 @@ def inquiry_info_view(request, id):
         line = booking.data.split(',*,')
         print(line)
         booking_data.append(line)"""
-    
+
     
     try:
         booking_detail = Booking.objects.get(inquiry=inquiry).details 
@@ -451,7 +451,7 @@ def inquiry_info_view(request, id):
 
     message1 = f"عزيزي {customer.first_name} {customer.last_name},"
     #messag1 = f"%0A"
-    message2 = f" نأمل أن تكونوا بخير. نود أن نعبر عن شكرنا لكم على الاتصال بنا بخصوص ({inquiry.description})."
+    message2 = f" نأمل أن تكونوا بخير. نود أن نعبر عن شكرنا لكم على الاتصال بنا ."
     message3 = f"يعتبر استفساركم أمرًا مهمًا بالنسبة لنا، ونقدر الفرصة التي تمنحونا لمساعدتكم. "
     message4 = f"لفهم احتياجاتكم بشكل أفضل وتقديم المساعدة الأكثر دقة ممكنة، نرجو منكم تزويدنا بمزيد من المعلومات حول {inquiry.services}. "
     message5 = f"بالإضافة إلى ذلك، إذا كان لديكم تفضيلات خاصة بطريقة التواصل أو أي تفضيلات محددة بشأن كيفية المتابعة، فلا تترددوا في إعلامنا."

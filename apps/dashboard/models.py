@@ -97,6 +97,7 @@ class Inquiry(models.Model):
     address = models.ForeignKey(Address, on_delete=models.CASCADE, blank=True, null=True)
     date_inq = models.DateField(blank=True, null=True)
     services = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     source = models.ForeignKey(Source, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Source model
     description = models.TextField(blank=True, null=True)
     # Add other fields as needed

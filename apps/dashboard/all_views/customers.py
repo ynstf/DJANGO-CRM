@@ -4,7 +4,7 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Permission
 from django.shortcuts import render, redirect, get_object_or_404
-from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotation, Service, Source
+from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotation, Service, Source, SuperProvider
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
 from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
@@ -190,7 +190,7 @@ def add_customer_view(request):
     if request.method == 'POST':
         #customer fields
         customer_form = CustomerForm(request.POST, prefix='customer')
-        
+
         #contact fields
         phone_form = request.POST.getlist('customer-phone_numbers')
         whatsapp_form = request.POST.getlist('customer-whats_apps')
@@ -204,11 +204,12 @@ def add_customer_view(request):
         adress_desc = request.POST.getlist('address-description_location')
         location = request.POST.getlist('address-location')
 
-
         #inquiry fields
         inq_date = request.POST.getlist('inquiry-date_inq')
         inq_source = request.POST.getlist('customer-source')
         inq_service = request.POST.getlist('inquiry-services')
+        sp = request.POST.getlist('sp')
+
         inq_desc = request.POST.getlist('inquiry-description')
 
         # counter to know inquiries of each address
@@ -316,6 +317,7 @@ def add_customer_view(request):
                         print(inq_source[q])
                         current_inq_source_id = inq_source[q]
                         current_inq_source = Source.objects.get(id=current_inq_source_id)
+                        current_sp = SuperProvider.objects.get(id=sp[q])
                         print(current_inq_source)
                         print(inq_source)
 
@@ -326,6 +328,7 @@ def add_customer_view(request):
                                 date_inq=inq_date[q],
                                 source = current_inq_source,
                                 services=services_set,
+                                sp=current_sp,
                                 description=inq_desc[q]
                                 
                             )
@@ -361,6 +364,7 @@ def add_customer_view(request):
                             address=address,
                             source = current_inq_source,
                             services=services_set,
+                            sp=current_sp,
                             description=inq_desc[q]
                             
                             )
@@ -428,6 +432,7 @@ def add_customer_view(request):
 
     Emirates = Emirate.objects.all()
 
+    all_sp = SuperProvider.objects.all()
     # Set the layout path even when authentication fails
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
@@ -442,6 +447,7 @@ def add_customer_view(request):
                 'Languages':Languages,
                 'Emirates':Emirates,
                 'types':types,
+                'all_sp':all_sp
 
                 }
     

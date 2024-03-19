@@ -462,6 +462,15 @@
                                             {% endfor %}
                                         </select>
                                     </div>
+                                    <div class="col-md-4" id="super-provider-container" >
+                                        <label for="id-sp">Super Provider:</label>
+                                        <select id="id-sp" name="sp" class="form-control">
+                                            <option value="" selected disabled>Select sp Company...</option>
+                                            {% for sp in all_sp %}
+                                                <option value="{{ sp.id }}">{{ sp.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                     <div class="col-md-4">
                                         <label for="id_inquiry-description"> Description : </label>
                                         <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number"></textarea>
