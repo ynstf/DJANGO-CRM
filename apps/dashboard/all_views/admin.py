@@ -31,6 +31,7 @@ def add_employee_view(request):
         phone_number = request.POST.get('employee-phone_number')
         position_name = request.POST.get('employee-position')
         sp = request.POST.get('employee-sp')
+        sp_company = request.POST.get('sp_company')
         permissions = request.POST.getlist('employee-permissions')
         username = request.POST.get('employee-username')
         password = request.POST.get('employee-password')
@@ -44,6 +45,8 @@ def add_employee_view(request):
 
         if sp:
             service = Service.objects.get(id=sp)
+            sp_company = SuperProvider.objects.get(id=sp_company)
+            
             # Create the employee instance
             employee = Employee.objects.create(
                 user=User.objects.create_user(username=username, email=email, password=password),
@@ -53,6 +56,7 @@ def add_employee_view(request):
                 phone_number=phone_number,
                 position=position,
                 sp_service=service,
+                sp=sp_company
             )
         else:
             employee = Employee.objects.create(
@@ -74,12 +78,14 @@ def add_employee_view(request):
 
         return redirect('employee_list')  # Redirect to the employee list page
 
+    all_sp = SuperProvider.objects.all()
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
                 'positions':positions,
                 'layout_path': layout_path,
                 'services':Service.objects.all(),
                 'permissions':Permission.objects.all(),
+                'all_sp':all_sp
                 }
     
     context = TemplateLayout.init(request, context)
@@ -97,14 +103,14 @@ def add_sp_view(request):
         phone_number = request.POST.get('sp-phone_number')
         sp_service = request.POST.get('sp-service')
         trn = request.POST.get('sp-trn')
+        search_count = request.POST.get('search-count')
 
         service = Service.objects.get(id=sp_service)
         new_sp = SuperProvider(
             name = sp_name,
             service = service,
-            phone = phone_number,
-            email = email,
-            trn=trn
+            trn=trn,
+            search_number = search_count
         )
         new_sp.save()
 

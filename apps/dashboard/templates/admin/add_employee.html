@@ -77,6 +77,14 @@
                             <option value="{{ service.id }}">{{ service.name }}</option>
                         {% endfor %}
                     </select>
+                    
+                    <label for="id-sp">Super Provider:</label>
+                    <select id="id-sp" name="sp_company" class="form-control">
+                        <option value="" selected disabled>Select sp Company...</option>
+                        {% for sp in all_sp %}
+                            <option value="{{ sp.id }}">{{ sp.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <!-- JavaScript to toggle Super Provider select box -->
                 <script>

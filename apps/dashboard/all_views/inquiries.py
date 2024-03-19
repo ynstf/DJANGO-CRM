@@ -153,16 +153,19 @@ def make_inq_pending(request,inq_id):
 
 def get_notifications(request):
     current_date = timezone.now().date()
-    reminders = InquiryReminder.objects.filter(employee=request.user.employee, schedule__lte=current_date)
-    for reminder in reminders:
-        notification = InquiryNotify(
-            employee = reminder.employee,
-            inquiry = reminder.inquiry,
-            service = reminder.service,
-            action = "reminder"
-        )
-        notification.save()
-        reminder.delete()
+    try:
+        reminders = InquiryReminder.objects.filter(employee=request.user.employee, schedule__lte=current_date)
+        for reminder in reminders:
+            notification = InquiryNotify(
+                employee = reminder.employee,
+                inquiry = reminder.inquiry,
+                service = reminder.service,
+                action = "reminder"
+            )
+            notification.save()
+            reminder.delete()
+    except:
+        pass
 
 
 
@@ -175,11 +178,14 @@ def get_notifications(request):
 def get_notify_state_view(request):
     print(request.user.employee)
     
-    notify_info = IsEmployeeNotified.objects.get(employee = request.user.employee)
+    try:
+        notify_info = IsEmployeeNotified.objects.get(employee = request.user.employee)
+        print(notify_info.notified)
+        return JsonResponse({'notify_info': notify_info.notified}, safe=False)
+    except:
+        return JsonResponse({}, safe=False)
 
-    print(notify_info.notified)
-
-    return JsonResponse({'notify_info': notify_info.notified}, safe=False)
+    
 
 
 def make_employee_notified_view(request):

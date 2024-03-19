@@ -58,7 +58,7 @@ class InquiryAdmin(admin.ModelAdmin):
 
 @admin.register(SuperProvider)
 class SuperProviderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'service', 'email', 'phone', 'trn')
+    list_display = ('name', 'service', 'trn', 'search_number')
 
 
 @admin.register(Status)
