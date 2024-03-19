@@ -309,7 +309,7 @@
 
                         {% for address in addresses %}
                         
-                        <h3>Address <a href="{% url 'delete_address' address.adrs.id %}"><button type="button" class="btn btn-danger">Delete this address</button></a> </h3>
+                        <h3>Address <!--<a href="{% url 'delete_address' address.adrs.id %}"><button type="button" class="btn btn-danger">Delete this address</button></a> --></h3>
                         <div class="col-md-4">
                             <label for="id_address-address_name"> Address Name :</label>
                             <input type="text" value="{{ address.adrs.address_name }}" id="id_address-address_name" name="address-address_name" class="form-control" placeholder="Address name..." aria-label="Address name">
