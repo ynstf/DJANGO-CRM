@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from xhtml2pdf import pisa
 import io
 from datetime import datetime, timedelta
+from django.contrib import messages
 
 def make_inq_underproccess(request,inq_id):
     underproccess = Status.objects.get(name = "underproccess")
@@ -67,8 +68,6 @@ def make_booking_view(request,id):
         ref_number = request.POST.get('ref-number')
         schedule_time = request.POST.get('schedule-time')
 
-        
-
 
         inquiry = Inquiry.objects.get(id=id)
         customer_id = inquiry.customer.id
@@ -82,26 +81,32 @@ def make_booking_view(request,id):
         quotation_service = Service.objects.get(id=srv_id)
 
 
-            
-        booking = Booking(
-            employee=employee,
-            customer=customer,
-            inquiry=inquiry,
-            booking_service=quotation_service,
-            booking_date=quotation_date,
-            details = booking_details,
-            booking_number=booking_number,
-            ref_number=ref_number
-        )
-        booking.save()
+        number = Booking.objects.filter(booking_number=booking_number)
+        print(number)
+        if number:
+            messages.info(request, "The booking already exist.")
+            return redirect('inquiry_info' ,id=id)
+        else:
 
-        reminder = InquiryReminder(
-            employee = employee,
-            inquiry=inquiry,
-            service=quotation_service,
-            schedule=schedule_time
-        )
-        reminder.save()
+            booking = Booking(
+                employee=employee,
+                customer=customer,
+                inquiry=inquiry,
+                booking_service=quotation_service,
+                booking_date=quotation_date,
+                details = booking_details,
+                booking_number=booking_number,
+                ref_number=ref_number
+            )
+            booking.save()
+
+            reminder = InquiryReminder(
+                employee = employee,
+                inquiry=inquiry,
+                service=quotation_service,
+                schedule=schedule_time
+            )
+            reminder.save()
 
         print()
         

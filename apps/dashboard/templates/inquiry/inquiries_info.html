@@ -26,6 +26,13 @@
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
+        {% if messages %}
+            {% for message in messages %}
+                <center>
+                    <div class="alert {% if message.tags %} alert-{{message.tags}} {% endif %}">{{ message }}</div>
+                </center>
+            {% endfor %}
+        {% endif %}
 
     {% if user.employee.position.name == "call center" or user.employee.position.name == "admin" or inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
 
