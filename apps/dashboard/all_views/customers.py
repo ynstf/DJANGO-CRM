@@ -251,15 +251,11 @@ def add_customer_view(request):
 
 
         print(inq_counters)
-
         print(adress_name,adress_type,emarate,adress_desc,location)
-
         print(inq_date,inq_source,inq_service,inq_desc)
 
-
-
-
         # Iterate through the data and create Address instances
+        
         
         addresses = []
         for i in range(len(adress_name)):
@@ -394,11 +390,14 @@ def add_customer_view(request):
                 except:
                     pass
 
-                    
         if not user_already_exist:
             return redirect('customer_list')  # Redirect to the customer list page
         else:
-            return redirect('merge_customer' ,id=customer.id)
+            #return redirect('merge_customer' ,id=customer.id)
+            id_addresses = []
+            for adr in addresses:
+                id_addresses.append(adr.id)
+            return render(request, 'customer/merge_confirmation.html', {'customer': customer, 'id_addresses':id_addresses, 'phone':phone})
     else:
         # Creating instances of forms with prefixes
         customer_form = CustomerForm(prefix='customer')
@@ -449,11 +448,31 @@ def add_customer_view(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'customer/add_customer.html', context)
 
+def merge_customer(request, id):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        addresses = request.POST.getlist('addresses')
+
+        if action == 'merge':
+
+            messages.success(request, "The two customers have been successfully merged.")
+        elif action == 'cancel':
+            # delete addresse
+            for adr in addresses:
+                address = Address.objects.get(id=adr)
+                address.delete()
+
+            messages.info(request, "The merge operation has been canceled.")
+        return redirect("customer_info", id=id)
+    else:
+        # Handle GET request if needed
+        return redirect("customer_list")
+"""
 def merge_customer(request,id):
     messages.success(request, "this number user already exist so we merge the two customer successfully")
     return redirect("customer_info" , id=id)
 
-
+"""
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="see customer info") in u.employee.permissions.all()) )
 def customer_info_view(request, id):

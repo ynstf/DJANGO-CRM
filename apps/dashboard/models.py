@@ -94,7 +94,7 @@ class Address(models.Model):
 
 class Inquiry(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, blank=True, null=True)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, blank=True, null=True)
     date_inq = models.DateField(blank=True, null=True)
     services = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     source = models.ForeignKey(Source, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Source model
