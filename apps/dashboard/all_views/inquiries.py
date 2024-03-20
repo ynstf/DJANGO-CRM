@@ -392,7 +392,7 @@ def inquiries_list_view(request):
     
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
-                #'inquiries': inquiries,
+                'inquiries_with_pages': inquiries,
                 'inquiries': inquiry,
                 'notifications':notifications,
                 'notifications_counter':notifications_counter,

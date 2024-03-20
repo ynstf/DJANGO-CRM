@@ -598,18 +598,18 @@
                 <!-- Add this block above or below your table -->
                 <div class="pagination">
                     <span class="step-links">
-                        {% if inquiries.has_previous %}
+                        {% if inquiries_with_pages.has_previous %}
                             <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ inquiries.previous_page_number }}">previous</a>
+                            <a href="?page={{ inquiries_with_pages.previous_page_number }}">previous</a>
                         {% endif %}
 
                         <span class="current">
-                            Page {{ inquiries.number }} of {{ inquiries.paginator.num_pages }}.
+                            Page {{ inquiries_with_pages.number }} of {{ inquiries_with_pages.paginator.num_pages }}.
                         </span>
 
-                        {% if inquiries.has_next %}
-                            <a href="?page={{ inquiries.next_page_number }}">next</a>
-                            <a href="?page={{ inquiries.paginator.num_pages }}">last &raquo;</a>
+                        {% if inquiries_with_pages.has_next %}
+                            <a href="?page={{ inquiries_with_pages.next_page_number }}">next</a>
+                            <a href="?page={{ inquiries_with_pages.paginator.num_pages }}">last &raquo;</a>
                         {% endif %}
                     </span>
                 </div>
