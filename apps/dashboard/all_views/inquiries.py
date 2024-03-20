@@ -462,8 +462,11 @@ def inquiry_info_view(request, id):
         booking_number = None
 
 
-    # Assuming you want to include a predefined message
-    phone_number = customer.whatsapp_set.all().first().whatsapp
+    try:
+        # Assuming you want to include a predefined message
+        phone_number = customer.whatsapp_set.all().first().whatsapp
+    except :
+        phone_number = ""
     message = "Your Quotations ready, check the link"
     # Replace 'https://example.com/path/to/your/document.pdf' with the actual URL to your hosted PDF document
     pdf_url = reverse('generate_pdf', args=[id])

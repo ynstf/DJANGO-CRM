@@ -2,13 +2,18 @@
 from faker import Faker
 from random import choice
 from apps.dashboard.models import Language, Source, Nationality, Emirate, Service, Customer, Address, Inquiry
+from apps.dashboard.models import Status,InquiryStatus
 from apps.authentication.models import Employee
 from django.db import transaction
 
 fake = Faker()
 
+
 @transaction.atomic
 def run():
+
+    status = ["new","connecting","pending","cancel","underproccess","send Q or B"]
+    status_objs = [Status.objects.get_or_create(name=state)[0] for state in status]
 
     # Create Languages
     languages = ["Arabic", "French", "English", "Spanish"]
@@ -42,7 +47,7 @@ def run():
         return
 
     # Create Customers with Addresses and Inquiries
-    for _ in range(100):
+    for _ in range(1000):
         employee_id = choice(employees)
 
         # Choose valid foreign key values for nationality and language
@@ -81,4 +86,13 @@ def run():
             services_id=service_id,
             source_id=source_id,
             description=fake.text(),
+        )
+
+
+        state_name = choice(status)
+
+        state = Status.objects.get(name= state_name)
+        inquiry_state = InquiryStatus.objects.create(
+            inquiry=inquiry,
+            status = state
         )

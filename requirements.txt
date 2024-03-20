@@ -16,3 +16,4 @@ django-extensions
 reportlab
 xhtml2pdf
 faker
+openpyxl
