@@ -21,7 +21,9 @@ from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
 from collections import defaultdict
-
+from apps.dashboard.models_com import Service
+import random
+import json
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
@@ -387,7 +389,8 @@ def edit_quotation_doc_view(request):
 
 
 
-
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def services_list_view(request):
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
@@ -401,27 +404,70 @@ def services_list_view(request):
     return render(request, 'admin/services_list.html',context)
 
 
-
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def statistics_view(request):
+
     # Calculate the date range for the last 30 days
     end_date = timezone.now().date()
     start_date = end_date - timedelta(days=29)
-
     # Query the database to get the counts of inquiries for each date within the last 30 days
     inquiry_counts = defaultdict(int)
     inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date))
     for inquiry in inquiries:
         inquiry_date = inquiry.date_inq.strftime('%Y-%m-%d')
         inquiry_counts[inquiry_date] += 1
-
     # Prepare the data for the chart
     dates = list(inquiry_counts.keys())
     counts = list(inquiry_counts.values())
-
     # Sort dates chronologically
     dates.sort()
+
+
+
+
+    # Calculate the date range of each service for the last 30 days
+    services = Service.objects.all()
+    services_list = []
+    services_counter = defaultdict(int)
+    for service in services:
+        count = Inquiry.objects.filter(services=service).count()
+        services_counter[count] += 1
+        services_list.append(service.name)
+    services_counts = list(services_counter.keys())
+
+
+
+
+    # Calculate the date range for the last 30 days
+    service_colors = {}  # Dictionary to store colors for each service
+    random.seed(42)  # Seed the random number generator for reproducibility
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=29)
+    # Query the database to get the counts of inquiries for each date and service within the last 30 days
+    service_data = defaultdict(lambda: defaultdict(int))
+    services = Service.objects.all()
+    for service in services:
+        inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date), services=service)
+        for inquiry in inquiries:
+            inquiry_date = inquiry.date_inq.strftime('%Y-%m-%d')
+            service_data[inquiry_date][service.name] += 1
+    # Prepare the aggregated data for the chart
+    dates = sorted(service_data.keys())
+    service_names = [service.name for service in services]
+    service_counts = {service: [] for service in service_names}
+    for date in dates:
+        for service in service_names:
+            service_counts[service].append(service_data[date][service])
+            rgb_values = [random.randint(0, 255) for _ in range(3)]
+            rgb_string = ', '.join(map(str, rgb_values))
+            service_colors[service] = rgb_string    
+    # Convert the service_colors dictionary to a JSON object
+    service_colors_json = json.dumps(service_colors)
+    print(service_colors_json)
+
+
+
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {
@@ -429,8 +475,12 @@ def statistics_view(request):
         'layout_path': layout_path,
         'dates': dates,
         'counts': counts,
+        'service_counts': service_counts,
+        'services_list': services_list,
+        'services_counts': services_counts,
+        'service_colors_json': service_colors_json,
     }
     context = TemplateLayout.init(request, context)
 
-
     return render(request, 'admin/statistics/inquiry_statistics.html', context)
+

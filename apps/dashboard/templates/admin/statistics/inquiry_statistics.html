@@ -60,7 +60,75 @@
                     }
                 });
             </script>
+            <br><br><br>
             <hr>
+            
+            <center><h2>Number of Inquiries for each service</h2></center>
+            <br>
+            <canvas id="serviceBars" width="400" height="200"></canvas>
+            <script>
+                var ctx = document.getElementById('serviceBars').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{ services_list|safe }},
+                        datasets: [{
+                            label: 'Number of Inquiries for each service',
+                            data: {{ services_counts|safe }},
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            </script>
+
+            <br><br><br>
+            <hr>
+            <center><h2>Services Counter in Last 30 Days</h2></center>
+            <br>
+            <canvas id="serviceChart" width="800" height="400"></canvas>
+            <script>
+                var serviceColors = JSON.parse('{{ service_colors_json|escapejs }}');
+                
+                var ctx = document.getElementById('serviceChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: {{ dates|safe }},
+                        datasets: [
+                        {% for service, counts in service_counts.items %}
+                            {
+                                label: 'Number of Inquiries for {{ service }} service in last 30 days',
+                                data: {{ counts|safe }},
+                                backgroundColor: 'rgba(' + serviceColors[ '{{service}}' ] + ', 0.2)',
+                                borderColor: 'rgba(' + serviceColors[ '{{service}}' ] + ', 1)',
+                                borderWidth: 1
+                            },
+                        {% endfor %}
+
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            </script>
 
         </div>
 

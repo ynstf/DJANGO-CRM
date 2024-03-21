@@ -16,7 +16,7 @@ RUN /opt/ENVCRM/bin/pip install pip --upgrade && \
 
 #CMD [ "python3", "manage.py", "runserver", "0.0.0.0:8000"]
 
-RUN /opt/ENVCRM/bin/python3 manage.py runscript fill
+#RUN /opt/ENVCRM/bin/python3 manage.py runscript fill
 
 CMD ["/app/entrypoint.sh"]
 
