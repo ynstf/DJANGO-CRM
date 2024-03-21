@@ -5,7 +5,8 @@ from .views import get_languages, get_status, get_nationalities,get_sources,get_
 from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
 from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list
 from .views import make_booking, make_inq_underproccess, make_inq_new,generate_invoice,get_notify_state,make_employee_notified, make_inq_cancel
-from .views import add_sp,sp_list, edit_invoice_doc, edit_quotation_doc
+from .views import add_sp,sp_list, edit_invoice_doc, edit_quotation_doc, statistics
+
 urlpatterns = [
     path("dashboard/",dashboard,name="dashboard",),
     path('add_customers/', add_customer, name='add_customer'),
@@ -29,7 +30,6 @@ urlpatterns = [
     path('get_status', get_status, name='get_status'),
 
 
-    
     path('notifications', notifications, name='notifications'),
     path('get_notifications/', get_notifications, name='get_notifications'),
     path('get_notify_state/', get_notify_state, name='get_notify_state'),
@@ -63,6 +63,7 @@ urlpatterns = [
     path('services_list/', services_list, name='services_list'),
     path('edit_invoice_doc/', edit_invoice_doc, name='edit_invoice_doc'),
     path('edit_quotation_doc/', edit_quotation_doc, name='edit_quotation_doc'),
+    path('statistics/', statistics, name='statistics'),
 
 
 ]

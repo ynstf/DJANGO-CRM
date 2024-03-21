@@ -15,7 +15,12 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Position, Permission
 from django.http import JsonResponse
-from apps.dashboard.models import InvoiceForm, Quotation, QuotationForm, Service, SuperProvider
+from apps.dashboard.models import InvoiceForm, Quotation, QuotationForm, Service, SuperProvider, Inquiry
+from django.shortcuts import render
+from django.db.models import Count
+from django.utils import timezone
+from datetime import timedelta
+from collections import defaultdict
 
 
 @login_required(login_url='/')
@@ -382,8 +387,7 @@ def edit_quotation_doc_view(request):
 
 
 
-@login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+
 def services_list_view(request):
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
@@ -395,3 +399,38 @@ def services_list_view(request):
     }
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/services_list.html',context)
+
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def statistics_view(request):
+    # Calculate the date range for the last 30 days
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=29)
+
+    # Query the database to get the counts of inquiries for each date within the last 30 days
+    inquiry_counts = defaultdict(int)
+    inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date))
+    for inquiry in inquiries:
+        inquiry_date = inquiry.date_inq.strftime('%Y-%m-%d')
+        inquiry_counts[inquiry_date] += 1
+
+    # Prepare the data for the chart
+    dates = list(inquiry_counts.keys())
+    counts = list(inquiry_counts.values())
+
+    # Sort dates chronologically
+    dates.sort()
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'dates': dates,
+        'counts': counts,
+    }
+    context = TemplateLayout.init(request, context)
+
+
+    return render(request, 'admin/statistics/inquiry_statistics.html', context)
