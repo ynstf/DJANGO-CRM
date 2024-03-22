@@ -17,3 +17,4 @@ reportlab
 xhtml2pdf
 faker
 openpyxl
+pretty_errors

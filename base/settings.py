@@ -1,6 +1,6 @@
 from pathlib import Path
 from dotenv import load_dotenv
-
+import pretty_errors
 from .template import  THEME_LAYOUT_DIR, THEME_VARIABLES
 
 load_dotenv()  # take environment variables from .env.
@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'pretty_errors',
 
     #apps
     "apps.authentication",
@@ -184,3 +185,10 @@ THEME_VARIABLES = THEME_VARIABLES
 # Your stuff...
 # ------------------------------------------------------------------------------
 LOGOUT_REDIRECT_URL = "login"
+
+# Configure Pretty Errors
+PRETTY_ERRORS = {
+    'display': True,  # Enable Pretty Errors
+    'filters': ['django'],  # Filter out only Django-related errors
+    # Additional configuration options can be added here
+}

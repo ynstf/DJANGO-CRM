@@ -62,16 +62,18 @@
             <h3 style="color: #105794;">Contact Information</h3>
 
             <ul>
+                
             
                 {% for number in customer.landline_set.all %}
                     {% if number.landline %}
-                        <h6>Landlines: {{ number.landline }}</h6>
+                        <h6>Landlines: {{ number.landline }} <a href="tel:{{ number.landline }}" class="btn btn-primary waves-effect waves-light">Call {{ number.landline }}</a></h6>
                     {% endif %}
                 {% endfor %}
 
+
                 {% for number in customer.phonenumber_set.all %}
                     {% if number.number %}
-                        <h6>Phone Numbers: {{ number.number }}</h6>
+                        <h6>Phone Numbers: {{ number.number }} <a href="tel:{{ number.number }}" class="btn btn-primary waves-effect waves-light">Call {{ number.number }}</a></h6>
                     {% endif %}
                 {% endfor %}
 

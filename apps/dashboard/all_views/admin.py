@@ -441,7 +441,7 @@ def statistics_view(request):
 
     # Calculate the date range for the last 30 days
     service_colors = {}  # Dictionary to store colors for each service
-    random.seed(42)  # Seed the random number generator for reproducibility
+    random.seed(24)  # Seed the random number generator for reproducibility
     end_date = timezone.now().date()
     start_date = end_date - timedelta(days=29)
     # Query the database to get the counts of inquiries for each date and service within the last 30 days
@@ -456,12 +456,19 @@ def statistics_view(request):
     dates = sorted(service_data.keys())
     service_names = [service.name for service in services]
     service_counts = {service: [] for service in service_names}
+    colors = ["31, 119, 180","255, 127, 14","44, 160, 44","214, 39, 40","148, 103, 189","140, 86, 75","227, 119, 194","127, 127, 127","188, 189, 34","23, 190, 207","26, 85, 255","255, 0, 191","128, 255, 0","255, 191, 0","0, 255, 204"]
+    
     for date in dates:
+        color_counter = 0
         for service in service_names:
             service_counts[service].append(service_data[date][service])
             rgb_values = [random.randint(0, 255) for _ in range(3)]
             rgb_string = ', '.join(map(str, rgb_values))
-            service_colors[service] = rgb_string    
+            #service_colors[service] = rgb_string
+            service_colors[service] = colors[color_counter]
+            color_counter+=1
+            #print(service_names,colors[color_counter])
+    
     # Convert the service_colors dictionary to a JSON object
     service_colors_json = json.dumps(service_colors)
     print(service_colors_json)
