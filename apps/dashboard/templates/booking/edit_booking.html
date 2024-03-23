@@ -1,6 +1,6 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Make Booking{% endblock %}
+{% block title %}Edit Booking{% endblock %}
 
 {% block layout %}
 <!-- Layout wrapper: Start -->
@@ -53,7 +53,7 @@
                 <div>
                     <div class="col-md-4">
                         <label for="id_quotation-date" > Booking Date : </label>
-                        <input type="date" id="id_quotation-date" value="{{ date|date:'Y-m-d' }}" name="quotation-date" class="form-control" >
+                        <input type="date" id="id_quotation-date" value="{{ book.booking_date|date:'Y-m-d' }}" name="quotation-date" class="form-control" >
                     </div>
                     
 
@@ -64,18 +64,18 @@
                     
                     <div class="col-md-4">
                         <label for="id_booking-details" > Booking Details : </label>
-                        <textarea id="id_booking-details"  name="booking-details" class="form-control" ></textarea>
+                        <textarea id="id_booking-details"  name="booking-details" class="form-control" >{{ book.details }}</textarea>
                     </div>
 
                     <br>
                     <div class="col-md-4">
                         <label for="id_schedule-time" > scheduling next reminder in {{reminder_time}} month : </label>
-                        <input type="date" id="id_schedule-time" value="{{ scheduling|date:'Y-m-d' }}" name="schedule-time" class="form-control" >
+                        <input type="date" id="id_schedule-time" value="{{ reminder.schedule|date:'Y-m-d' }}" name="schedule-time" class="form-control" >
                     </div>
 
                     <div class="col-md-4">
                         <label for="id_booking-number" > Booking Number : </label>
-                        <input id="id_booking-number" name="booking-number" class="form-control" required>
+                        <input id="id_booking-number" value="{{ book.booking_number }}" name="booking-number" class="form-control" readonly>
                     </div>
 
 
@@ -96,17 +96,8 @@
                     <br><br>
                 </div>
 
-                <button class="btn btn-success" type="submit">Confirm Booking</button>
+                <button class="btn btn-success" type="submit">Edit Booking</button>
             </form>
-
-
-
-
-
-
-
-
-
 
 
         </div>

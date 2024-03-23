@@ -233,7 +233,10 @@
             {% if booking_number %}
                 <hr>
                 <h3 style="color:#264f13;">Booking
+                    
+                    
                 {% if user.employee.position.name == "call center" or  user.employee.position.name == "admin" %}
+                    <a class="btn btn-primary" href="{% url 'edit_booking' id=inquiry.id %}">Edit Booking</a>
                     <a class="btn btn-primary" href="{% url 'generate_invoice' id=inquiry.id %}" target="_blank">INVOICE PDF</a>
                 {% endif %}
 

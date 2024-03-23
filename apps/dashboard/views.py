@@ -51,10 +51,11 @@ statistics = statistics_view
 
 ################# booking ###################
 from .all_views.booking import (make_booking_view, make_inq_underproccess,
-                                generate_invoice_view)
+                                generate_invoice_view,edit_booking_view)
 make_booking = make_booking_view
 make_inq_underproccess = make_inq_underproccess
 generate_invoice = generate_invoice_view
+edit_booking = edit_booking_view
 
 ################# inquiries ###################
 from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,

@@ -176,6 +176,121 @@ def make_booking_view(request,id):
     return render(request, 'booking/make_booking.html',context)
 
 
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
+def edit_booking_view(request,id):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+
+    inquiry = Inquiry.objects.get(id = id)
+    quotations = Quotation.objects.filter(inquiry=inquiry)
+
+
+    
+
+    if request.method == 'POST':
+
+        quotation_service = request.POST.get('quotation-service')
+        quotation_date = request.POST.get('quotation-date')
+        booking_details = request.POST.get('booking-details')
+        booking_number = request.POST.get('booking-number')
+        ref_number = request.POST.get('ref-number')
+        schedule_time = request.POST.get('schedule-time')
+
+
+        inquiry = Inquiry.objects.get(id=id)
+        customer_id = inquiry.customer.id
+        customer = Customer.objects.get(id=customer_id)
+        employee_id = request.user.employee.id
+        employee = Employee.objects.get(id=employee_id)
+
+
+
+        srv_id = inquiry.services.id
+        quotation_service = Service.objects.get(id=srv_id)
+
+        booking = Booking.objects.get(inquiry=inquiry)
+        booking.booking_date = quotation_date
+        booking.details = booking_details
+        booking.booking_number = booking_number
+        booking.save()
+
+        reminder = InquiryReminder.objects.get(inquiry=inquiry)
+        reminder.schedule = schedule_time
+        reminder.save()
+        
+        return redirect('inquiry_info', id=id)
+
+
+
+    
+    date=quotations[0].quotation_date
+    service=quotations[0].quotation_service
+    sp=quotations[0].quotation_sp
+
+
+    #book infos
+    book = Booking.objects.get(inquiry=inquiry)
+    reminder = InquiryReminder.objects.get(inquiry=inquiry)
+    # monthly reminnder
+    reminder_time = service.reminder_time
+    # Get today's date
+    today = datetime.now()
+    # Add 5 months to today's date
+    scheduling = today + timedelta(days=reminder_time*30)
+
+    quotations=[]
+    for q in Quotation.objects.filter(inquiry=Inquiry.objects.get(id = id)):
+        print(q.data)
+        quotations.append([d for d in q.data.split(",*,")])
+
+    cols = Inquiry.objects.get(id=id).services.columns
+    cols_list = cols.split(',')
+
+    defult_data = []
+    details = []
+    prices = []
+    quantities = []
+    for i in range(len(quotations)):
+        details.append(quotations[i][0])
+        prices.append(quotations[i][len(quotations[i])-2])
+        quantities.append(quotations[i][len(quotations[i])-1])
+    
+    for i in range(len(quotations)):
+        data = []
+        for d in quotations[i][1:-2]:
+            data.append(d)
+
+        result = [{"column_name": col, "data": d} for col, d in zip(cols_list[1:-2], data)]
+
+        defult_data.append(
+            {"detail":details[i], "result":result, "columns":cols_list[1:-2], "price":prices[i], "quantity":quantities[i] , "total":float(prices[i])*float(quantities[i])}
+        )
+    
+    # Render the initial page with the full customer list
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'notifications':notifications,
+                'notifications_counter':notifications_counter,
+                'inquiry': Inquiry.objects.get(id=id),
+                'date':date,
+                'service' : service,
+                'quotations':defult_data,
+                'services':Service.objects.all(),
+                'sp':sp,
+                'scheduling':scheduling,
+                'reminder_time':reminder_time,
+                'book':book,
+                'reminder':reminder,
+                }
+    
+    context = TemplateLayout.init(request, context)
+    return render(request, 'booking/edit_booking.html',context)
+
+
 def generate_invoice_view(request, id):
     # Retrieve the inquiry and associated quotations
     inquiry = Inquiry.objects.get(id=id)
