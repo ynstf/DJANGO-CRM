@@ -192,3 +192,17 @@ PRETTY_ERRORS = {
     'filters': ['django'],  # Filter out only Django-related errors
     # Additional configuration options can be added here
 }
+
+# settings.py
+# settings.py
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name="dncb74ian",
+    api_key="446313327729894",
+    api_secret="TJQQq_JflidmApsWkpX_q47pUqs"
+)
+

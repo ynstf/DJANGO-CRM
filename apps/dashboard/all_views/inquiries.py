@@ -19,6 +19,8 @@ from django.urls import reverse
 from urllib.parse import quote
 from datetime import timedelta
 from apps.dashboard.models import QuotationForm
+import cloudinary
+import cloudinary.uploader
 
 ################# permissions ############
 """
@@ -418,6 +420,32 @@ def inquiry_info_view(request, id):
     customer = inquiry.customer
 
 
+    # upload images 
+    if request.method == 'POST':
+        try:
+            imgs = request.FILES['images']
+            print(imgs)
+            # Upload images to Cloudinary
+            cloudinary_response = cloudinary.uploader.upload(request.FILES['images'])
+            # Get the public URL(s) of the uploaded image(s)
+            try:
+                urls = inquiry.cloudinary_urls.split(',**,')
+            except:
+                urls = []
+            image_urls = [cloudinary_response['secure_url']]
+            image_urls+=urls
+            # Save the URL(s) to the model
+            inquiry.cloudinary_urls = ',**,'.join(image_urls)
+            inquiry.save()
+        except:
+            pass
+
+    try:
+        images = inquiry.cloudinary_urls.split(',**,')
+        print(images)
+    except:
+        images = "" 
+
     # delete the notification for this inquiry id
     try :
         the_notifications = InquiryNotify.objects.filter(inquiry=inquiry)
@@ -445,14 +473,6 @@ def inquiry_info_view(request, id):
         line = quotation.data.split(',*,')
         print(line)
         inquiry_data.append(line)
-
-    """booking_data = []
-    bookings = Booking.objects.filter(inquiry=Inquiry.objects.get(id=id))
-    for booking in bookings:
-        line = booking.data.split(',*,')
-        print(line)
-        booking_data.append(line)"""
-
     
     try:
         booking_detail = Booking.objects.get(inquiry=inquiry).details 
@@ -467,6 +487,7 @@ def inquiry_info_view(request, id):
         phone_number = customer.whatsapp_set.all().first().whatsapp
     except :
         phone_number = ""
+    
     message = "Your Quotations ready, check the link"
     # Replace 'https://example.com/path/to/your/document.pdf' with the actual URL to your hosted PDF document
     pdf_url = reverse('generate_pdf', args=[id])
@@ -514,7 +535,8 @@ def inquiry_info_view(request, id):
             'whatsapp_link':whatsapp_link,
             'whatsapp_link_invoice':whatsapp_link_invoice,
             'connect_with_customer_whatsapp_link':connect_with_customer_whatsapp_link,
-            'canceling_cause': inquiry_state.canceling_causes
+            'canceling_cause': inquiry_state.canceling_causes,
+            'images': images
 
             }
     context = TemplateLayout.init(request, context)

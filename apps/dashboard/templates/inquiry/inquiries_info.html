@@ -157,6 +157,21 @@
                     <h6>Source: {{ inquiry.source }}</h6>
                     <h6>Services: {{ inquiry.services.name }}</h6>
                     <h6>Description: {{ inquiry.description }}</h6>
+                    <h6> Images: </h6>
+                    {% for image in images %}
+                        <img src="{{ image }}" alt="">
+                    {% endfor %}
+
+
+
+                    <form id="image" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="col-md-4">
+                            <!-- Other form fields -->
+                            <input type="file" class="form-control" name="images" accept="image/*" multiple>
+                            <button class="btn btn-success" type="submit">Add images</button>
+                        </div>
+                    </form>
                     
                 </ul>
                 

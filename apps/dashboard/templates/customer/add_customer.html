@@ -35,7 +35,7 @@
             <br>
             
 
-            <form method="post" id="customerForm">
+            <form method="post" id="customerForm"  enctype="multipart/form-data">
                 {% csrf_token %}
                 <!-- {{ customer_form.as_p }} -->
 
@@ -476,6 +476,8 @@
                                         <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number"></textarea>
                                     </div>
                                     <br>
+
+
                         `;
 
                         // Add a delete button for the inquiry

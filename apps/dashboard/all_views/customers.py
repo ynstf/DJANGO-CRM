@@ -216,6 +216,7 @@ def add_customer_view(request):
 
         # counter to know inquiries of each address
         inq_counters = request.POST.get('inq_counters')
+        
 
 
         user_already_exist = False
