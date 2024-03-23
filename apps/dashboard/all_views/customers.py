@@ -134,13 +134,15 @@ def customer_list_view(request):
 
     # show all infos
     customer = []
+    #statu = InquiryStatus.objects.get(inquiry=Inquiry.objects.filter(customer=c).first()).status
     for c in customers:
         try:
             customer.append({'info':c,
                             'number':PhoneNumber.objects.filter(customer=c).first(),
                             'email':Email.objects.filter(customer=c).first(),
                             'source':Inquiry.objects.filter(customer=c).first().source,
-                            'inquiries':Inquiry.objects.filter(customer=c)
+                            'inquiries':Inquiry.objects.filter(customer=c),
+                            'statu':InquiryStatus.objects.get(inquiry=Inquiry.objects.filter(customer=c).last()).status
                         })
         except:
             customer.append({'info':c,
@@ -666,22 +668,26 @@ def edit_customer_view(request, id):
         print(s)
         print("inquiries data")
         print(inq_date,inq_source,inq_service,inq_desc)
+        print("inquiries id")
+        print(inq_id)
 
         for i in range(1,len(s)+1):
             for _ in range(s[f"{i}"]):
                 print(f'lenth of inquiries in adress{i}',s[f"{i}"])
                 print("i: ",i)
                 print("q: ",q)
-                print(inq_id[q])
                 if s[f"{i}"]>0:
+                    
+
+
+                    
                     print(adress_name[i-1])
                     address = addresses[i-1]
                     services_set = Service.objects.get(id=inq_service[q])
                     inq_src = Source.objects.get(id=inq_source[q])
 
-                    print(inq_src)
-
-                    if inq_date[q]:
+                    print(inq_id[q])
+                    if inq_id[q]!="new":
                         inquiry = Inquiry.objects.get(id=inq_id[q])
 
                         inquiry.customer = customer
@@ -714,21 +720,25 @@ def edit_customer_view(request, id):
                             )
                             isnotify.save()
                         
-                    else :
-                        inquiry = Inquiry.objects.get(id=inq_id[q])
 
-                        inquiry.customer = customer
-                        inquiry.address = address
-                        inquiry.date_inq = inq_date[q]
-                        inquiry.source = inq_src
-                        inquiry.description = inq_desc[q]
-                        inquiry.services = services_set
+                        q+=1
+                    else:
+                        inquiry = Inquiry(
+                            customer=customer,
+                            address = address,
+                            date_inq = inq_date[q],
+                            source = inq_src,
+                            description = inq_desc[q],
+                            services = services_set
+                        )
 
                         inquiry.save()
 
                         new = Status.objects.get(name = "new")
-                        inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+                        inq_state = InquiryStatus(inquiry = inquiry,status=new)
+                        inq_state.save()
                         #inq_state.status = new
+
 
                         all_employees = Employee.objects.filter(sp_service=services_set)
                         for employee in all_employees:
@@ -736,16 +746,16 @@ def edit_customer_view(request, id):
                                 employee = employee,
                                 inquiry = inquiry,
                                 service = services_set,
-                                action =  "updated"
+                                action = "new"
                             )
                             notification.save()
+
                             isnotify = IsEmployeeNotified(
                                 employee = employee,
                                 notified = False
                             )
                             isnotify.save()
-
-                    q+=1
+                        q+=1
                 else:
                     pass
                 

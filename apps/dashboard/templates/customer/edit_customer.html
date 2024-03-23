@@ -416,7 +416,7 @@
                             <ul class="inq-container" id="inqContainer_{{ forloop.counter }}"></ul>
 
                             <!-- Add new inquiry button for this address -->
-                            <button class="btn btn-secondary btn-sm" type="button" onclick="addInq('{{ forloop.counter }}')">Add New Inquiry</button>
+                            <button class="btn btn-secondary btn-sm" type="button" onclick="addInq('{{ forloop.counter }}')" >Add New Inquiry</button>
                             <!-- Display the number of inquiries for this address -->
                             <p>Total Inquiries: <span id="inqCount_{{ forloop.counter }}">0</span></p>
 
@@ -441,10 +441,15 @@
                                     newInqSection.innerHTML = `
                                             <h3>Inquiry</h3>
 
+                                                <div class="col-md-4">
+                                                    <label for="inquiry-id"> ID : </label>
+                                                    <input name="inquiry-id" value="new" class="form-control" readonly></input>
+                                                </div>
+
                                                 
                                                 <div class="col-md-4">
                                                     <label for="id_inquiry-date_inq"> Date Inquiry : </label>
-                                                    <input type="date" name="inquiry-date_inq" class="form-control" placeholder="Date Inquiry..." aria-label="Date Inquiry">
+                                                    <input type="date" name="inquiry-date_inq" class="form-control" placeholder="Date Inquiry..." aria-label="Date Inquiry" required>
                                                     <!--<button class="btn btn" type="button" onclick="fillCurrentDate()">Fill Current Date</button>-->
                                                 </div>
                                                 
