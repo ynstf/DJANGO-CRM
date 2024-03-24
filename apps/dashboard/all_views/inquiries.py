@@ -460,16 +460,18 @@ def inquiry_info_view(request, id):
     # upload images 
     if request.method == 'POST':
         try:
-            imgs = request.FILES['images']
+            imgs = request.FILES.getlist('images')
             print(imgs)
             # Upload images to Cloudinary
-            cloudinary_response = cloudinary.uploader.upload(request.FILES['images'])
+            image_urls = []
+            for img in imgs:
+                cloudinary_response = cloudinary.uploader.upload(img)
+                image_urls.append(cloudinary_response['secure_url'])
             # Get the public URL(s) of the uploaded image(s)
             try:
                 urls = inquiry.cloudinary_urls.split(',**,')
             except:
                 urls = []
-            image_urls = [cloudinary_response['secure_url']]
             image_urls+=urls
             # Save the URL(s) to the model
             inquiry.cloudinary_urls = ',**,'.join(image_urls)
