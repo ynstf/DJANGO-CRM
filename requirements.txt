@@ -19,4 +19,3 @@ faker
 openpyxl
 pretty_errors
 cloudinary
-cloudinary-django
