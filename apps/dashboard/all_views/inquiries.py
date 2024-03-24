@@ -1,3 +1,4 @@
+import django.db
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
@@ -18,7 +19,7 @@ from django.utils import timezone
 from django.urls import reverse
 from urllib.parse import quote
 from datetime import timedelta
-from apps.dashboard.models import QuotationForm
+from apps.dashboard.models import QuotationForm, Advence, Invoice
 import cloudinary
 import cloudinary.uploader
 
@@ -198,7 +199,6 @@ def get_notifications(request):
     notifications_data = [{'message': str(notification)} for notification in notifications]
     return JsonResponse({'notifications': notifications_data, 'notifications_counter': notifications_counter}, safe=False)
 
-
 def get_notify_state_view(request):
     print(request.user.employee)
     
@@ -209,16 +209,12 @@ def get_notify_state_view(request):
     except:
         return JsonResponse({}, safe=False)
 
-    
-
-
 def make_employee_notified_view(request):
     notify_info = IsEmployeeNotified.objects.get(employee = request.user.employee)
     notify_info.notified = True
     notify_info.save()
     print(notify_info.notified)
     return JsonResponse({'resp': True})
-
 
 
 @login_required(login_url='/')
@@ -382,8 +378,27 @@ def inquiries_list_view(request):
     inquiry = []
     for i in inquiries:
         try:
+            advence = Advence.objects.get(inquiry=i)
+
+            from django.db.models import Sum
+            # Assuming 'i' is the specific inquiry instance
+            quotations = Quotation.objects.filter(inquiry=i)
+            # Aggregate the total values of all quotations for the inquiry
+            total_quotations = quotations.aggregate(total=Sum('total'))
+            # Access the total value and count
+            totale = total_quotations['total']
+
+
+        except :
+            advence = 0
+            totale = 0
+            
+
+        try:
             inquiry.append({'info':i,
                             'state':InquiryStatus.objects.get(inquiry=i),
+                            'advence' : advence,
+                            'totale':totale
                         })
         except:
             inquiry.append({'info':i,
@@ -391,6 +406,7 @@ def inquiries_list_view(request):
 
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    
     
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
@@ -407,6 +423,27 @@ def inquiries_list_view(request):
 
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiry/inquiries_list.html',context)
+
+def add_advence_view(request, id):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    inquiry = Inquiry.objects.get(id=id)
+    inquiry_state = InquiryStatus.objects.get(inquiry=inquiry)
+    customer = inquiry.customer
+    if request.method == 'POST':
+        advence_price = request.POST.get('advence_price')
+        print(advence_price)
+        try :
+            advence = Advence.objects.get(inquiry=inquiry)
+            print(advence)
+            advence.price = advence_price
+            advence.save()
+        except :
+            advence = Advence.objects.create(inquiry=inquiry)
+            advence.price = advence_price
+            advence.save()
+
+    return redirect('inquiries_list')
 
 
 @login_required(login_url='/')
@@ -636,7 +673,6 @@ def edit_quotation_view(request,id):
     if request.method == 'POST':
         quotation_service = request.POST.get('quotation-service')
         quotation_date = request.POST.get('quotation-date')
-
         details = request.POST.getlist('quotation-detail')
         prices = request.POST.getlist('quotation-price')
         quantities = request.POST.getlist('quotation-quantity')

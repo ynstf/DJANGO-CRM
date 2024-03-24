@@ -4,7 +4,7 @@ from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber
 from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
 from .models import Status,InquiryStatus, IsEmployeeNotified
 from .models import Service, InquiryReminder,SuperProvider
-from .models import InvoiceForm, QuotationForm
+from .models import InvoiceForm, QuotationForm, Advence
 
 
 # Register your models here.
@@ -103,3 +103,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 @admin.register(InquiryReminder)
 class InquiryReminderAdmin(admin.ModelAdmin):
     list_display = ('employee', 'inquiry', 'service', 'schedule')
+
+@admin.register(Advence)
+class AdvenceAdmin(admin.ModelAdmin):
+    list_display = ('inquiry',)

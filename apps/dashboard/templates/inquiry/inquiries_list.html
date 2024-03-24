@@ -541,6 +541,9 @@
                         <th>source</th>
                         <th>state</th>
                         <th>canceling causes</th>
+                        <th>advenced price</th>
+                        <th>total price</th>
+                        <th>percentage</th>
 
 
                         <!-- Add other columns as needed -->
@@ -585,6 +588,35 @@
                             <td>{{ inquiry.info.source }}</td>
                             <td>{{ inquiry.state.status }}</td>
                             <td>{{ inquiry.state.canceling_causes }}</td>
+
+                            <td style="min-width: 200px;" >
+                                <form method="post" action="{% url 'add_advence' inquiry.info.id %}" >
+                                    {% csrf_token %}
+                                    <div style="display: flex;">
+                                        <input id="advence_price" type="number" name="advence_price" class="form-control mr-2" value="{{ inquiry.advence.price }}">
+                                        <button class="btn btn-sm btn-success" type="submit">Add price</button>
+                                    </div>
+                                </form>
+                            </td>
+
+                            <td>{{ inquiry.totale }}</td>
+                            <td id="percentage-{{inquiry.info.id}}"></td>
+
+                            <script>
+                                if (parseInt("{{ inquiry.totale }}") != 0) {
+                                    // Calculate the percentage
+                                    var percentage = (parseInt("{{inquiry.advence.price}}") / parseInt("{{ inquiry.totale }}") ) * 100;
+
+                                    console.log(percentage)
+                                    // Update the content of the <td> element with id "percentage"
+                                    document.getElementById("percentage-{{inquiry.info.id}}").textContent = percentage.toFixed(2) + "%";
+                                } else {
+                                    document.getElementById("percentage-{{inquiry.info.id}}").textContent = 'None';
+
+                                }
+
+                            </script>
+
 
 
 
