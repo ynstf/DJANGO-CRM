@@ -540,6 +540,7 @@
                         <th>services</th>
                         <th>source</th>
                         <th>state</th>
+                        <th>have media</th>
                         <th>canceling causes</th>
                         <th>advenced price</th>
                         <th>total price</th>
@@ -587,6 +588,20 @@
                             <td>{{ inquiry.info.services }}</td>
                             <td>{{ inquiry.info.source }}</td>
                             <td>{{ inquiry.state.status }}</td>
+                            
+                            {% if inquiry.info.cloudinary_urls %} 
+                                <td style="color: #66c31f;"> Yes <div id="mediacount-{{inquiry.info.id}}"></div> </td>
+                                <script>
+                                    var cloudinaryUrls = "{{ inquiry.info.cloudinary_urls }}"; // Get the URLs
+                                    var urlsArray = cloudinaryUrls.split(',**,'); // Split by the delimiter
+                                    var numberOfUrls = urlsArray.length; // Count the number of URLs
+                                    console.log('count: '+numberOfUrls)
+                                    document.getElementById("mediacount-{{inquiry.info.id}}").innerText = numberOfUrls; // Update the cell with the count
+                                </script>
+                            {% else %} 
+                                <td style="color: #dc2215;"> No </td>
+                            {% endif %}
+
                             <td>{% if inquiry.state.canceling_causes %}{{ inquiry.state.canceling_causes }}{% else %} not canceled {% endif %}</td>
 
                             {% if inquiry.state.status.name == "underproccess" %}
