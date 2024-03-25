@@ -587,20 +587,29 @@
                             <td>{{ inquiry.info.services }}</td>
                             <td>{{ inquiry.info.source }}</td>
                             <td>{{ inquiry.state.status }}</td>
-                            <td>{{ inquiry.state.canceling_causes }}</td>
+                            <td>{% if inquiry.state.canceling_causes %}{{ inquiry.state.canceling_causes }}{% else %} not canceled {% endif %}</td>
 
-                            <td style="min-width: 200px;" >
-                                <form method="post" action="{% url 'add_advence' inquiry.info.id %}" >
-                                    {% csrf_token %}
-                                    <div style="display: flex;">
-                                        <input id="advence_price" type="number" name="advence_price" class="form-control mr-2" value="{{ inquiry.advence.price }}">
-                                        <button class="btn btn-sm btn-success" type="submit">Add price</button>
-                                    </div>
-                                </form>
-                            </td>
+                            {% if inquiry.state.status.name == "underproccess" %}
+                                <td style="min-width: 200px;" >
+                                    <form method="post" action="{% url 'add_advence' inquiry.info.id %}" >
+                                        {% csrf_token %}
+                                        <div style="display: flex;">
+                                            <input id="advence_price" type="number" name="advence_price" class="form-control mr-2" value="{{ inquiry.advence.price }}">
+                                            <button class="btn btn-sm btn-success" type="submit">Add price</button>
+                                        </div>
+                                    </form>
+                                </td>
 
-                            <td>{{ inquiry.totale }}</td>
-                            <td id="percentage-{{inquiry.info.id}}"></td>
+                                <td>{{ inquiry.totale }}</td>
+
+                                <td id="percentage-{{inquiry.info.id}}"></td>
+                            {% else %}
+                                <td> Null </td>
+
+                                <td> Null </td>
+
+                                <td> Null </td>
+                            {% endif %}
 
                             <script>
                                 if (parseInt("{{ inquiry.totale }}") != 0) {
