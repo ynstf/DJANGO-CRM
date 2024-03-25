@@ -379,18 +379,19 @@ def inquiries_list_view(request):
     for i in inquiries:
         try:
             advence = Advence.objects.get(inquiry=i)
-
-            from django.db.models import Sum
-            # Assuming 'i' is the specific inquiry instance
-            quotations = Quotation.objects.filter(inquiry=i)
-            # Aggregate the total values of all quotations for the inquiry
-            total_quotations = quotations.aggregate(total=Sum('total'))
-            # Access the total value and count
-            totale = total_quotations['total']
-
-
         except :
             advence = 0
+
+        try:
+            # Assuming 'i' is the specific inquiry instance
+            quotations = Quotation.objects.filter(inquiry=i)
+            print(i)
+            print(quotations)
+            totale = 0
+            for q in quotations:
+                totale = totale + float(q.total)
+            print(totale)
+        except:
             totale = 0
             
 
@@ -436,9 +437,11 @@ def add_advence_view(request, id):
         try :
             advence = Advence.objects.get(inquiry=inquiry)
             print(advence)
-            advence.price = advence_price
+            print("11111111111111")
+            advence.price = float(advence.price) + float(advence_price)
             advence.save()
         except :
+            print("222222222222222")
             advence = Advence.objects.create(inquiry=inquiry)
             advence.price = advence_price
             advence.save()
@@ -561,6 +564,7 @@ def inquiry_info_view(request, id):
 
 
     print(schedule_date)
+    print(booking_number)
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
@@ -630,13 +634,13 @@ def make_quotation_view(request, id):
             columns_str = ",*,".join(data)
             print(columns_str)
             
-            sp = SuperProvider.objects.get(id=sp)
+            superprovider = SuperProvider.objects.get(id=sp)
             quotation = Quotation(
                 employee=employee,
                 customer=customer,
                 inquiry=inquiry,
                 quotation_service=quotation_service,
-                quotation_sp=sp,
+                quotation_sp=superprovider,
                 quotation_date=quotation_date,
                 data = columns_str,
                 total=total

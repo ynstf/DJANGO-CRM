@@ -229,7 +229,7 @@ class Invoice(models.Model):
 
 class Advence(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
-    inquiry = models.ForeignKey(Inquiry, on_delete=models.SET_NULL, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=80, blank=True, null=True)
     price = models.IntegerField(blank=True, null=True)
     def __str__(self):

@@ -609,7 +609,7 @@
                                     <form method="post" action="{% url 'add_advence' inquiry.info.id %}" >
                                         {% csrf_token %}
                                         <div style="display: flex;">
-                                            <input id="advence_price" type="number" name="advence_price" class="form-control mr-2" value="{{ inquiry.advence.price }}">
+                                            <input id="advence_price" type="number" name="advence_price" class="form-control mr-2">
                                             <button class="btn btn-sm btn-success" type="submit">Add price</button>
                                         </div>
                                     </form>
@@ -633,7 +633,10 @@
 
                                     console.log(percentage)
                                     // Update the content of the <td> element with id "percentage"
-                                    document.getElementById("percentage-{{inquiry.info.id}}").textContent = percentage.toFixed(2) + "%";
+                                    var advencePrice = {{ inquiry.advence.price }};
+                                    var formattedPercentage = '(' + advencePrice + ')' + '<br>' + percentage.toFixed(2) + "%";
+                                    document.getElementById("percentage-{{inquiry.info.id}}").innerHTML  = formattedPercentage;
+
                                 } else {
                                     document.getElementById("percentage-{{inquiry.info.id}}").textContent = 'None';
 

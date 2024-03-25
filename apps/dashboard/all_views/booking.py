@@ -6,10 +6,8 @@ from web_project import TemplateLayout
 
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee,Permission
-from apps.dashboard.models import (Inquiry, InquiryStatus, Language, 
-                                Nationality, InquiryNotify,
-                                Source, Status, EmployeeAction,
-                                IsEmployeeNotified,InquiryReminder)
+from apps.dashboard.models import (Advence, EmployeeAction, Inquiry, InquiryNotify,
+    InquiryReminder, InquiryStatus, IsEmployeeNotified, Language, Nationality, Source, Status)
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 import io
@@ -334,6 +332,8 @@ def generate_invoice_view(request, id):
     date=booking.booking_date
     service=booking.booking_service
 
+    advence = Advence.objects.get(inquiry=inquiry).price
+
     context = {'inquiry': inquiry,
                 'quotations': quotations,
                 'date':date,
@@ -347,6 +347,8 @@ def generate_invoice_view(request, id):
                 'data':data,
                 'booking':booking,
                 'sp':sp,
+                'advence':advence,
+                'rest': total-advence,
 
                 }
     html_content = template.render(context)
