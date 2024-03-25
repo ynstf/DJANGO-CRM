@@ -516,9 +516,13 @@ def inquiry_info_view(request, id):
     try:
         booking_detail = Booking.objects.get(inquiry=inquiry).details 
         booking_number = Booking.objects.get(inquiry=inquiry).booking_number
+        booking_date = Booking.objects.get(inquiry=inquiry).booking_date
+        schedule_date = InquiryReminder.objects.get(inquiry=inquiry).schedule
     except:
         booking_detail = None
         booking_number = None
+        booking_date = None
+        schedule_date = None
 
 
     try:
@@ -556,7 +560,7 @@ def inquiry_info_view(request, id):
     connect_with_customer_whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message1)}%0A{quote(message2)}%0A{quote(message3)}%0A{quote(message4)}%0A{quote(message5)}%0A{quote(message6)}%0A{quote(message7)}%0A{quote(message8)}%0A{quote(message9)}%0A{quote(message10)}'
 
 
-
+    print(schedule_date)
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
@@ -569,6 +573,10 @@ def inquiry_info_view(request, id):
             'data':inquiry_data,
             'booking_detail':booking_detail,
             'booking_number':booking_number,
+            'booking_date':booking_date,
+            'schedule_date':schedule_date,
+
+
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
             'permissions_list':[p.name for p in request.user.employee.permissions.all()],
             'whatsapp_link':whatsapp_link,
