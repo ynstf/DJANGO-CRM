@@ -310,6 +310,48 @@
 
                 <!-- JavaScript code to add new address forms dynamically -->
                 <script>
+                    // Assuming you're using jQuery for AJAX
+                    $(document).ready(function() {
+                        $('#superProvider').change(function() {
+                            var superProviderId = $(this).val();
+                            $.ajax({
+                                type: 'GET',
+                                url: '/get_services_by_sp/',
+                                data: {
+                                    'super_provider_id': superProviderId
+                                },
+                                dataType: 'json',
+                                success: function(response) {
+                                    $('#serviceList').empty();
+                                    if (response.services && response.services.length > 0) {
+                                        var selectElement = $('<select>', {
+                                            id: 'inquiry-services',
+                                            name: 'inquiry-services',
+                                            required: true,
+                                            class:"form-control"
+                                        });
+                                        $.each(response.services, function(index, serviceName) {
+                                            var option = $('<option>', {
+                                                value: serviceName,
+                                                text: serviceName
+                                            });
+                                            selectElement.append(option);
+                                        });
+                                        $('#serviceList').append(selectElement);
+                                    } else {
+                                        $('#serviceList').text('No services available');
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error:', error);
+                                }
+                            });
+                        });
+                    });
+
+                </script>
+
+                <script>
                     var br = document.createElement('br');
                     var addressCounter = 1;
                      var inqCounters = {};  // Counter for each address
@@ -411,7 +453,47 @@
                     var inqCounter = 1;
 
                     function addNewInq(addressIndex) {
-                        
+                        // Assuming you're using jQuery for AJAX
+                    $(document).ready(function() {
+
+                        $('#superProvider_'+addressIndex+'_'+inqCounters[addressIndex]).change(function() {
+                            var superProviderId = $(this).val();
+                            console.log(superProviderId)
+                            $.ajax({
+                                type: 'GET',
+                                url: '/get_services_by_sp/',
+                                data: {
+                                    'super_provider_id': superProviderId
+                                },
+                                dataType: 'json',
+                                success: function(response) {
+                                    $('#serviceList_'+addressIndex+'_'+inqCounters[addressIndex]).empty();
+                                    if (response.services && response.services.length > 0) {
+                                        var selectElement = $('<select>', {
+                                            id: 'inquiry-services',
+                                            name: 'inquiry-services',
+                                            required: true,
+                                            class:"form-control"
+                                        });
+                                        $.each(response.services, function(index, serviceName) {
+                                            var option = $('<option>', {
+                                                value: serviceName,
+                                                text: serviceName
+                                            });
+                                            selectElement.append(option);
+                                        });
+                                        $('#serviceList_'+addressIndex+'_'+inqCounters[addressIndex]).append(selectElement);
+                                    } else {
+                                        $('#serviceList_'+addressIndex+'_'+inqCounters[addressIndex]).text('No services available');
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error:', error);
+                                }
+                            });
+                        });
+                    });
+
                         // Create a new div for the inquiry section
                         var newInqSection = document.createElement('li');
                         newInqSection.className = 'inq-form';
@@ -450,27 +532,22 @@
                                             {% endfor %}
                                         </select>
                                     </div>
+
                                     <div class="col-md-4">
-                                        <label for="id_inquiry-services"> Services : </label>
-                                        <select name="inquiry-services" class="form-control">
-                                            {% for srv in Services %}
-                                                {% if srv.name == "Others" %}
-                                                    <option value="{{ srv.id }}" selected>{{ srv }}</option>
-                                                {% else %}
-                                                    <option value="{{ srv.id }}">{{ srv }}</option>
-                                                {% endif %}
+                                        <label for="superProvider">Select Super Provider:</label>
+                                        <select id="superProvider_${addressIndex}_${inqCounters[addressIndex]}" class="form-control" name="inquiry-superprovider" required>
+                                            <!-- Populate dropdown menu with super providers -->
+                                            {% for superProvider in all_sp %}
+                                                <option value="{{ superProvider.id }}">{{ superProvider.name }}</option>
                                             {% endfor %}
                                         </select>
+
+                                        <label for="serviceList">services:</label>
+                                        <div id="serviceList_${addressIndex}_${inqCounters[addressIndex]}">
+                                            <!-- Services will be displayed here -->
+                                        </div>
                                     </div>
-                                    <div class="col-md-4" id="super-provider-container" >
-                                        <label for="id-sp">Super Provider:</label>
-                                        <select id="id-sp" name="sp" class="form-control">
-                                            <option value="" selected disabled>Select sp Company...</option>
-                                            {% for sp in all_sp %}
-                                                <option value="{{ sp.id }}">{{ sp.name }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
+
                                     <div class="col-md-4">
                                         <label for="id_inquiry-description"> Description : </label>
                                         <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number"></textarea>
