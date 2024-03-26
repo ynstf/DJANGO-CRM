@@ -4,16 +4,9 @@ from apps.authentication.models import Employee
 from base.settings import DEFAULT_AUTO_FIELD
 from .models_com import Service
 from django.db import models
+from .models_com import SuperProvider
 
 
-class SuperProvider(models.Model):
-    name = models.CharField(max_length=50)
-    service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
-    trn = models.CharField(max_length=50, blank=True, null=True)
-    search_number = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
 
 class Emirate(models.Model):
     name = models.CharField(max_length=50)
@@ -167,6 +160,7 @@ class InquiryNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     action = models.CharField(max_length=50, choices=[('new', 'new'),
                                                     ('connecting', 'connecting'),
                                                     ('cancel', 'cancel'),

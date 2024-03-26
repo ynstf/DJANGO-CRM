@@ -59,7 +59,7 @@ class InquiryAdmin(admin.ModelAdmin):
 
 @admin.register(SuperProvider)
 class SuperProviderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'service', 'trn', 'search_number')
+    list_display = ('name', 'trn', 'search_number')
 
 
 @admin.register(QuotationForm)
@@ -86,7 +86,7 @@ class QuotationAdmin(admin.ModelAdmin):
 
 @admin.register(InquiryNotify)
 class InquiryNotifyAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'inquiry', 'service','action')
+    list_display = ('employee', 'inquiry', 'sp','action')
 
 @admin.register(IsEmployeeNotified)
 class IsEmployeeNotifiedAdmin(admin.ModelAdmin):

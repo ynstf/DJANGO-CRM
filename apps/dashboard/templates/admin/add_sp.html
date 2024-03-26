@@ -53,17 +53,27 @@
 
                 <div class="col-md-4">
                     <label for="id_employee-permissions">Services:</label>
-                    <select name="sp-service" class="form-control">
-                        <option value="">Chose a service</option>
+                    <select name="sp-service" class="form-control" required multiple size="5">
+                        <option value="" disabled >Chose a service</option>
                         {% for service in services %}
                             <option value="{{service.id}}">{{ service.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
+
                 <div class="col-md-4">
                     <label for="id_count">result search count :</label>
-                    <input type="number" id="id_count" name="search-count" class="form-control" placeholder="SEARCH COUNT...">
+                    <input type="number" id="id_count" name="search-count" class="form-control" placeholder="SEARCH COUNT ..." required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_Phone">Phone number :</label>
+                    <input type="text" id="id_Phone" name="sp-phone_number" class="form-control" placeholder="Phone Number ...">
+                </div>
+                <div class="col-md-4">
+                    <label for="id_email">Email :</label>
+                    <input type="text" id="id_email" name="sp-email" class="form-control" placeholder="Email ...">
                 </div>
 
                 

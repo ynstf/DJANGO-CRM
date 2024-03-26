@@ -37,7 +37,7 @@
             <h4>Hello, {{ user.employee.first_name }} {{ user.employee.last_name }}!</h4>
             <h4>Email: {{ user.employee.email }}</h4>
             <h4>Phone Number: {{ user.employee.phone_number }}</h4>
-            <h4>Position: {{ user.employee.position }} {% if user.employee.position.name == "super provider" %}<small>({{ user.employee.sp_service }})</small>{% endif %}</h4>
+            <h4>Position: {{ user.employee.position }} {% if user.employee.position.name == "super provider" %}<small>({{ user.employee.sp }})</small>{% endif %}</h4>
 
             <br><br>
     

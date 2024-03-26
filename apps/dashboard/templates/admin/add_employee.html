@@ -70,13 +70,6 @@
                     </select>
                 </div>
                 <div class="col-md-4" id="super-provider-container" style="display: none;">
-                    <label for="id_employee-sp">service:</label>
-                    <select id="id_employee-sp" name="employee-sp" class="form-control">
-                        <option value="" selected disabled>Select service...</option>
-                        {% for service in services %}
-                            <option value="{{ service.id }}">{{ service.name }}</option>
-                        {% endfor %}
-                    </select>
                     
                     <label for="id-sp">Super Provider:</label>
                     <select id="id-sp" name="sp_company" class="form-control">

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.dashboard.models_com import Service
+from apps.dashboard.models_com import Service, SuperProvider
 
 
 class Position(models.Model):
@@ -17,7 +17,6 @@ class Permission(models.Model):
         return self.name
 
 
-    
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255)
@@ -25,8 +24,8 @@ class Employee(models.Model):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
-    sp_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
-    #sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
+    #sp_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     permissions = models.ManyToManyField(Permission, blank=True, null=True)
     # Add more fields as needed
 

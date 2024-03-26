@@ -34,7 +34,7 @@
             {% endfor %}
         {% endif %}
 
-    {% if user.employee.position.name == "call center" or user.employee.position.name == "admin" or inquiry.services.name == user.employee.sp_service.name or "inquiry info" in permissions_list %}
+    {% if user.employee.position.name == "call center" or user.employee.position.name == "admin" or inquiry.sp.name == user.employee.sp.name or "inquiry info" in permissions_list %}
 
             
         

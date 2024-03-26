@@ -36,8 +36,10 @@
                     <tr>
                         <th>ID</th>
                         <th>super provider Name</th>
-                        <th>Service</th>
+                        <th>Services</th>
                         <th>TRN</th>
+                        <th>Phone</th>
+                        <th>Email</th>
                         <th>Search Count</th>
 
                         <!-- Add other columns as needed -->
@@ -48,8 +50,10 @@
                         <tr>
                             <td>{{ sp.id }}</td>
                             <td>{{ sp.name }}</td>
-                            <td>{{ sp.service }}</td>
+                            <td>{% for srvs in sp.service.all %}{{srvs}} , {% endfor %}</td>
                             <td>{{ sp.trn }}</td>
+                            <td>{{ sp.phone_Number }}</td>
+                            <td>{{ sp.email }}</td>
                             <td>{{ sp.search_number }}</td>
 
                             <!-- Add other columns as needed -->

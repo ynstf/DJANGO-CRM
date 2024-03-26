@@ -344,13 +344,13 @@ def add_customer_view(request):
                             )
                             inq_state.save()
 
-                            all_employees = Employee.objects.filter(sp_service=services_set)
+                            all_employees = Employee.objects.filter(sp=current_sp)
                             
                             for employee in all_employees:
                                 notification = InquiryNotify(
                                     employee = employee,
                                     inquiry = inquiry,
-                                    service = services_set,
+                                    sp = current_sp,
                                     action = "new"
                                 )
                                 notification.save()
@@ -386,7 +386,7 @@ def add_customer_view(request):
                                 notification = InquiryNotify(
                                     employee = employee,
                                     inquiry = inquiry,
-                                    service = services_set,
+                                    sp = current_sp,
                                     action = "new"
                                 )
                                 notification.save()

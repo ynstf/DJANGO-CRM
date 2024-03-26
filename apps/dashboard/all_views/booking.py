@@ -36,7 +36,7 @@ def make_inq_underproccess(request,inq_id):
         notification = InquiryNotify(
             employee = employee,
             inquiry = inquiry,
-            service = inquiry.services,
+            sp = inquiry.sp,
             action = "underproccess"
         )
         notification.save()

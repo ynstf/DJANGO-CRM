@@ -354,8 +354,11 @@ def inquiries_list_view(request):
         employee_id = request.user.employee.id
         employee = Employee.objects.get(id=employee_id)
         try:
-            srvc_id = employee.sp_service.id
-            inquiries = inquiries.filter(services=srvc_id)
+            #srvc_id = employee.sp_service.id
+            #inquiries = inquiries.filter(services=srvc_id)
+            sp_id = employee.sp.id
+            inquiries = inquiries.filter(sp=sp_id)
+            print(sp_id)
         except:
             pass
 

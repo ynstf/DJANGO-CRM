@@ -37,7 +37,7 @@ def add_employee_view(request):
         email = request.POST.get('employee-email')
         phone_number = request.POST.get('employee-phone_number')
         position_name = request.POST.get('employee-position')
-        sp = request.POST.get('employee-sp')
+        #sp = request.POST.get('employee-sp')
         sp_company = request.POST.get('sp_company')
         permissions = request.POST.getlist('employee-permissions')
         username = request.POST.get('employee-username')
@@ -50,8 +50,8 @@ def add_employee_view(request):
             position = Position.objects.get(name=position_name)
         
 
-        if sp:
-            service = Service.objects.get(id=sp)
+        if sp_company:
+            #service = Service.objects.get(id=sp)
             sp_company = SuperProvider.objects.get(id=sp_company)
             
             # Create the employee instance
@@ -62,7 +62,6 @@ def add_employee_view(request):
                 email=email,
                 phone_number=phone_number,
                 position=position,
-                sp_service=service,
                 sp=sp_company
             )
         else:
@@ -108,17 +107,25 @@ def add_sp_view(request):
         sp_name = request.POST.get('sp-name')
         email = request.POST.get('sp-email')
         phone_number = request.POST.get('sp-phone_number')
-        sp_service = request.POST.get('sp-service')
+        sp_services = request.POST.getlist('sp-service')
         trn = request.POST.get('sp-trn')
         search_count = request.POST.get('search-count')
 
-        service = Service.objects.get(id=sp_service)
+        print(sp_services)
+
         new_sp = SuperProvider(
             name = sp_name,
-            service = service,
             trn=trn,
-            search_number = search_count
-        )
+            search_number = search_count,
+            phone_Number = phone_number,
+            email = email,
+            )
+        new_sp.save()  # Save the SuperProvider object first
+
+        # Add services to the sp
+        for sp_service_id in sp_services:
+            service = Service.objects.get(id=sp_service_id)
+            new_sp.service.add(service)
         new_sp.save()
 
         return redirect('sp_list')  # Redirect to the employee list page
