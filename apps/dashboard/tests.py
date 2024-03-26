@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from apps.authentication.models import Employee
 from apps.authentication.models import Position, Permission, Service
 from django.contrib.auth.models import Group
+from apps.dashboard.models_com import SuperProvider
 
 """
 dashboard test
@@ -27,6 +28,12 @@ Positions = [
     'call center',
     'super provider',
     'team leader'
+]
+sps = [
+    'sp1',
+    'sp2',
+    'sp3',
+    'sp4'
 ]
 
 Permissions = [
@@ -62,11 +69,19 @@ class BaseTest(TestCase):
             if created:
                 prm.save()
 
+
+        # Create sps
+        for sp in sps:
+            spr, created = SuperProvider.objects.get_or_create(name=sp)
+            if created:
+                spr.save()
+
         # Create a test user
         self.user = User.objects.create_user(username='testuser', password='testpassword')
 
-        sp = Position.objects.get(name="super provider")
+        superp = Position.objects.get(name="super provider")
         service = Service.objects.get(name="electric")
+        sp = SuperProvider.objects.get(name="sp1")
 
         self.employee = Employee.objects.create(
             user=self.user,
@@ -74,8 +89,8 @@ class BaseTest(TestCase):
             last_name='test',
             email='test@test.com',
             phone_number='0648474648',
-            position=sp,
-            sp_service=service
+            position=superp,
+            sp=sp
         )
 
         # Create groups for different roles
