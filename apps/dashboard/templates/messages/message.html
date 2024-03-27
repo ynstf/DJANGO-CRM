@@ -1,0 +1,101 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Messages{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            <center><h1>Message List </h1><small>for {{ inquiry }}</small></center>
+    
+            <ul>
+                {% for message in messages %}
+                    <li>
+                        <strong>Source:</strong> {{ message.source }}<br>
+                        <strong>Content:</strong> {{ message.content }}<br>
+                        <strong>Created:</strong> {{ message.created }}<br>
+                    </li>
+                {% endfor %}
+            </ul>
+        
+            <h2>Send Message</h2>
+            <form action="{% url 'messages' inquiry.id %}" method="post">
+                {% csrf_token %}
+                <div>
+                    <label for="content">Content:</label><br>
+                    <textarea id="content" name="content" rows="4" cols="50"></textarea>
+                </div>
+                <br>
+                <button type="submit">Send Message</button>
+            </form>
+
+
+
+
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}
+

@@ -100,13 +100,12 @@ class Inquiry(models.Model):
 
 class Message(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
-    source = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
-    destination = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    source = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True, related_name='sent_messages')
     content = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     
     def __str__(self):
-        return f'{self.inquiry}'# : {self.detail[30]}'
+        return f'{self.inquiry} source:{self.source} destination:{self.destination} '
     
 
 class Complain(models.Model):

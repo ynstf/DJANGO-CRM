@@ -1,3 +1,4 @@
+import django.contrib
 import django.db
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -19,7 +20,7 @@ from django.utils import timezone
 from django.urls import reverse
 from urllib.parse import quote
 from datetime import timedelta
-from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain
+from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain, Message
 import cloudinary
 import cloudinary.uploader
 
@@ -934,3 +935,35 @@ def make_complain_view(request, id):
             return redirect('make_inq_complain', inq_id = id)
 
     return redirect('inquiry_info', id = id)
+
+
+def messages_view(request, id):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    inquiry = Inquiry.objects.get(id = id)
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+
+        source = request.user.employee
+        
+        message = Message.objects.create(
+            inquiry = inquiry,
+            source = source,
+            content = content
+        )
+
+    messages = Message.objects.filter(inquiry=inquiry)
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'notifications':notifications,
+        'notifications_counter':notifications_counter,
+        'messages': messages, 
+        'inquiry':inquiry,
+
+        }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'messages/message.html', context)
+        

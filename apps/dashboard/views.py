@@ -66,7 +66,7 @@ from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
                                     make_inq_new,get_notify_state_view,
                                     make_employee_notified_view, make_inq_cancel,
                                     add_advence_view, make_complain_view, make_inq_complain,
-                                    make_inq_done)
+                                    make_inq_done, messages_view)
 
 inquiries_list = inquiries_list_view
 edit_quotation = edit_quotation_view
@@ -86,6 +86,7 @@ add_advence = add_advence_view
 make_complain = make_complain_view
 make_inq_complain = make_inq_complain
 make_inq_done = make_inq_done
+messages = messages_view
 
 
 ############### get infos ###########
