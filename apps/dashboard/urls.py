@@ -1,9 +1,9 @@
 from django.urls import path
 from .views import dashboard,merge_customer,add_customer,customer_list,customer_info,edit_customer
-from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry,delete_number
+from .views import delete_number, delete_whatsApp, delete_landline, delete_email, delete_address,delete_inquiry,delete_number, make_complain
 from .views import get_languages, get_status, get_nationalities,get_sources,get_services, make_inq_connecting, make_inq_sendQ, make_inq_pending
 from .views import notifications, get_notifications,inquiries_list,inquiry_info,make_quotation,edit_quotation,generate_pdf
-from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list
+from .views import add_employee,employee_list,delete_user,employee_info,edit_employee,add_service,services_list, make_inq_complain, make_inq_done
 from .views import make_booking, make_inq_underproccess, make_inq_new,generate_invoice,get_notify_state,make_employee_notified, make_inq_cancel
 from .views import add_sp,sp_list, edit_invoice_doc, edit_quotation_doc, statistics, edit_booking, add_advence, get_services_by_sp
 
@@ -41,6 +41,7 @@ urlpatterns = [
     path('make_quotation/<int:id>', make_quotation, name='make_quotation'),
     path('edit_quotation/<int:id>', edit_quotation, name='edit_quotation'),
     path('generate_pdf/<int:id>', generate_pdf, name='generate_pdf'),
+    path('make_complain/<int:id>', make_complain, name='make_complain'),
 
 
     path('generate_invoice/<int:id>/', generate_invoice, name='generate_invoice'),
@@ -54,6 +55,8 @@ urlpatterns = [
     path('make_inq_sendQ/<int:inq_id>', make_inq_sendQ, name='make_inq_sendQ'),
     path('make_inq_pending/<int:inq_id>', make_inq_pending, name='make_inq_pending'),
     path('make_inq_cancel/<int:inq_id>', make_inq_cancel, name='make_inq_cancel'),
+    path('make_inq_complain/<int:inq_id>', make_inq_complain, name='make_inq_complain'),
+    path('make_inq_done/<int:inq_id>', make_inq_done, name='make_inq_done'),
     
 
     path('add_employee/', add_employee, name='add_employee'),

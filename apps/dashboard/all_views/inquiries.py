@@ -19,7 +19,7 @@ from django.utils import timezone
 from django.urls import reverse
 from urllib.parse import quote
 from datetime import timedelta
-from apps.dashboard.models import QuotationForm, Advence, Invoice
+from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain
 import cloudinary
 import cloudinary.uploader
 
@@ -166,6 +166,74 @@ def make_inq_pending(request,inq_id):
             inquiry = inquiry,
             service = inquiry.services,
             action = "pending"
+        )
+        notification.save()
+        isnotify = IsEmployeeNotified(
+            employee = employee,
+            notified = False
+        )
+        isnotify.save()
+
+    return redirect('inquiries_list')
+
+def make_inq_complain(request,inq_id):
+    complain  = Status.objects.get(name = "complain")
+    inquiry = Inquiry.objects.get(id = inq_id)
+    inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.status = complain
+    inq_state.save()
+
+    #create action
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
+    )
+    action.save()
+
+
+    #create notification
+    all_employees = Employee.objects.filter(sp=inquiry.sp)
+    for employee in all_employees:
+        notification = InquiryNotify(
+            employee = employee,
+            inquiry = inquiry,
+            service = inquiry.services,
+            action = "complain"
+        )
+        notification.save()
+        isnotify = IsEmployeeNotified(
+            employee = employee,
+            notified = False
+        )
+        isnotify.save()
+
+    return redirect('inquiries_list')
+
+def make_inq_done(request,inq_id):
+    done  = Status.objects.get(name = "done")
+    inquiry = Inquiry.objects.get(id = inq_id)
+    inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.status = done
+    inq_state.save()
+
+    #create action
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
+    )
+    action.save()
+
+
+    #create notification
+    all_employees = Employee.objects.filter(sp=inquiry.sp)
+    for employee in all_employees:
+        notification = InquiryNotify(
+            employee = employee,
+            inquiry = inquiry,
+            service = inquiry.services,
+            action = "done"
         )
         notification.save()
         isnotify = IsEmployeeNotified(
@@ -568,6 +636,12 @@ def inquiry_info_view(request, id):
 
     print(schedule_date)
     print(booking_number)
+
+    try:
+        complain = Complain.objects.get(inquiry=inquiry)
+    except:
+        complain = None
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
@@ -582,6 +656,7 @@ def inquiry_info_view(request, id):
             'booking_number':booking_number,
             'booking_date':booking_date,
             'schedule_date':schedule_date,
+            'complain':complain,
 
 
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
@@ -816,3 +891,46 @@ def generate_pdf_view(request, id):
 
     return response
 
+
+def make_complain_view(request, id):
+
+    inquiry = Inquiry.objects.get(id = id)
+
+    if request.method == 'POST':
+        opened = request.POST.get('open')
+        detail = request.POST.get('detail')
+        fixe_detail = request.POST.get('fixe_detail')
+        closed = request.POST.get('closed')
+
+        print(opened,detail,closed)
+
+        try :
+            complain = Complain.objects.get(inquiry=inquiry)
+            print(complain)
+            print("11111111111111")
+            complain.opened = opened
+            complain.detail = detail
+            complain.fixe_detail = fixe_detail
+            if closed:
+                complain.closed = closed
+                complain.save()
+                return redirect('make_inq_done', inq_id = id)
+            
+            complain.save()
+            return redirect('make_inq_complain', inq_id = id)
+            
+        except :
+            print("222222222222222")
+            complain = Complain.objects.create(inquiry=inquiry)
+            complain.opened = opened
+            complain.detail = detail
+            complain.fixe_detail = fixe_detail
+            if closed:
+                complain.closed = closed
+                complain.save()
+                return redirect('make_inq_done', inq_id = id)
+            
+            complain.save()
+            return redirect('make_inq_complain', inq_id = id)
+
+    return redirect('inquiry_info', id = id)

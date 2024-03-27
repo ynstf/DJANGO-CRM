@@ -98,6 +98,27 @@ class Inquiry(models.Model):
     def __str__(self):
         return f'{self.customer} - {self.address}'
 
+class Message(models.Model):
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
+    source = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    destination = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    
+    def __str__(self):
+        return f'{self.inquiry}'# : {self.detail[30]}'
+    
+
+class Complain(models.Model):
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
+    opened = models.DateField(blank=True, null=True)
+    detail = models.TextField(blank=True, null=True)
+    closed = models.DateField(blank=True, null=True)
+    fixe_detail = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return f'{self.inquiry}'# : {self.detail[30]}'
+    
 class Status(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
 
@@ -169,6 +190,8 @@ class InquiryNotify(models.Model):
                                                     ('underpreccess', 'underpreccess'),
                                                     ('updated', 'updated'),
                                                     ('reminder', 'reminder'),
+                                                    ('complain', 'complain'),
+                                                    ('done', 'done'),
                                                     ], blank=True, null=True)
     # Add other fields as needed
 
