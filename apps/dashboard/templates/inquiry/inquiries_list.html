@@ -536,7 +536,8 @@
                         <th>inquiries id</th>
                         <td> Customer id</td>
                         <th>Customer & Address</th>
-                        <th>inquiry date</th>
+                        <!--<th>inquiry date</th>-->
+                        <th style="cursor: pointer;" onclick="sortTableByDate()"><strong>inquiry date ></strong></th>
                         <th>services</th>
                         <th>source</th>
                         <th>state</th>
@@ -550,6 +551,55 @@
                         <!-- Add other columns as needed -->
                     </tr>
                 </thead>
+
+                <script>
+                    var ascending = true; // Flag to track sorting order
+                
+                    function sortTableByDate() {
+                        var table, rows, switching, i, x, y, shouldSwitch;
+                        table = document.querySelector('.table'); // Assuming your table has the 'table' class
+                        switching = true;
+                        
+                        while (switching) {
+                            switching = false;
+                            rows = table.rows;
+                            
+                            for (i = 1; i < (rows.length - 1); i++) {
+                                shouldSwitch = false;
+                                
+                                x = rows[i].getElementsByTagName("td")[3]; // Assuming the date column is the fourth column (index 3)
+                                y = rows[i + 1].getElementsByTagName("td")[3];
+                                
+                                // Convert the date strings to Date objects for comparison
+                                var dateX = new Date(x.textContent);
+                                var dateY = new Date(y.textContent);
+                                
+                                if (ascending) {
+                                    if (dateX > dateY) {
+                                        shouldSwitch = true;
+                                        break;
+                                    }
+                                } else {
+                                    if (dateX < dateY) {
+                                        shouldSwitch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            if (shouldSwitch) {
+                                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                switching = true;
+                            }
+                        }
+                        
+                        // Toggle sorting order for next click
+                        ascending = !ascending;
+                    }
+                </script>
+                
+
+
                 <tbody>
                     {% for inquiry in inquiries %}
                         <tr>

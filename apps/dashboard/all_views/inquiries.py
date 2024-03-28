@@ -433,10 +433,12 @@ def inquiries_list_view(request):
 
         search_counter = inquiries.count()
 
-        search_number = request.user.employee.sp.search_number
-
-        #order inquiries by last updated
-        inquiries = inquiries.order_by('-inquirystatus__update')[:search_number]
+        try :
+            search_number = request.user.employee.sp.search_number
+            #order inquiries by last updated
+            inquiries = inquiries.order_by('-inquirystatus__update')[:search_number]
+        except:
+            inquiries = inquiries.order_by('-inquirystatus__update')
         search_counter = inquiries.count()
 
         # Pagination
