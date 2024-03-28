@@ -288,8 +288,11 @@ def add_service_view(request):
     if request.method == 'POST':
         service_name = request.POST.get('service-name')
         
+        remainder_checked = request.POST.get('remainder_check')
         reminder = request.POST.get('service-reminder')
         columns = request.POST.getlist('service-column')
+
+        print(remainder_checked)
         
         # Convert the list to a comma-separated string
         print(columns)
@@ -299,9 +302,16 @@ def add_service_view(request):
                 not_empty.append(c)
         columns_str = ",".join(not_empty)
 
-        # Save the Service instance
-        service_instance = Service.objects.create(name=service_name, columns=columns_str, reminder_time=reminder)
-        service_instance.save()
+        if remainder_checked == "on":
+            # Save the Service instance
+            service_instance = Service.objects.create(name=service_name, columns=columns_str, have_reminder='True', reminder_time=reminder)
+            service_instance.save()
+
+        else:
+            # Save the Service instance
+            service_instance = Service.objects.create(name=service_name, columns=columns_str, have_reminder='False')
+            service_instance.save()
+            print(remainder_checked)
 
         return redirect('services_list')
     

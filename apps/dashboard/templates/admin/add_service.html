@@ -43,9 +43,29 @@
                     <input type="text" id="id_service-name" name="service-name" class="form-control" placeholder="name..." aria-label="name">
                 </div>
                 <div class="col-md-4">
-                    <label for="id_service-reminder">reminder (months) :</label>
+                    <label for="remainder_check">Remainder:</label>
+                    <input type="checkbox" id="remainder_check" name="remainder_check" onclick="toggleReminder()">
+                </div>
+                
+                <div class="col-md-4" id="reminderField" style="display: none;">
+                    <label for="id_service-reminder">Reminder (months):</label>
                     <input type="number" id="id_service-reminder" name="service-reminder" class="form-control" placeholder="Reminder..." aria-label="Reminder">
                 </div>
+                <script>
+                    function toggleReminder() {
+                        var reminderField = document.getElementById('reminderField');
+                        var checkbox = document.getElementById('remainder_check');
+                        var input = document.getElementById('id_service-reminder');
+                        
+                        if (checkbox.checked) {
+                            reminderField.style.display = 'block';
+                            input.setAttribute('required', 'required');
+                        } else {
+                            reminderField.style.display = 'none';
+                            input.removeAttribute('required');
+                        }
+                    }
+                </script>
 
                 <br><br>
                 
