@@ -1,4 +1,6 @@
 {% extends 'layout/master.html' %}
+{% load i18n %}
+{% load static %}
 
 {% block title %}Messages{% endblock %}
 
@@ -29,28 +31,62 @@
 
         <div class="container">
 
-            <center><h1>Message List </h1><small>for {{ inquiry }}</small></center>
-    
-            <ul>
-                {% for message in messages %}
-                    <li>
-                        <strong>Source:</strong> {{ message.source }}<br>
-                        <strong>Content:</strong> {{ message.content }}<br>
-                        <strong>Created:</strong> {{ message.created }}<br>
-                    </li>
-                {% endfor %}
-            </ul>
+            <center><h1>Messages </h1><small>for {{ inquiry }}</small></center>
+
+            <style>
+                .message-from-user {
+                    color: darkgreen;
+                    text-align: right;
+                }
+                .message-from-other {
+                    color: brown;
+                    text-align: left;
+                }
+            </style>
+            <br>
+
+            <div class="container">
+                <div >
+                    {% for message in messages %}
+                        {% if message.source == user.employee %}
+
+                            <div class="message-from-user">
+
+                                <img src="{% static 'img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle">
+                                {{ message.source }}<br>
+                                <strong>{{ message.content }}</strong><br>
+                                send at: {{ message.created }}<br>
+                            </div>
+
+                        {% else %}
+
+                            <div class="message-from-other">
+
+                                <img  src="{% static 'img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle">
+                                {{ message.source }}<br>
+                                <strong>{{ message.content }}</strong><br>
+                                send at: {{ message.created }}<br>
+                            </div>
+                            
+                            
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
         
+            <center>
             <h2>Send Message</h2>
             <form action="{% url 'messages' inquiry.id %}" method="post">
                 {% csrf_token %}
-                <div>
+                <div class="col-md-8">
                     <label for="content">Content:</label><br>
-                    <textarea id="content" name="content" rows="4" cols="50"></textarea>
+                    <textarea id="content" class="form-control" name="content" rows="4" cols="50"></textarea>
                 </div>
                 <br>
-                <button type="submit">Send Message</button>
+                <button class="btn btn-success" type="submit">Send Message</button>
             </form>
+            </center>
 
 
 

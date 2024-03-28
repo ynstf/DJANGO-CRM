@@ -50,7 +50,7 @@
                 {% endif %}
             </center>
 
-            <h3>message for this inquiry : <a href="{% url 'messages' inquiry.id %}"> Messages</a></h3>
+            <h3>Open <a href="{% url 'messages' inquiry.id %}"> Messages</a></h3><br>
 
             <h3 style="color: #105794;">Customer Details</h3>
             <ul>
@@ -375,30 +375,35 @@
                     transition: display 0.9s ease-in-out;
                 }
             </style>
+
             <button id="toggleFormBtn" style="background-color: #fc9292;" class="btn btn-white">Complain</button>
+            
             <div id="complainFormContainer">
+                <br>
                 <h3 style="color:#6f1212;">Complain </h3>
-                <form action="{% url 'make_complain' inquiry.id %}" method="post">
-                    {% csrf_token %}
-                    <div class="col-md-4">
-                        <label for="id_open">Open complain date:</label>
-                        <input type="date" id="id_open" value="{{complain.opened|date:'Y-m-d'}}" name="open" class="form-control" placeholder="open..." required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="id_detail">Problem details:</label>
-                        <textarea id="id_detail" name="detail" class="form-control" cols="30" rows="10" placeholder="detail...">{{ complain.detail }}</textarea>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="id_closed">Close complain date:</label>
-                        <input type="date" id="id_closed" value="{{complain.closed|date:'Y-m-d'}}" name="closed" class="form-control" placeholder="closed...">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="id_fixe_detail">How fixed details : </label>
-                        <textarea id="id_fixe_detail" name="fixe_detail" class="form-control" cols="30" rows="10" placeholder="Fixed details...">{{ complain.fixe_detail }}</textarea>
-                    </div>
-                    <br>
-                    <button type="submit" class="btn btn-danger btn-sm">Make Complain</button>
-                </form>
+                <ul>
+                    <form action="{% url 'make_complain' inquiry.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="col-md-4">
+                            <label for="id_open">Open complain date:</label>
+                            <input type="date" id="id_open" value="{{complain.opened|date:'Y-m-d'}}" name="open" class="form-control" placeholder="open..." required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="id_detail">Problem details:</label>
+                            <textarea id="id_detail" name="detail" class="form-control" cols="30" rows="10" placeholder="detail...">{{ complain.detail }}</textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="id_closed">Close complain date:</label>
+                            <input type="date" id="id_closed" value="{{complain.closed|date:'Y-m-d'}}" name="closed" class="form-control" placeholder="closed...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="id_fixe_detail">How fixed details : </label>
+                            <textarea id="id_fixe_detail" name="fixe_detail" class="form-control" cols="30" rows="10" placeholder="Fixed details...">{{ complain.fixe_detail }}</textarea>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-danger btn-sm">Make Complain</button>
+                    </form>
+                </ul>
             </div>
         
             <script>
