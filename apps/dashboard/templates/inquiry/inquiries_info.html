@@ -279,54 +279,54 @@
 
             
             <hr>
-        {% if quotations %}
-            <h3 style="color:#264f13;">Quotations 
-                {% if quotations and user.employee.position.name == "super provider" %}
-                    <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
-                {% endif %}
-                {% if quotations and user.employee.position.name == "admin" %}
-                    <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
-                    <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Generate PDF</a>
-                {% endif %}
-                {% for permission in user.employee.permissions.all %}
-                    {% if quotations and permission.name == "extract quotations" or user.employee.position.name == "call center" %}
-                        <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
-                    {% endif %}
-                    {% if quotations and permission.name == "edit quotation" %}
+            {% if quotations %}
+                <h3 style="color:#264f13;">Quotations 
+                    {% if quotations and user.employee.position.name == "super provider" %}
                         <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
                     {% endif %}
-                {% endfor %}
-        
-                <a href="{{ whatsapp_link }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>
-            </h3> 
-                
-                <table class="table">
-                    <thead>
-                        <tr>
-                            {% for column in columns_list %}
-                                <th>{{ column }}</th>
-                            {% endfor %}
-
-                            <!-- Add other columns as needed -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for line in data %}
+                    {% if quotations and user.employee.position.name == "admin" %}
+                        <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
+                        <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Generate PDF</a>
+                    {% endif %}
+                    {% for permission in user.employee.permissions.all %}
+                        {% if quotations and permission.name == "extract quotations" or user.employee.position.name == "call center" %}
+                            <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
+                        {% endif %}
+                        {% if quotations and permission.name == "edit quotation" %}
+                            <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
+                        {% endif %}
+                    {% endfor %}
+            
+                    <a href="{{ whatsapp_link }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>
+                </h3> 
+                    
+                    <table class="table">
+                        <thead>
                             <tr>
-                                {% for case in line %}
-                                    <td>{{ case }}</td>
+                                {% for column in columns_list %}
+                                    <th>{{ column }}</th>
                                 {% endfor %}
+
                                 <!-- Add other columns as needed -->
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% if quotations or user.employee.position.name == "admin" or user.employee.position.name == "call center" %}
-                    {% if inquiry_state.status.name ==  "send Q or B" %}
-                        <a href="{% url 'make_inq_pending' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> quotation has been sent to the client </a>
+                        </thead>
+                        <tbody>
+                            {% for line in data %}
+                                <tr>
+                                    {% for case in line %}
+                                        <td>{{ case }}</td>
+                                    {% endfor %}
+                                    <!-- Add other columns as needed -->
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if quotations or user.employee.position.name == "admin" or user.employee.position.name == "call center" %}
+                        {% if inquiry_state.status.name ==  "send Q or B" %}
+                            <a href="{% url 'make_inq_pending' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> quotation has been sent to the client </a>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-        {% endif %}
+            {% endif %}
 
                 <br>
                 <!-- Add other inquiry details as needed -->

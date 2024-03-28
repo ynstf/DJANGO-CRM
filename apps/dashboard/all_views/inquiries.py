@@ -592,11 +592,14 @@ def inquiry_info_view(request, id):
         booking_detail = Booking.objects.get(inquiry=inquiry).details 
         booking_number = Booking.objects.get(inquiry=inquiry).booking_number
         booking_date = Booking.objects.get(inquiry=inquiry).booking_date
-        schedule_date = InquiryReminder.objects.get(inquiry=inquiry).schedule
     except:
         booking_detail = None
         booking_number = None
         booking_date = None
+
+    try:
+        schedule_date = InquiryReminder.objects.get(inquiry=inquiry).schedule
+    except:
         schedule_date = None
 
 
@@ -739,6 +742,9 @@ def make_quotation_view(request, id):
     # Convert the comma-separated string back to a list
     columns_list = service_instance.columns.split(',')
 
+    sp = request.user.employee.sp
+    services = sp.service.all()
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
@@ -746,8 +752,8 @@ def make_quotation_view(request, id):
             'notifications_counter':notifications_counter,
             'customer': Inquiry.objects.get(id=id).customer,
             'inquiry': Inquiry.objects.get(id=id),
-            'services':Service.objects.all(),
-            'all_sp':SuperProvider.objects.all(),
+            'services':services,
+            'sp':sp,
             'columns_list':columns_list,
             }
     context = TemplateLayout.init(request, context)

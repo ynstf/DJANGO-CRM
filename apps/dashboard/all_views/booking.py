@@ -21,7 +21,8 @@ def make_inq_underproccess(request,inq_id):
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = underproccess
     inq_state.save()
-    all_employees = Employee.objects.filter(sp_service=inquiry.services)
+
+    all_employees = Employee.objects.filter(sp=inquiry.sp)
 
     #create action
     action = EmployeeAction(
@@ -99,13 +100,14 @@ def make_booking_view(request,id):
             )
             booking.save()
 
-            reminder = InquiryReminder(
-                employee = employee,
-                inquiry=inquiry,
-                service=quotation_service,
-                schedule=schedule_time
-            )
-            reminder.save()
+            if inquiry.services.have_reminder == 'True':
+                reminder = InquiryReminder(
+                    employee = employee,
+                    inquiry=inquiry,
+                    service=quotation_service,
+                    schedule=schedule_time
+                )
+                reminder.save()
 
         print()
         
@@ -118,12 +120,19 @@ def make_booking_view(request,id):
     service=quotations[0].quotation_service
     sp=quotations[0].quotation_sp
 
-    # monthly reminnder
-    reminder_time = service.reminder_time
-    # Get today's date
-    today = datetime.now()
-    # Add 5 months to today's date
-    scheduling = today + timedelta(days=reminder_time*30)
+    if inquiry.services.have_reminder == 'True':
+        # monthly reminnder
+        reminder_time = service.reminder_time
+        # Get today's date
+        today = datetime.now()
+        # Add 5 months to today's date
+        scheduling = today + timedelta(days=reminder_time*30)
+        have_reminder = True
+    else:
+        have_reminder = False
+        scheduling = 0
+        reminder_time = 0
+        pass
 
     quotations=[]
     for q in Quotation.objects.filter(inquiry=Inquiry.objects.get(id = id)):
@@ -168,6 +177,7 @@ def make_booking_view(request,id):
                 'sp':sp,
                 'scheduling':scheduling,
                 'reminder_time':reminder_time,
+                'have_reminder':have_reminder,
                 }
     
     context = TemplateLayout.init(request, context)

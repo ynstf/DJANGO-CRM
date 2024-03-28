@@ -53,9 +53,15 @@
                     </div>
 
                     <div class="col-md-4">
+                        <label for="id_quotation-sp">super provider :</label>
+                        <select id="id_quotation-sp" name="quotation-sp" class="form-control" aria-readonly="true">
+                                <option value="{{ sp.id }}" selected>{{ sp }}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
                         <label for="id_quotation-service">service :</label>
                         <select id="id_quotation-service" name="quotation-service" class="form-control">
-                                <option value="{{ user.employee.sp_service.id }}" selected >{{ user.employee.sp_service.name }}</option>
                                 {% for service in services %}
                                     <option value="{{ service.id }}">{{ service }}</option>
                                 {% endfor %}
@@ -63,15 +69,7 @@
                     </div>
 
                 
-                    <div class="col-md-4">
-                        <label for="id_quotation-sp">super provider :</label>
-                        <select id="id_quotation-sp" name="quotation-sp" class="form-control">
-                                <option value="" selected >Super Provider</option>
-                                {% for sp in all_sp %}
-                                    <option value="{{ sp.id }}">{{ sp }}</option>
-                                {% endfor %}
-                        </select>
-                    </div>
+
                     
                     <br><br>
 

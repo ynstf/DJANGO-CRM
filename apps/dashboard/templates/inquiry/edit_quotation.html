@@ -64,6 +64,7 @@
                     <!-- add details forms -->
                     <!-- edit details forms -->
                     {% for q in quotations %}
+                    <p>{{q.data}}</p>
                         <div class="col-md-4">
                             <label for="id_quotation-detail-{{ forloop.counter }}">Detail :</label>
                             <textarea type="text" rows="3" id="id_quotation-detail-{{ forloop.counter }}" name="quotation-detail" class="form-control" placeholder="Detail..." aria-label="detail">{{ q.detail }}</textarea>
