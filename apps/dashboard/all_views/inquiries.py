@@ -387,7 +387,6 @@ def inquiries_list_view(request):
         today = timezone.now().date()
 
         if reminder:
-            
 
             if reminder == '1':
                 # Reminder today or tomorrow
@@ -431,10 +430,14 @@ def inquiries_list_view(request):
         except:
             pass
 
+
         search_counter = inquiries.count()
 
+        search_number = request.user.employee.sp.search_number
+
         #order inquiries by last updated
-        inquiries = inquiries.order_by('-inquirystatus__update')
+        inquiries = inquiries.order_by('-inquirystatus__update')[:search_number]
+        search_counter = inquiries.count()
 
         # Pagination
         page = request.GET.get('page', 1)
@@ -496,6 +499,7 @@ def inquiries_list_view(request):
 
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiry/inquiries_list.html',context)
+
 
 def add_advence_view(request, id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
