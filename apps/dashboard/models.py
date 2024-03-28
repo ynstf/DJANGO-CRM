@@ -1,7 +1,6 @@
 # models.py
 from django.db import models
 from apps.authentication.models import Employee
-from base.settings import DEFAULT_AUTO_FIELD
 from .models_com import Service
 from django.db import models
 from .models_com import SuperProvider
@@ -106,7 +105,6 @@ class Message(models.Model):
     
     def __str__(self):
         return f'{self.inquiry} source:{self.source} destination:{self.destination} '
-    
 
 class Complain(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
@@ -175,7 +173,6 @@ class InvoiceForm(models.Model):
     def __str__(self):
         return self.title
 
-
 class InquiryNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
@@ -241,7 +238,6 @@ class Invoice(models.Model):
     # Add other fields as needed
     def __str__(self):
         return f'{self.customer} - {self.inquiry}'
-
 
 class Advence(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
