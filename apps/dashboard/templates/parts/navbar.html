@@ -21,7 +21,6 @@
       <button id="notificationButton" style="display: none;"></button>
     </audio>
 
-  
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
       // Check if there are new notifications (you can customize this based on your logic)
@@ -117,7 +116,7 @@
     
       function updateNotificationCounter(newCount) {
         var counterElement = document.getElementById('notifications-counter1');
-        counterElement.innerHTML = newCount > 0 ? '(' + newCount + ')' : '';  // Update the counter text
+        counterElement.innerHTML = newCount > 0 ? '' + newCount + '' : '';  // Update the counter text
       }
     
       // Fetch notifications every 5 seconds (adjust as needed)
@@ -131,17 +130,235 @@
     
 
 
+    <!--<audio id="message-sound">
+      <source src="{% static 'message-sound.mp3' %}" type="audio/mpeg">
+      Your browser does not support the audio element.
+      <button id="messageButton" style="display: none;"></button>
+    </audio>-->
+
+
+    <!-- Include the audio element for the message notification sound -->
+    <audio id="message-notification-sound">
+      <source src="{% static 'message-sound.mp3' %}" type="audio/mpeg">
+      Your browser does not support the audio element.
+      <button id="message-notificationButton" style="display: none;"></button>
+    </audio>
+
+    <script>
+      // Check if there are new message notifications
+      var hasNewMessageNotifications = true;
+      var MessageNotificationsChange = 0;
+
+      document.addEventListener('DOMContentLoaded', function () {
+        if (Notification.permission !== 'granted') {
+          Notification.requestPermission();
+        }
+      });
+
+      function fetchMessageNotifications() {
+        $.get("/get_messages/", function (data) {
+          updateMessageUI(data.messages, data.messages_counter);
+
+          if (data.messages_counter > 0) {
+            if (MessageNotificationsChange != data.messages_counter) {
+              MessageNotificationsChange = data.messages_counter;
+              hasNewMessageNotifications = true;
+            }
+            $.ajax({
+                url: '/get_message_state/',  // URL for the get_message_state view
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    if (data.notify_info === false) {
+                        playMessageNotificationSound();
+                        $.ajax({
+                            url: '/make_employee_readmessage/',  // URL for the make_employee_readmessage view
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(data) {
+                              playMessageNotificationSound();
+                              console.log('Employee recive message:', data.resp);
+                            },
+                            error: function(error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+            updateMessageNotificationCounter(data.messages_counter);
+          }
+        });
+      }
+
+      function updateMessageUI(messages, messages_counter) {
+        $("#messages-list").empty();
+
+        messages.forEach(function (message) {
+          $("#messages-list").append("<li>" + message.message + "</li>");
+        });
+
+        $("#messages-counter").html(messages_counter);
+
+        if (messages_counter > 0) {
+          // Show the red notification span if there are new message notifications
+          $("#messages-counter").show();
+        } else {
+          $("#messages-counter").hide();
+        }
+      }
+
+      function playMessageNotificationSound() {
+        if (hasNewMessageNotifications) {
+          var audio = document.getElementById('message-notification-sound');
+          audio.play().then(function () {
+            // Sound played successfully
+            hasNewMessageNotifications = false;
+          }).catch(function (error) {
+            console.error('Error playing message notification sound:', error);
+          });
+        }
+      }
+
+      function updateMessageNotificationCounter(newCount) {
+        var counterElement = document.getElementById('messages-counter1');
+        counterElement.innerHTML = newCount > 0 ? '' + newCount + '' : '';  // Update the counter text
+      }
+
+      // Fetch message notifications every 5 seconds (adjust as needed)
+      setInterval(fetchMessageNotifications, 5000);
+
+      // Initial fetch on page load
+      $(document).ready(function () {
+        fetchMessageNotifications();
+      });
+    </script>
+
+
+    <!--
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      // Check if there are new messages (you can customize this based on your logic)
+      var hasNewNotifications = true;
+      var NotificationsChange = 0;
+
+      document.addEventListener('DOMContentLoaded', function () {
+        if (Notification.permission !== 'granted') {
+          Notification.requestPermission();
+        }
+      });
+      
+
+      function fetchNotifications() {
+        $.get("/get_messages/", function (dataM) {
+          // Update the UI with new messages and counter
+          updateUI(dataM.messages, dataM.messages_counter);
+    
+          // Play message sound if there are new messages
+          if (dataM.messages_counter > 0) {
+            if (NotificationsChange != dataM.messages_counter ) {
+              
+              NotificationsChange = dataM.messages_counter;
+              hasNewNotifications = true;
+            }
+            $.ajax({
+                url: '/get_message_state/',  // URL for the get_notify_state view
+                type: 'GET',
+                dataType: 'json',
+                success: function(dataM) {
+                    // If the message state is false, play the message sound
+                    if (dataM.notify_info === false) {
+                        console.log(dataM.notify_info)
+                        playNotificationSound();
+                        console.log("sound played")
+                        
+
+                        $.ajax({
+                            url: '/make_employee_readmessage/',  // URL for the make_employee_notified view
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(dataM) {
+                              playNotificationSound();
+                                // Handle success response if needed
+                                console.log('Employee notified:', dataM.resp);
+                            },
+                            error: function(error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    }
+                    // Add any other logic based on the response if needed
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+            updateNotificationCounter(dataM.messages_counter);
+          }
+        });
+      }
+    
+      function updateUI(messages, messages_counter) {
+        // Clear existing messages
+        $("#messages-list").empty();
+    
+        // Add new messages to the list
+        messages.forEach(function (message) {
+          $("#messages-list").append("<li>" + message.message + "</li>");
+        });
+    
+        // Update the counter in the UI
+        $("#messages-counter").html(messages_counter);
+    
+        // Show the red message span if there are new messages
+        if (messages_counter > 0) {
+          $("#messages-counter").show();
+        } else {
+          $("#messages-counter").hide();
+        }
+      }
+    
+      function playNotificationSound() {
+        if (hasNewNotifications) {
+          var audio = document.getElementById('message-sound');
+          audio.play().then(function () {
+            // Sound played successfully
+            hasNewNotifications = false;
+          }).catch(function (error) {
+            console.error('Error playing message sound:', error);
+          });
+        }
+      }
+    
+      function updateNotificationCounter(newCount) {
+        var counterElement = document.getElementById('messages-counter1');
+        counterElement.innerHTML = newCount > 0 ? '' + newCount + '' : '';  // Update the counter text
+      }
+    
+      // Fetch messages every 5 seconds (adjust as needed)
+      setInterval(fetchNotifications, 2000);
+    
+      // Initial fetch on page load
+      $(document).ready(function () {
+        fetchNotifications();
+      });
+    </script>-->
+
 
     <ul class="navbar-nav flex-row align-items-center ms-auto" id="clickonmer">
       
 
       <!-- User -->
       <li class="nav-item navbar-dropdown dropdown-user dropdown">
-        <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
+        <a class="nav-link dropdown-toggle hide-arrow p-4" href="javascript:void(0);" data-bs-toggle="dropdown">
           <div class="avatar avatar-online">
             <img src="{% static 'img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle">
             
-              <span class="badge bg-danger" id="notifications-counter" style="display: none;">{{ notifications_counter }}</span>
+              <span class="badge bg-danger" id="notifications-counter" style="display: none; size: 3px;">{{ notifications_counter }}</span>
+              <span class="badge bg-success" id="messages-counter" style="display: none; size: 3px;">{{ messages_counter }}</span>
             
           </div>
         </a>
@@ -170,13 +387,45 @@
               <span class="align-middle">My Profile</span>
             </a>
           </li>
+
+          <style>
+            .messages-counter {
+                background-color: green;
+                color: white;
+                border-radius: 100%; /* Makes it a circle */
+                padding: 5px; /* Adjust as needed */
+                margin-left: 5px; /* Adjust as needed to position it */
+                font-size: 12px; /* Adjust as needed */
+            }
+          </style>
           <li>
-            <li>
-              <a class="dropdown-item" href="{% url 'notifications' %}">
-                  <i class="mdi mdi-bell-outline me-1 mdi-20px"></i>
-                  <span class="align-middle">Notifications <small style="color: brown;" id="notifications-counter1" style="display: none;" >({{ notifications_counter }})</small> </span>
-              </a>
-          </li>          
+            <a class="dropdown-item" href="{% url 'messages_list' %}">
+                <i class="mdi mdi-message-outline me-1 mdi-20px"></i>
+                <span class="align-middle">Messages</span>
+                <span id="messages-counter1" class="messages-counter">{{ messages_counter }}</span>
+            </a>
+          </li>
+          
+
+          <style>
+            .notification-counter {
+                background-color: brown;
+                color: white;
+                border-radius: 100%; /* Makes it a circle */
+                padding: 5px; /* Adjust as needed */
+                margin-left: 5px; /* Adjust as needed to position it */
+                font-size: 12px; /* Adjust as needed */
+            }
+          </style>
+          <li>
+            <a class="dropdown-item" href="{% url 'notifications' %}">
+                <i class="mdi mdi-bell-outline me-1 mdi-20px"></i>
+                <span class="align-middle">Notifications</span>
+                <span id="notifications-counter1" class="notification-counter">{{ notifications_counter }}</span>
+            </a>
+          </li>
+        
+          <li>         
             <a class="dropdown-item" href="javascript:void(0);">
               <i class="mdi mdi-cog-outline me-1 mdi-20px"></i>
               <span class="align-middle">Settings</span>

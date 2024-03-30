@@ -31,7 +31,23 @@
 
         <div class="container">
 
-            <center><h1>Messages </h1><small>for {{ inquiry }}</small></center>
+            <center><h1>Messages </h1>
+                <small>for 
+                    
+                    customer : {{ inquiry.customer.first_name }} {{ inquiry.customer.last_name }} <br>
+                    customer id : {{ inquiry.customer.id }} <br>
+                    inquiry id : {{ inquiry.id }} <br>
+                    service : {{ inquiry.services }} <br>
+                    address : {{ inquiry.address.address_name }} - {{ inquiry.address.location }} <br>
+                    {% if booking %}
+                        {% for book in booking %}
+                            booking : {{ book.booking_number }} 
+                        {% endfor %}
+                    {% endif %}
+                    <br>
+                    
+                </small>
+            </center>
 
             <style>
                 .message-from-user {

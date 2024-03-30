@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import dashboard
+from .views import dashboard,get_messages,make_employee_readmessage,get_message_state,messages_list
 
 # importation for documents
 from .views import (generate_pdf,generate_invoice,
@@ -95,6 +95,13 @@ urlpatterns = [
     path('get_notifications/', get_notifications, name='get_notifications'),
     path('get_notify_state/', get_notify_state, name='get_notify_state'),
     path('make_employee_notified/', make_employee_notified, name='make_employee_notified'),
+
+    # messages
+    path('messages_list', messages_list, name='messages_list'),
+    path('get_messages/', get_messages, name='get_messages'),
+    path('get_message_state/', get_message_state, name='get_message_state'),
+    path('make_employee_readmessage/', make_employee_readmessage, name='make_employee_readmessage'),
+
 
     # inquiries
     path('inquiries_list', inquiries_list, name='inquiries_list'),

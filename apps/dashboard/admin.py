@@ -4,7 +4,7 @@ from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber
 from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
 from .models import Status,InquiryStatus, IsEmployeeNotified
 from .models import Service, InquiryReminder,SuperProvider
-from .models import InvoiceForm, QuotationForm, Advence, Complain, Message
+from .models import InvoiceForm, QuotationForm, Advence, Complain, Message, MessageNotify, IsEmployeeReadMessage
 
 
 # Register your models here.
@@ -99,6 +99,15 @@ class InquiryNotifyAdmin(admin.ModelAdmin):
 @admin.register(IsEmployeeNotified)
 class IsEmployeeNotifiedAdmin(admin.ModelAdmin):
     list_display = ('employee','notified')
+
+
+@admin.register(MessageNotify)
+class MessageNotifyAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'inquiry', 'service','sp')
+
+@admin.register(IsEmployeeReadMessage)
+class IsEmployeeReadMessageAdmin(admin.ModelAdmin):
+    list_display = ('employee','notified','sp')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):

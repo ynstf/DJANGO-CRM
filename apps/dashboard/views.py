@@ -24,6 +24,17 @@ def dashboard(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
 
+################# admin ################
+from .all_views.inquiries import (messages_view,get_message_state_view,
+                            make_employee_readmessage_view,get_messages,
+                            messages_list_view
+                            )
+
+get_message_state = get_message_state_view
+make_employee_readmessage = make_employee_readmessage_view
+get_messages = get_messages
+messages = messages_view
+messages_list = messages_list_view
 
 
 ################# admin ################
@@ -66,7 +77,7 @@ from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
                                     make_inq_new,get_notify_state_view,
                                     make_employee_notified_view, make_inq_cancel,
                                     add_advence_view, make_complain_view, make_inq_complain,
-                                    make_inq_done, messages_view)
+                                    make_inq_done)
 
 inquiries_list = inquiries_list_view
 edit_quotation = edit_quotation_view
@@ -86,7 +97,6 @@ add_advence = add_advence_view
 make_complain = make_complain_view
 make_inq_complain = make_inq_complain
 make_inq_done = make_inq_done
-messages = messages_view
 
 
 ############### get infos ###########

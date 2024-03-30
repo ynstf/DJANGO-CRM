@@ -8,7 +8,6 @@ from web_project.template_helpers.theme import TemplateHelper
 from web_project import TemplateLayout
 from xhtml2pdf import pisa
 import io
-from apps.dashboard.views import employee_info
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee, Permission, Position
 from apps.dashboard.models import (EmployeeAction, Inquiry, InquiryNotify, InquiryReminder,
@@ -20,7 +19,7 @@ from django.utils import timezone
 from django.urls import reverse
 from urllib.parse import quote
 from datetime import timedelta
-from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain, Message
+from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain, Message, MessageNotify, IsEmployeeReadMessage
 import cloudinary
 import cloudinary.uploader
 
@@ -160,7 +159,7 @@ def make_inq_pending(request,inq_id):
 
 
     #create notification
-    all_employees = Employee.objects.filter(sp_service=inquiry.services)
+    all_employees = Employee.objects.filter(sp=inquiry.sp)
     for employee in all_employees:
         notification = InquiryNotify(
             employee = employee,
@@ -245,6 +244,49 @@ def make_inq_done(request,inq_id):
 
     return redirect('inquiries_list')
 
+
+def get_messages(request):
+
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+    messages_data = [{'message': str(message)} for message in messages]
+    return JsonResponse({'messages': messages_data, 'messages_counter': messages_counter}, safe=False)
+
+def get_message_state_view(request):
+    print(request.user.employee)
+    
+    try:
+        notify_info = IsEmployeeReadMessage.objects.get(employee = request.user.employee)
+        print(notify_info.notified)
+        return JsonResponse({'notify_info': notify_info.notified}, safe=False)
+    except:
+        return JsonResponse({}, safe=False)
+
+def make_employee_readmessage_view(request):
+    notify_info = IsEmployeeReadMessage.objects.get(employee = request.user.employee)
+    notify_info.notified = True
+    notify_info.save()
+    print(notify_info.notified)
+    return JsonResponse({'resp': True})
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center','provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
+def messages_list_view(request):
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
+            'messages':messages,
+            'messages_counter':messages_counter,
+
+            }
+    context = TemplateLayout.init(request, context)
+    return render(request, "inquiry/messages.html", context)
+
+
+
 def get_notifications(request):
     current_date = timezone.now().date()
     try:
@@ -285,18 +327,21 @@ def make_employee_notified_view(request):
     print(notify_info.notified)
     return JsonResponse({'resp': True})
 
-
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center','provider', 'admin', 'team_leader']).exists() or (Permission.objects.get(name="inquiry info") in u.employee.permissions.all()) )
 def notifications_view(request):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
             'notifications':notifications,
             'notifications_counter':notifications_counter,
+            'messages':messages,
+            'messages_counter':messages_counter,
 
             }
     context = TemplateLayout.init(request, context)
@@ -310,6 +355,9 @@ def inquiries_list_view(request):
 
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
     print("teest")
     print(notifications)
     print("counter")
@@ -494,6 +542,8 @@ def inquiries_list_view(request):
                 'notifications_counter':notifications_counter,
                 "search_counter":search_counter,
                 "states":Status.objects.all(),
+                'messages':messages,
+                'messages_counter':messages_counter,
 
                 'search_fields':search_fields,
                 }
@@ -506,6 +556,9 @@ def inquiries_list_view(request):
 def add_advence_view(request, id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
     inquiry = Inquiry.objects.get(id=id)
     inquiry_state = InquiryStatus.objects.get(inquiry=inquiry)
     customer = inquiry.customer
@@ -533,6 +586,9 @@ def inquiry_info_view(request, id):
 
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
     inquiry = Inquiry.objects.get(id=id)
     inquiry_state = InquiryStatus.objects.get(inquiry=inquiry)
     customer = inquiry.customer
@@ -667,6 +723,8 @@ def inquiry_info_view(request, id):
             'booking_date':booking_date,
             'schedule_date':schedule_date,
             'complain':complain,
+            'messages':messages,
+            'messages_counter':messages_counter,
 
 
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
@@ -687,6 +745,8 @@ def inquiry_info_view(request, id):
 def make_quotation_view(request, id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
 
 
 
@@ -761,6 +821,8 @@ def make_quotation_view(request, id):
             'services':services,
             'sp':sp,
             'columns_list':columns_list,
+            'messages':messages,
+            'messages_counter':messages_counter,
             }
     context = TemplateLayout.init(request, context)
     return render(request, "inquiry/make_quotation.html", context)
@@ -771,6 +833,8 @@ def make_quotation_view(request, id):
 def edit_quotation_view(request,id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
     inquiry = Inquiry.objects.get(id = id)
 
     quotations = Quotation.objects.filter(inquiry=inquiry)
@@ -829,6 +893,9 @@ def edit_quotation_view(request,id):
                 'service' : service,
                 'quotations':quotations,
                 'services':Service.objects.all(),
+                'messages':messages,
+                'messages_counter':messages_counter,
+
                 }
     
     context = TemplateLayout.init(request, context)
@@ -950,9 +1017,28 @@ def make_complain_view(request, id):
 
 
 def messages_view(request, id):
+
+    inquiry = Inquiry.objects.get(id = id)
+
+    # delete the notification for this inquiry id
+    try :
+        the_notifications = MessageNotify.objects.filter(inquiry=inquiry)
+        for notify in the_notifications:
+            if notify.employee.user == request.user:
+                notify.delete()
+                notify_info = IsEmployeeReadMessage.objects.filter(employee = request.user.employee)
+                notify_info.delete()
+    except :
+        pass
+
+
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
-    inquiry = Inquiry.objects.get(id = id)
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+    
+
+    
 
     if request.method == 'POST':
         content = request.POST.get('content')
@@ -965,6 +1051,46 @@ def messages_view(request, id):
             content = content
         )
 
+        if request.user.employee.position.name == "call center": 
+            #create notification
+            all_employees = Employee.objects.filter(sp=inquiry.sp)
+            for employee in all_employees:
+                notification = MessageNotify(
+                    employee = employee,
+                    inquiry = inquiry,
+                    service = inquiry.services,
+                    sp = inquiry.sp
+                )
+                notification.save()
+
+                isnotify = IsEmployeeReadMessage(
+                            employee = employee,
+                            notified = False,
+                            sp = inquiry.sp
+                        )
+                isnotify.save()
+
+        elif request.user.employee.position.name == "super provider":
+            position = Position.objects.get(name='call center')
+            all_employees = Employee.objects.filter(position=position)
+            for employee in all_employees:
+                notification = MessageNotify(
+                        employee = employee,
+                        inquiry = inquiry,
+                        service = inquiry.services,
+                        sp = inquiry.sp
+                    )
+                notification.save()
+
+
+                isnotify = IsEmployeeReadMessage(
+                            employee = employee,
+                            notified = False,
+                            sp = inquiry.sp
+                        )
+                isnotify.save()
+
+    booking = Booking.objects.filter(inquiry=inquiry)
     messages = Message.objects.filter(inquiry=inquiry)
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {
@@ -974,6 +1100,9 @@ def messages_view(request, id):
         'notifications_counter':notifications_counter,
         'messages': messages, 
         'inquiry':inquiry,
+        'messages':messages,
+        'messages_counter':messages_counter,
+        "booking":booking,
 
         }
     context = TemplateLayout.init(request, context)

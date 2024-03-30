@@ -106,6 +106,27 @@ class Message(models.Model):
     def __str__(self):
         return f'{self.inquiry} source:{self.source} destination:{self.destination} '
 
+
+class MessageNotify(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
+    service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
+    sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
+
+    def __str__(self):
+        return f'message for {self.sp} {self.inquiry} inquiry'
+
+class IsEmployeeReadMessage(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    notified = models.BooleanField(default=False)
+    sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
+    # Add other fields as needed
+
+    def __str__(self):
+        return f'employee :{self.employee}'
+
+
+
 class Complain(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     opened = models.DateField(blank=True, null=True)
@@ -115,7 +136,7 @@ class Complain(models.Model):
     
     def __str__(self):
         return f'{self.inquiry}'# : {self.detail[30]}'
-    
+
 class Status(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
 
