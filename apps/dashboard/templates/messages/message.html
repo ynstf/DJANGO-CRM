@@ -62,7 +62,7 @@
             <br>
 
             <div class="container">
-                <div >
+                <!--<div >
                     {% for message in messages %}
                         {% if message.source == user.employee %}
 
@@ -88,20 +88,147 @@
                         {% endif %}
                         <br>
                     {% endfor %}
-                </div>
+                </div>-->
+
+
+                    
+                
+                    <style>
+                        .message-container {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 10px; /* Adjust as needed for spacing between messages */
+                            
+                        }
+
+                        .message-from-user,
+                        .message-from-other {
+                            display: flex;
+                            align-items: center;
+                            max-width: 100%;
+                            padding: 10px;
+                            border-radius: 10px;
+                        }
+
+                        .message-from-user {
+                            justify-content: flex-end;
+                            background-color: #DCF8C6; /* Background color for user messages */
+                        }
+
+                        .message-from-other {
+                            justify-content: flex-start;
+                            background-color: #F2F2F2; /* Background color for other messages */
+                        }
+
+                        .avatar {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            margin-right: 10px;
+                        }
+
+                        .message-content {
+                            max-width: calc(100% - 50px); /* Adjust for avatar width */
+                        }
+
+                        .message-author {
+                            font-weight: bold;
+                        }
+
+                        .message-text {
+                            color: black;
+                            /* Style for message text */
+                        }
+
+                        .message-time {
+                            color: #888;
+                            font-size: 0.8em;
+                        }
+
+                    </style>
+                    <center>
+                        <div class="message-container">
+                            {% for message in messages %}
+                                {% if message.source == user.employee %}
+                                    <div class="message-from-user">
+                                        
+                                        <div class="message-content">
+                                            <span class="message-author">{{ message.source }}</span><br>
+                                            <span class="message-text">{{ message.content }}</span><br>
+                                            <span class="message-time">Sent at: {{ message.created }}</span><br>
+                                        </div>
+                                        <img src="{% static 'img/avatars/1.png' %}" style="margin: 0px 0px 0px 10px;" alt class="avatar">
+                                    </div>
+                                {% else %}
+                                    <div class="message-from-other">
+                                        <img src="{% static 'img/avatars/1.png' %}" alt class="avatar">
+                                        <div class="message-content">
+                                            <span class="message-author">{{ message.source }}</span><br>
+                                            <span class="message-text">{{ message.content }}</span><br>
+                                            <span class="message-time">Sent at: {{ message.created }}</span><br>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </center>
             </div>
+                
         
             <center>
-            <h2>Send Message</h2>
-            <form action="{% url 'messages' inquiry.id %}" method="post">
-                {% csrf_token %}
-                <div class="col-md-8">
-                    <label for="content">Content:</label><br>
-                    <textarea id="content" class="form-control" name="content" rows="4" cols="50"></textarea>
-                </div>
-                <br>
-                <button class="btn btn-success" type="submit">Send Message</button>
-            </form>
+            <br>
+            <style>
+                /* Style for the form container */
+                .message-form-container {
+                    background-color: #f8f9fa; /* Light background color */
+                    border-radius: 10px; /* Rounded corners */
+                    padding: 20px; /* Padding around the form */
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow for depth */
+                    max-width: 900px; /* Maximum width of the form */
+                    margin: 0 auto; /* Center the form horizontally */
+                }
+            
+                /* Style for the form headings */
+                .message-form-heading {
+                    font-size: 24px; /* Larger font size */
+                    margin-bottom: 20px; /* Spacing below the heading */
+                }
+            
+                /* Style for the text area */
+                #content {
+                    width: 100%; /* Full width */
+                    resize: vertical; /* Allow vertical resizing */
+                }
+            
+                /* Style for the submit button */
+                .btn-send-message {
+                    background-color: #28a745; /* Green background color */
+                    color: #fff; /* White text color */
+                    border: none; /* No border */
+                    padding: 10px 20px; /* Padding inside the button */
+                    border-radius: 5px; /* Rounded corners */
+                    cursor: pointer; /* Show pointer cursor on hover */
+                }
+            
+                /* Hover effect for the submit button */
+                .btn-send-message:hover {
+                    background-color: #218838; /* Darker green on hover */
+                }
+            </style>
+            
+            <div class="message-form-container">
+                <h2 class="message-form-heading">Send Message</h2>
+                <form action="{% url 'messages' inquiry.id %}" method="post">
+                    {% csrf_token %}
+                    <div>
+                        <label for="content">Content:</label><br>
+                        <textarea id="content" class="form-control" name="content" rows="4" cols="50"></textarea>
+                    </div>
+                    <br>
+                    <button class="btn btn-send-message" type="submit">Send Message</button>
+                </form>
+            </div>
+            
             </center>
 
 
