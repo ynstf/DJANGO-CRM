@@ -95,6 +95,9 @@ def customer_list_view(request):
             id = Source.objects.get(name=source_query)
             customers = customers.filter(inquiry__source=id)
             
+        # Order the customers from newest to oldest based on registration date
+        customers = customers.order_by('-register')
+
         search_counter = customers.count()
 
         if number_query:

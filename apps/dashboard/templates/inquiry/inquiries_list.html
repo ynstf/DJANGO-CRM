@@ -533,25 +533,26 @@
                 <thead>
                     <tr>
 
-                        <th>inquiries id</th>
-                        <td> Customer id</td>
-                        <th>Customer & Address</th>
-                        <!--<th>inquiry date</th>-->
-                        <th style="cursor: pointer;" onclick="sortTableByDate()"><strong>inquiry date ></strong></th>
-                        <th>services</th>
-                        <th>source</th>
-                        <th>state</th>
-                        <th>have media</th>
-                        <th>canceling causes</th>
-                        <th>advenced price</th>
-                        <th>total price</th>
-                        <th>percentage</th>
+                        <th style="cursor: pointer;" onclick="sortTable(0)"><strong>inquiries id ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(1)"><strong>Customer id ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(2)"><strong>inquiry date ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(3)"><strong>Update date ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(4)"><strong>Customer & Address ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(5)"><strong>services ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(6)"><strong>source ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(7)"><strong>state ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(8)"><strong>have media ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(9)"><strong>canceling causes ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(10)"><strong>advenced price ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(11)"><strong>total price ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(12)"><strong>percentage ></strong></th>
 
 
                         <!-- Add other columns as needed -->
                     </tr>
                 </thead>
 
+                <!--
                 <script>
                     var ascending = true; // Flag to track sorting order
                 
@@ -567,8 +568,8 @@
                             for (i = 1; i < (rows.length - 1); i++) {
                                 shouldSwitch = false;
                                 
-                                x = rows[i].getElementsByTagName("td")[3]; // Assuming the date column is the fourth column (index 3)
-                                y = rows[i + 1].getElementsByTagName("td")[3];
+                                x = rows[i].getElementsByTagName("td")[2]; // Assuming the date column is the fourth column (index 3)
+                                y = rows[i + 1].getElementsByTagName("td")[2];
                                 
                                 // Convert the date strings to Date objects for comparison
                                 var dateX = new Date(x.textContent);
@@ -596,8 +597,48 @@
                         // Toggle sorting order for next click
                         ascending = !ascending;
                     }
+                </script>-->
+                <script>
+                    var ascending = true; // Flag to track sorting order
+                    
+                    function sortTable(columnIndex) {
+                        var table, rows, switching, i, x, y, shouldSwitch;
+                        table = document.querySelector('.table'); // Assuming your table has the 'table' class
+                        switching = true;
+                        
+                        while (switching) {
+                            switching = false;
+                            rows = table.rows;
+                            
+                            for (i = 1; i < (rows.length - 1); i++) {
+                                shouldSwitch = false;
+                                
+                                x = rows[i].getElementsByTagName("td")[columnIndex];
+                                y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+                                
+                                if (ascending) {
+                                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                        shouldSwitch = true;
+                                        break;
+                                    }
+                                } else {
+                                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                        shouldSwitch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            if (shouldSwitch) {
+                                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                switching = true;
+                            }
+                        }
+                        
+                        // Toggle sorting order for next click
+                        ascending = !ascending;
+                    }
                 </script>
-                
 
 
                 <tbody>
@@ -622,7 +663,13 @@
                             {% else %}
                                 <td>{{ inquiry.info.id }}</td>
                             {% endif %}
+
                             <td> {{ inquiry.info.customer.id }} </td>
+
+                            <td>{{ inquiry.info.date_inq }}</td>
+
+                            <td>{{ inquiry.state.update }}</td>
+
                             <td>
                                 {% if user.employee.position.name == 'call center' or user.employee.position.name == 'super provider' or user.employee.position.name == 'admin' %}
                                     <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
@@ -638,7 +685,7 @@
                                     {% endfor %}
                                 {% endif %}
                             </td>
-                            <td>{{ inquiry.info.date_inq }}</td>
+                            
                             <td>{{ inquiry.info.services }}</td>
                             <td>{{ inquiry.info.source }}</td>
                             <td>{{ inquiry.state.status }}</td>

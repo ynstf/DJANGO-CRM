@@ -125,8 +125,6 @@ class IsEmployeeReadMessage(models.Model):
     def __str__(self):
         return f'employee :{self.employee}'
 
-
-
 class Complain(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     opened = models.DateField(blank=True, null=True)
