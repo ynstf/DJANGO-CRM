@@ -78,9 +78,9 @@
                                 <select id="id_employee-sp" name="employee-sp" class="form-control">
                                     {% for service in Services %}
                                         {% if service.name == employee.sp_service.name %}
-                                        <option value="{{ service.id }}" selected>{{ service.name }}</option>
+                                        <option value="{{ service.id }}" selected>{{ service.id }} - {{ service.name }}</option>
                                         {% else %}
-                                        <option value="{{ service.id }}">{{ service.name }}</option>
+                                        <option value="{{ service.id }}">{{ service.id }} - {{ service.name }}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
@@ -91,9 +91,9 @@
                                 <select id="id_employee-sp" name="employee-sp" class="form-control">
                                     {% for service in Services %}
                                         {% if service.name == employee.sp_service.name %}
-                                        <option value="{{ service.id }}" selected>{{ service.name }}</option>
+                                        <option value="{{ service.id }}" selected>{{ service.id }} - {{ service.name }}</option>
                                         {% else %}
-                                        <option value="{{ service.id }}">{{ service.name }}</option>
+                                        <option value="{{ service.id }}">{{ service.id }} - {{ service.name }}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>

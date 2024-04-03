@@ -309,47 +309,6 @@
                 
 
                 <!-- JavaScript code to add new address forms dynamically -->
-                <script>
-                    // Assuming you're using jQuery for AJAX
-                    $(document).ready(function() {
-                        $('#superProvider').change(function() {
-                            var superProviderId = $(this).val();
-                            $.ajax({
-                                type: 'GET',
-                                url: '/get_services_by_sp/',
-                                data: {
-                                    'super_provider_id': superProviderId
-                                },
-                                dataType: 'json',
-                                success: function(response) {
-                                    $('#serviceList').empty();
-                                    if (response.services && response.services.length > 0) {
-                                        var selectElement = $('<select>', {
-                                            id: 'inquiry-services',
-                                            name: 'inquiry-services',
-                                            required: true,
-                                            class:"form-control"
-                                        });
-                                        $.each(response.services, function(index, serviceName) {
-                                            var option = $('<option>', {
-                                                value: serviceName,
-                                                text: serviceName
-                                            });
-                                            selectElement.append(option);
-                                        });
-                                        $('#serviceList').append(selectElement);
-                                    } else {
-                                        $('#serviceList').text('No services available');
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                    console.error('Error:', error);
-                                }
-                            });
-                        });
-                    });
-
-                </script>
 
                 <script>
                     var br = document.createElement('br');
@@ -477,8 +436,8 @@
                                         });
                                         $.each(response.services, function(index, serviceName) {
                                             var option = $('<option>', {
-                                                value: serviceName,
-                                                text: serviceName
+                                                value: serviceName.name,
+                                                text: serviceName.id + " - " + serviceName.name
                                             });
                                             selectElement.append(option);
                                         });

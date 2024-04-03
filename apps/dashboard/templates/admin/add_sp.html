@@ -56,7 +56,7 @@
                     <select name="sp-service" class="form-control" required multiple size="5">
                         <option value="" disabled >Chose a service</option>
                         {% for service in services %}
-                            <option value="{{service.id}}">{{ service.name }}</option>
+                            <option value="{{service.id}}">{{service.id}} - {{ service.name }}</option>
                         {% endfor %}
                     </select>
                 </div>

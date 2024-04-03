@@ -96,7 +96,7 @@
                         <h6>inquiry address in: {{ inquiry.address.address_name }}</h6>
                         <h6>Date Inq: {{ inquiry.date_inq }}</h6>
                         <h6>Source: {{ inquiry.source }}</h6>
-                        <h6>Services: {{ inquiry.services }}</h6>
+                        <h6>Services: {{ inquiry.services.id }} - {{ inquiry.services }}</h6>
                         <h6>Description: {{ inquiry.description }}</h6>
 
                         {% if inquiry.has_quotations and user.employee.position.name == "admin"  %}

@@ -50,7 +50,7 @@
                     <div class="col-md-4">
                         <label for="id_quotation-service">service :</label>
                         <select id="id_quotation-service" name="quotation-service" class="form-control">
-                                <option value="{{ service.id }}" selected >{{ service.name }}</option>
+                                <option value="{{ service.id }}" selected >{{ service.id }} - {{ service.name }}</option>
                                 {% for srv in services %}
                                     <option value="{{ srv.id }}">{{ srv }}</option>
                                 {% endfor %}
