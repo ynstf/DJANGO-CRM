@@ -329,11 +329,10 @@ def add_customer_view(request):
                         print(current_inq_source)
                         print(inq_source)
 
-                        if inq_date[q]:
+                        if True:
                             inquiry = Inquiry(
                                 customer=customer,
                                 address=address,
-                                date_inq=inq_date[q],
                                 source = current_inq_source,
                                 services=services_set,
                                 sp=current_sp,
@@ -698,7 +697,6 @@ def edit_customer_view(request, id):
 
                         inquiry.customer = customer
                         inquiry.address = address
-                        inquiry.date_inq = inq_date[q]
                         inquiry.source = inq_src
                         inquiry.description = inq_desc[q]
                         inquiry.services = services_set
@@ -732,7 +730,6 @@ def edit_customer_view(request, id):
                         inquiry = Inquiry(
                             customer=customer,
                             address = address,
-                            date_inq = inq_date[q],
                             source = inq_src,
                             description = inq_desc[q],
                             services = services_set

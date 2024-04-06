@@ -87,7 +87,7 @@ class Address(models.Model):
 class Inquiry(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, blank=True, null=True)
-    date_inq = models.DateField(blank=True, null=True)
+    date_inq = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     services = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     source = models.ForeignKey(Source, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Source model
@@ -105,7 +105,6 @@ class Message(models.Model):
     
     def __str__(self):
         return f'{self.inquiry} source:{self.source} destination:{self.destination} '
-
 
 class MessageNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
@@ -142,6 +141,7 @@ class Status(models.Model):
         return self.name
 
 class InquiryStatus(models.Model):
+    #employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     canceling_causes = models.CharField(max_length=200, blank=True, null=True)

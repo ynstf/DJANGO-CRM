@@ -287,6 +287,7 @@ def edit_employee_view(request, id):
 def add_service_view(request):
     if request.method == 'POST':
         service_name = request.POST.get('service-name')
+        description = request.POST.get('service-description')
         
         remainder_checked = request.POST.get('remainder_check')
         reminder = request.POST.get('service-reminder')
@@ -304,12 +305,12 @@ def add_service_view(request):
 
         if remainder_checked == "on":
             # Save the Service instance
-            service_instance = Service.objects.create(name=service_name, columns=columns_str, have_reminder='True', reminder_time=reminder)
+            service_instance = Service.objects.create(name=service_name, description=description, columns=columns_str, have_reminder='True', reminder_time=reminder)
             service_instance.save()
 
         else:
             # Save the Service instance
-            service_instance = Service.objects.create(name=service_name, columns=columns_str, have_reminder='False')
+            service_instance = Service.objects.create(name=service_name, description=description, columns=columns_str, have_reminder='False')
             service_instance.save()
             print(remainder_checked)
 

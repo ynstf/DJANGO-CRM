@@ -524,7 +524,8 @@ def inquiries_list_view(request):
             inquiry.append({'info':i,
                             'state':InquiryStatus.objects.get(inquiry=i),
                             'advence' : advence,
-                            'totale':totale
+                            'totale':totale,
+                            'action':EmployeeAction.objects.filter(inquiry=i).last()
                         })
         except:
             inquiry.append({'info':i,

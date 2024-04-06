@@ -537,6 +537,9 @@
                         <th style="cursor: pointer;" onclick="sortTable(1)"><strong>Customer id ></strong></th>
                         <th style="cursor: pointer;" onclick="sortTable(2)"><strong>inquiry date ></strong></th>
                         <th style="cursor: pointer;" onclick="sortTable(3)"><strong>Update date ></strong></th>
+                        {% if user.employee.position.name == 'admin' %}
+                            <th ><strong>Updated with </strong></th>
+                        {% endif %}
                         <th style="cursor: pointer;" onclick="sortTable(4)"><strong>Customer & Address ></strong></th>
                         <th style="cursor: pointer;" onclick="sortTable(5)"><strong>services ></strong></th>
                         <th style="cursor: pointer;" onclick="sortTable(6)"><strong>source ></strong></th>
@@ -552,52 +555,7 @@
                     </tr>
                 </thead>
 
-                <!--
-                <script>
-                    var ascending = true; // Flag to track sorting order
-                
-                    function sortTableByDate() {
-                        var table, rows, switching, i, x, y, shouldSwitch;
-                        table = document.querySelector('.table'); // Assuming your table has the 'table' class
-                        switching = true;
-                        
-                        while (switching) {
-                            switching = false;
-                            rows = table.rows;
-                            
-                            for (i = 1; i < (rows.length - 1); i++) {
-                                shouldSwitch = false;
-                                
-                                x = rows[i].getElementsByTagName("td")[2]; // Assuming the date column is the fourth column (index 3)
-                                y = rows[i + 1].getElementsByTagName("td")[2];
-                                
-                                // Convert the date strings to Date objects for comparison
-                                var dateX = new Date(x.textContent);
-                                var dateY = new Date(y.textContent);
-                                
-                                if (ascending) {
-                                    if (dateX > dateY) {
-                                        shouldSwitch = true;
-                                        break;
-                                    }
-                                } else {
-                                    if (dateX < dateY) {
-                                        shouldSwitch = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                            if (shouldSwitch) {
-                                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                                switching = true;
-                            }
-                        }
-                        
-                        // Toggle sorting order for next click
-                        ascending = !ascending;
-                    }
-                </script>-->
+
                 <script>
                     var ascending = true; // Flag to track sorting order
                     
@@ -669,6 +627,10 @@
                             <td>{{ inquiry.info.date_inq }}</td>
 
                             <td>{{ inquiry.state.update }}</td>
+                            
+                            {% if user.employee.position.name == 'admin' %}
+                                <td>{{ inquiry.action.from_employee }}</td>
+                            {% endif %}
 
                             <td>
                                 {% if user.employee.position.name == 'call center' or user.employee.position.name == 'super provider' or user.employee.position.name == 'admin' %}
