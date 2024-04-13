@@ -46,9 +46,9 @@
                     {% for service in services %}
                         <tr>
                             <td>{{ service.id }}</td>
-                            <td>{{ service.id }} - {{ service.name }}</td>
+                            <td>{{ service.number }} - {{ service.name }}</td>
                             <td>{{ service.columns }}</td>
-                            <td>{{ service.reminder_time }}</td>
+                            <td>{% if service.reminder_time  %}{{ service.reminder_time }} {% endif %}</td>
 
                             <!-- Add other columns as needed -->
                         </tr>

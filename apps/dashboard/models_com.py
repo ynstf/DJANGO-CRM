@@ -1,6 +1,7 @@
 from django.db import models
 
 class Service(models.Model):
+    number = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     columns = models.TextField(blank=True, null=True)
