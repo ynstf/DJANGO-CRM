@@ -435,6 +435,7 @@
                                             class:"form-control"
                                         });
                                         $.each(response.services, function(index, serviceName) {
+                                            console.log(serviceName)
                                             var option = $('<option>', {
                                                 value: serviceName.name,
                                                 text: serviceName.id + " - " + serviceName.name

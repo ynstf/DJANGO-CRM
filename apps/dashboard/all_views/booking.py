@@ -324,6 +324,11 @@ def generate_invoice_view(request, id):
     except:
         sp = ''
 
+    nvoice_counter = sp_inv.invoice_count
+    reference = sp_inv.reference
+
+    ref = f'{reference} - {nvoice_counter}'
+
     # Retrieve the Service instance
     service_instance = inquiry.services
     # Convert the comma-separated string back to a list
@@ -342,7 +347,10 @@ def generate_invoice_view(request, id):
     date=booking.booking_date
     service=booking.booking_service
 
-    advence = Advence.objects.get(inquiry=inquiry).price
+    try:
+        advence = Advence.objects.get(inquiry=inquiry).price
+    except:
+        advence = 0
 
     context = {'inquiry': inquiry,
                 'quotations': quotations,
@@ -359,6 +367,7 @@ def generate_invoice_view(request, id):
                 'sp':sp,
                 'advence':advence,
                 'rest': total-advence,
+                'ref':ref
 
                 }
     html_content = template.render(context)

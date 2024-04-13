@@ -40,38 +40,48 @@
         
                 <h3>Super Provider Details</h3>
         
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="id_name">Name :</label>
                     <input type="text" id="id_name" name="sp-name" class="form-control" placeholder="First name..." aria-label="First name">
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="id_trn">TRN :</label>
                     <input type="text" id="id_trn" name="sp-trn" class="form-control" placeholder="TRN..." aria-label="First name">
                 </div>
+                <br>
+
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label for="Reference" style="margin-right: 10px;">Reference </label>
+                    <input type="text" id="Reference" name="sp-ref" class="form-control" placeholder="Reference..." aria-label="Reference">
+                    <label for="id_counter" style="margin-right: 10px; margin-left: 10px;">Invoice counter </label>
+                    <input type="number" id="id_counter" name="sp-counter" class="form-control" placeholder="Invoice counter..." aria-label="Invoice counter">
+                </div>
+                <br>
+                
 
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="id_employee-permissions">Services:</label>
                     <select name="sp-service" class="form-control" required multiple size="5">
                         <option value="" disabled >Chose a service</option>
                         {% for service in services %}
-                            <option value="{{service.id}}">{{service.id}} - {{ service.name }}</option>
+                            <option value="{{service.id}}">{% if service.reminder_time  %}{{ service.reminder_time }} {% endif %} - {{ service.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="id_count">result search count :</label>
                     <input type="number" id="id_count" name="search-count" class="form-control" placeholder="SEARCH COUNT ..." required>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="id_Phone">Phone number :</label>
                     <input type="text" id="id_Phone" name="sp-phone_number" class="form-control" placeholder="Phone Number ...">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="id_email">Email :</label>
                     <input type="text" id="id_email" name="sp-email" class="form-control" placeholder="Email ...">
                 </div>

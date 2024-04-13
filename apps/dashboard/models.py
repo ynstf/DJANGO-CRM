@@ -165,6 +165,7 @@ class Quotation(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     quotation_sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
+    invoice_counter = models.IntegerField(blank=True, null=True)
     quotation_date = models.DateField(blank=True, null=True)
     data = models.TextField(blank=True, null=True)
     total = models.CharField(max_length=50, blank=True, null=True)

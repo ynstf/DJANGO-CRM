@@ -774,6 +774,11 @@ def make_quotation_view(request, id):
         quotation_service = Service.objects.get(id=srv_id)
 
         lent = request.POST.getlist('quotation-price')
+        superprovider = SuperProvider.objects.get(id=sp)
+        new_invoice_counter = superprovider.invoice_count + 1
+        superprovider.invoice_count = new_invoice_counter
+        superprovider.save()
+
         for i in range(len(lent)):
             data = []
             for field in columns_list:
@@ -790,6 +795,7 @@ def make_quotation_view(request, id):
                 inquiry=inquiry,
                 quotation_service=quotation_service,
                 quotation_sp=superprovider,
+                invoice_counter=superprovider.invoice_count,
                 quotation_date=quotation_date,
                 data = columns_str,
                 total=total

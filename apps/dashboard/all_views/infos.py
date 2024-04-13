@@ -32,7 +32,7 @@ def get_services_by_sp_view(request):
             try:
                 super_provider = SuperProvider.objects.get(id=super_provider_id)
                 services = super_provider.service.all()
-                service_names = [ {"name":service.name,"id":service.id} for service in services]
+                service_names = [ {"name":service.name,"id":service.number} for service in services]
         
                 return JsonResponse({'services': service_names})
             #{"name":service_names,'id':}

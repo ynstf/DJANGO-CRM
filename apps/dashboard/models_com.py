@@ -15,6 +15,8 @@ class SuperProvider(models.Model):
     name = models.CharField(max_length=50)
     service = models.ManyToManyField(Service, blank=True, null=True)
     trn = models.CharField(max_length=50, blank=True, null=True)
+    reference = models.CharField(max_length=50, blank=True, null=True)
+    invoice_count = models.IntegerField(blank=True, null=True)
     search_number = models.IntegerField(blank=True, null=True)
     phone_Number = models.CharField(max_length=50, blank=True, null=True)
     email = models.CharField(max_length=50, blank=True, null=True)
