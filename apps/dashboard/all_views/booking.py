@@ -51,7 +51,7 @@ def make_inq_underproccess(request,inq_id):
 
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin','provider']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
 def make_booking_view(request,id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
@@ -186,7 +186,7 @@ def make_booking_view(request,id):
 
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin','provider']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
 def edit_booking_view(request,id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()

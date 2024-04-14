@@ -26,6 +26,7 @@
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
+        <!--
         {% if messages %}
             {% for message in messages %}
                 <center>
@@ -33,6 +34,7 @@
                 </center>
             {% endfor %}
         {% endif %}
+        -->
 
     {% if user.employee.position.name == "call center" or user.employee.position.name == "admin" or inquiry.sp.name == user.employee.sp.name or "inquiry info" in permissions_list %}
 
@@ -119,7 +121,7 @@
             <hr>
         
             <h3 style="color:#479d1f;">Inquiry
-                {% if user.employee.position.name == "call center" %}
+                {% if user.employee.position.name == "call center" or user.employee.position.name == "super provider" %}
                     {% if not booking_number and quotations %}
                         <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
                     {% endif %}
