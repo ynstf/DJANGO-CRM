@@ -40,8 +40,34 @@
         
                 <div class="col-md-4">
                     <label for="id_service-number">Number id :</label>
-                    <input type="text" id="id_service-number" name="service-number" class="form-control" placeholder="Number ID..." aria-label="number" required>
+                    <input type="number" id="id_service-number" name="service-number" class="form-control" placeholder="Number ID..." aria-label="number" required>
+                    <span id="error-message" style="color: red; display: none;">Invalid number or This number already exists</span>
                 </div>
+
+                <script>
+                    // List of numbers
+                    var numbers = {{services_id}};
+                
+                    // Reference to the input field and error message span
+                    var inputField = document.getElementById("id_service-number");
+                    var errorMessage = document.getElementById("error-message");
+                
+                    // Function to validate the input
+                    function validateInput() {
+                        var inputValue = parseInt(inputField.value);
+                        if (isNaN(inputValue) || numbers.includes(inputValue)) {
+                            errorMessage.style.display = "inline";
+                            return false;
+                        } else {
+                            errorMessage.style.display = "none";
+                            return true;
+                        }
+                    }
+                
+                    // Add event listener to the input field
+                    inputField.addEventListener("input", validateInput);
+                </script>
+                
 
                 <div class="col-md-4">
                     <label for="id_service-name">Name :</label>

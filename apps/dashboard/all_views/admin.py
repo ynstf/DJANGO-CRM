@@ -319,11 +319,16 @@ def add_service_view(request):
 
         return redirect('services_list')
     
+    services_id = []
+    for srv in Service.objects.all():
+        if srv.number:
+            services_id.append(srv.number)
     
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {
         'position': request.user.employee.position,
         'layout_path': layout_path,
+        'services_id': services_id,
     }
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/add_service.html',context)
