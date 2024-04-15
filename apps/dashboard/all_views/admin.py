@@ -106,7 +106,6 @@ def add_sp_view(request):
         # Handle form submission
         sp_name = request.POST.get('sp-name')
         sp_ref = request.POST.get('sp-ref')
-        sp_counter = request.POST.get('sp-counter')
         email = request.POST.get('sp-email')
         phone_number = request.POST.get('sp-phone_number')
         sp_services = request.POST.getlist('sp-service')
@@ -118,7 +117,6 @@ def add_sp_view(request):
         new_sp = SuperProvider(
             name = sp_name,
             reference = sp_ref,
-            invoice_count = sp_counter,
             trn=trn,
             search_number = search_count,
             phone_Number = phone_number,

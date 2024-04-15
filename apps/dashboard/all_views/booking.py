@@ -324,10 +324,9 @@ def generate_invoice_view(request, id):
     except:
         sp = ''
 
-    nvoice_counter = sp_inv.invoice_count
-    reference = sp_inv.reference
+    reference = quotations[0].invoice_counter
 
-    ref = f'{reference} - {nvoice_counter}'
+    ref = f'{reference}'
 
     # Retrieve the Service instance
     service_instance = inquiry.services
