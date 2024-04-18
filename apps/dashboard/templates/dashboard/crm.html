@@ -1,6 +1,9 @@
 {% extends 'layout/master.html' %}
 {% load static %}
 
+
+
+
 {% block title %}Dashboard{% endblock %}
 
 {% block layout %}
@@ -24,13 +27,16 @@
     <!-- Navbar: End -->
     {% endif %}
 
+
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
+        
 
         <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row gy-4">
 
+                <!-- inquiries of this month -->
                 <div class="col-xl-3 col-sm-6 mt-5">
                     <div class="card">
                         <div class="row">
@@ -58,7 +64,33 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- inquiries of last month -->
+                <div class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">Number of Inquiries</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{inquiries_len_last}}</h4>
+
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">Last month</div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <img src="{% static 'last-month.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="110" height="110">
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     
+                <!-- info of all system -->
                 <div class="col-xl-6 align-self-end">
                     <div class="card">
                         <div class="card-header d-flex align-items-center justify-content-between">
@@ -119,11 +151,213 @@
                         </div>
                     </div>
                 </div>
+
+                
+
+                <div class="col-xl-6">
+                    <div class="card h-100">
+                    <div class="card-header pb-1">
+                        <div class="d-flex justify-content-between">
+                        <h5 class="mb-0">Bookings Overview</h5>
+                        <div class="dropdown">
+                            <button class="btn p-0" type="button" id="salesOverviewDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="salesOverviewDropdown" style="">
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last 28 Days</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Month</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Year</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-body pt-lg-4 mt-lg-1">
+                        <div class="row align-items-center">
+                        <div class="col-md-6" style="position: relative;">
+                            
+                            
+                            <!-- Add ApexCharts JavaScript and CSS files -->
+                            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+                            <link href="https://cdn.jsdelivr.net/npm/apexcharts/dist/apexcharts.min.css" rel="stylesheet">
+                            <!-- Container element for the donut chart -->
+                            <div id="donutChart"></div>
+                            <script>
+                                // JavaScript code for ApexCharts donut chart
+                                const donutChartEl = document.querySelector('#donutChart'),
+                                donutChartConfig = {
+                                    chart: {
+                                        height: 400,
+                                        type: 'donut'
+                                    },
+                                    labels: JSON.parse('{{ labels_pie|escapejs }}'),
+                                    series: JSON.parse('{{ numbers_pie|escapejs }}'),
+                                    colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
+                                    stroke: {
+                                        show: false,
+                                        curve: 'straight'
+                                    },
+                                    dataLabels: {
+                                        enabled: true,
+                                        formatter: function (val, opt) {
+                                        return parseInt(val, 10) + '%';
+                                        }
+                                    },
+                                    legend: {
+                                        show: true,
+                                        position: 'bottom',
+                                        labels: {
+                                        colors: '#333'
+                                        }
+                                    }
+                                    };
+
+                                if (typeof donutChartEl !== undefined && donutChartEl !== null) {
+                                    const donutChart = new ApexCharts(donutChartEl, donutChartConfig);
+                                    donutChart.render();
+                                }
+                            </script>
+                        
+                        
+                        <div class="resize-triggers"><div class="expand-trigger"><div style="width: 236px; height: 199px;"></div></div><div class="contract-trigger"></div></div></div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <div class="d-flex align-items-center mb-3">
+                            <div class="avatar">
+                                <div class="rounded">
+                                    <img src="{% static 'res-icon.webp' %}" alt="">
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex flex-column">
+                                <p class="mb-1">Number of Bookings</p>
+                                <h5 class="mb-1">{{bookings_len}}</h5>
+                            </div>
+                            </div>
+                            <hr>
+
+                            <div class="row g-4">
+                                {% for line in dic %}
+                                    {% if line.books > 0 %}
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="badge badge-dot bg-primary me-2"></div>
+                                            <p class="text-heading mb-0">{{line.name}}</p>
+                                            </div>
+                                            <p class="fw-medium mb-0">{{line.books}}</p>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-6">
+                    <div class="card h-100">
+                    <div class="card-header pb-1">
+                        <div class="d-flex justify-content-between">
+                        <h5 class="mb-0">Income of all bookings</h5>
+                        <div class="dropdown">
+                            <button class="btn p-0" type="button" id="salesOverviewDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="salesOverviewDropdown" style="">
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last 28 Days</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Month</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Year</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-body pt-lg-4 mt-lg-1">
+                        <div class="row align-items-center">
+                        <div class="col-md-6" style="position: relative;">
+                            
+                            
+                            <!-- Add ApexCharts JavaScript and CSS files -->
+                            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+                            <link href="https://cdn.jsdelivr.net/npm/apexcharts/dist/apexcharts.min.css" rel="stylesheet">
+                            <!-- Container element for the donut chart -->
+                            <div id="donutChartprices"></div>
+                            <script>
+                                // JavaScript code for ApexCharts donut chart
+                                const donutChartEl1 = document.querySelector('#donutChartprices'),
+                                donutChartConfig1 = {
+                                    chart: {
+                                        height: 400,
+                                        type: 'donut'
+                                    },
+                                    labels: JSON.parse('{{ labels_pie_prices|escapejs }}'),
+                                    series: JSON.parse('{{ numbers_pie_prices|escapejs }}'),
+                                    colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
+                                    stroke: {
+                                        show: false,
+                                        curve: 'straight'
+                                    },
+                                    dataLabels: {
+                                        enabled: true,
+                                        formatter: function (val, opt) {
+                                        return parseInt(val, 10) + '%';
+                                        }
+                                    },
+                                    legend: {
+                                        show: true,
+                                        position: 'bottom',
+                                        labels: {
+                                        colors: '#333'
+                                        }
+                                    }
+                                    };
+
+                                if (typeof donutChartEl1 !== undefined && donutChartEl1 !== null) {
+                                    const donutChart1 = new ApexCharts(donutChartEl1, donutChartConfig1);
+                                    donutChart1.render();
+                                }
+                            </script>
+                        
+                        
+                        <div class="resize-triggers"><div class="expand-trigger"><div style="width: 236px; height: 199px;"></div></div><div class="contract-trigger"></div></div></div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <div class="d-flex align-items-center mb-3">
+                            <div class="avatar">
+                                <div class="avatar-initial bg-label-primary rounded">
+                                    <i class="mdi mdi-currency-usd mdi-24px"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex flex-column">
+                                <p class="mb-1">Billing income</p>
+                                <h5 class="mb-1">{{bookings_price}} $</h5>
+                            </div>
+                            </div>
+                            <hr>
+
+                            <div class="row g-4">
+                                {% for line in dic_prices %}
+                                    {% if line.books > 0 %}
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="badge badge-dot bg-primary me-2"></div>
+                                            <p class="text-heading mb-0">{{line.name}}</p>
+                                            </div>
+                                            <p class="fw-medium mb-0">{{line.books}} $</p>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+
             </div>
-
-
-            
-
         </div>
 
         <!-- Content: Start -->

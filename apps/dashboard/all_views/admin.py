@@ -36,10 +36,8 @@ def crm_page(request):
     # Calculate the start and end dates for the last 30 days
     end_date = datetime.now().date()
     start_date = end_date - timedelta(days=30)
-    print(end_date,start_date)
     # Filter inquiries created within the last 30 days
     inquiries_last_30_days = Inquiry.objects.filter(date_inq__range=[start_date, end_date])
-    print(inquiries_last_30_days)
     # Get the count of inquiries for the last 30 days
     inquiries_len = inquiries_last_30_days.count()
 
@@ -58,18 +56,68 @@ def crm_page(request):
     sp_len = SuperProvider.objects.all().count()
     service_len = Service.objects.all().count()
 
+
+    all_services = Service.objects.all()
+    dic = []
+    for service in all_services:
+        bookPerService = Booking.objects.filter(booking_service=service).count()
+        if bookPerService>0:
+            line = {'name':service.name,'books':bookPerService}
+            dic.append(line)
+    labels_pie = [item['name'] for item in dic]
+    numbers_pie = [item['books'] for item in dic]
+    # Convert lists to JSON strings
+    labels_pie_json = json.dumps(labels_pie)
+    numbers_pie_json = json.dumps(numbers_pie)
+
+
+    dic_prices = []
+    bookings_price = 0
+    for service in all_services:
+        bookPerService = Booking.objects.filter(booking_service=service)
+        bookPerServiceCount = Booking.objects.filter(booking_service=service).count()
+        price = 0
+        for book in bookPerService:
+            inquiry = book.inquiry
+            quotations = Quotation.objects.filter(inquiry=inquiry)
+            for quotation in quotations:
+                price += float(quotation.total)
+        
+        bookings_price += price
+
+        if bookPerServiceCount>0:
+            line = {'name':service.name,'books':price}
+            dic_prices.append(line)
+
+    labels_pie_prices = [item['name'] for item in dic_prices]
+    numbers_pie_prices = [item['books'] for item in dic_prices]
+    # Convert lists to JSON strings
+    labels_pie_prices_json = json.dumps(labels_pie_prices)
+    numbers_pie_prices_json = json.dumps(numbers_pie_prices)
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'title':title,
                 'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'services':Service.objects.all(),
                 'permissions':Permission.objects.all(),
+
                 'inquiries_len':inquiries_len,
                 'inquiries_len_last':inquiries_len_last,
                 'percentage_change':percentage_change,
+
                 'bookings_len':bookings_len,
                 'sp_len':sp_len,
                 'service_len':service_len,
+
+                'dic':dic,
+                'labels_pie':labels_pie_json,
+                'numbers_pie':numbers_pie_json,
+
+                'labels_pie_prices':labels_pie_prices_json,
+                'numbers_pie_prices':numbers_pie_prices_json,
+                'dic_prices':dic_prices,
+                'bookings_price':bookings_price,
 
                 }
     context = TemplateLayout.init(request, context)
