@@ -18,16 +18,40 @@
 
   <div class="menu-inner-shadow"></div>
 
+  
   <ul class="menu-inner py-1">
+    {% if user.employee.position.name == 'admin' %}
+      <li class="menu-item {% if 'title' == 'crm' or '/crm_page/' in request.path or 'title' == 'analytics' or '/analytics_page/' in request.path or '/dashboard/' in request.path %}active open{% endif %}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons mdi mdi-home-outline"></i>
+          <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
+          <span class="badge bg-danger rounded-pill ms-auto">2</span>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {% if 'crm_page' == request.resolver_match.url_name or title == 'crm' %}active{% endif %}">
+            <a href="{% url 'crm_page' %}" class="menu-link" >
+              <div class="text-truncate" data-i18n="CRM">CRM</div>
+            </a>
+          </li>
+          <li class="menu-item {% if 'analytics_page' == request.resolver_match.url_name or title == 'analytics' %}active{% endif %}">
+            <a href="{% url 'analytics_page' %}" class="menu-link">
+              <div class="text-truncate" data-i18n="Analytics">Analytics</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+    {% endif %}
 
 
-    <li class="menu-item">
-      <a href="{% url 'dashboard' %}" class="menu-link" >
-        <i class="menu-icon tf-icons mdi mdi-home-outline"></i>
-        
-        <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
-      </a>
-    </li>
+    {% if user.employee.position.name != 'admin' %}
+      <li class="menu-item">
+        <a href="{% url 'dashboard' %}" class="menu-link" >
+          <i class="menu-icon tf-icons mdi mdi-home-outline"></i>
+          
+          <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
+        </a>
+      </li>
+    {% endif %}
 
 
     <li class="menu-header fw-medium mt-4">
@@ -118,7 +142,7 @@
           {% endfor %}
         {% endif %}
     
-    
+        
         {% if position.name == 'call center' or position.name == 'admin' or position.name == 'super provider' or position.name == 'team leader' %}
             <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
                 <a href="{% url 'inquiries_list' %}" class="menu-link">

@@ -45,9 +45,12 @@ from .views import (make_inq_connecting, make_inq_sendQ,
                     make_inq_complain, make_inq_done)
 
 
+from .all_views.admin import crm_page, analytics_page
 urlpatterns = [
 
     path("dashboard/",dashboard,name="dashboard"),
+    path("crm_page/",crm_page,name="crm_page"),
+    path("analytics_page/",analytics_page,name="analytics_page"),
 
     # admin
     path('add_employee/', add_employee, name='add_employee'),

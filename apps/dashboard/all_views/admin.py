@@ -1,8 +1,5 @@
-
-
-
 ############### admin manupilations #################
-# myapp/views.py
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
@@ -15,7 +12,8 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Position, Permission
 from django.http import JsonResponse
-from apps.dashboard.models import InvoiceForm, Quotation, QuotationForm, Service, SuperProvider, Inquiry
+from apps.dashboard.models import (Booking, Inquiry, InvoiceForm, Quotation, QuotationForm,
+    Service, SuperProvider)
 from django.shortcuts import render
 from django.db.models import Count
 from django.utils import timezone
@@ -24,6 +22,73 @@ from collections import defaultdict
 from apps.dashboard.models_com import Service
 import random
 import json
+
+
+from datetime import datetime, timedelta
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def crm_page(request):
+    title = "crm"
+
+    
+    # Calculate the start and end dates for the last 30 days
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=30)
+    print(end_date,start_date)
+    # Filter inquiries created within the last 30 days
+    inquiries_last_30_days = Inquiry.objects.filter(date_inq__range=[start_date, end_date])
+    print(inquiries_last_30_days)
+    # Get the count of inquiries for the last 30 days
+    inquiries_len = inquiries_last_30_days.count()
+
+    end_date = datetime.now().date() - timedelta(days=30)
+    start_date = end_date - timedelta(days=30)
+    inquiries_last_month = Inquiry.objects.filter(date_inq__range=[start_date, end_date])
+    inquiries_len_last = inquiries_last_month.count()
+
+    # Calculate the percentage change
+    if inquiries_len_last != 0:
+        percentage_change = ((inquiries_len - inquiries_len_last) / inquiries_len_last) * 100
+    else:
+        percentage_change = 0  # Avoid division by zero error
+
+    bookings_len = Booking.objects.all().count()
+    sp_len = SuperProvider.objects.all().count()
+    service_len = Service.objects.all().count()
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'title':title,
+                'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'services':Service.objects.all(),
+                'permissions':Permission.objects.all(),
+                'inquiries_len':inquiries_len,
+                'inquiries_len_last':inquiries_len_last,
+                'percentage_change':percentage_change,
+                'bookings_len':bookings_len,
+                'sp_len':sp_len,
+                'service_len':service_len,
+
+                }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'dashboard/crm.html', context)
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def analytics_page(request):
+    title = "analytics"
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'title':title,
+                'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'services':Service.objects.all(),
+                'permissions':Permission.objects.all(),
+                }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'dashboard/analytics.html', context)
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
@@ -283,7 +348,6 @@ def edit_employee_view(request, id):
     return render(request, "admin/edit_employee.html", context)
 
 
-
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def add_service_view(request):
@@ -332,6 +396,7 @@ def add_service_view(request):
     }
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/add_service.html',context)
+
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
@@ -412,7 +477,6 @@ def edit_quotation_doc_view(request):
     }
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/edit_quotation.html',context)
-
 
 
 @login_required(login_url='/')

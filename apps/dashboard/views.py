@@ -2,7 +2,7 @@ import django.urls
 from web_project import TemplateLayout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from apps.dashboard.models import InquiryNotify, EmployeeAction
+from apps.dashboard.models import InquiryNotify, EmployeeAction, MessageNotify
 from django.shortcuts import render
 
 
@@ -12,6 +12,8 @@ from django.shortcuts import render
 def dashboard(request):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
 
     actions = EmployeeAction.objects.filter(from_employee=request.user.employee)
 
@@ -20,6 +22,8 @@ def dashboard(request):
             'notifications':notifications,
             'notifications_counter':notifications_counter,
             'actions':actions,
+            'messages':messages,
+            'messages_counter':messages_counter,
             }
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
