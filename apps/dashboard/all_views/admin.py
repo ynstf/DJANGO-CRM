@@ -24,7 +24,7 @@ import json
 
 
 from datetime import datetime, timedelta
-
+from django.contrib import messages
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
@@ -160,41 +160,45 @@ def add_employee_view(request):
         # Retrieve the selected position
         if position_name:
             position = Position.objects.get(name=position_name)
+
         
+        users = User.objects.all()
+        usernames = [usr.username for usr in users]
+        if username not in usernames:
+            if sp_company:
+                #service = Service.objects.get(id=sp)
+                sp_company = SuperProvider.objects.get(id=sp_company)
+                
+                # Create the employee instance
+                employee = Employee.objects.create(
+                    user=User.objects.create_user(username=username, email=email, password=password),
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    phone_number=phone_number,
+                    position=position,
+                    sp=sp_company
+                )
+            else:
+                employee = Employee.objects.create(
+                    user=User.objects.create_user(username=username, email=email, password=password),
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    phone_number=phone_number,
+                    position=position,
+                )
+            # Add permissions to the employee
+            for permission_name in permissions:
+                permission = Permission.objects.get(name=permission_name)
+                employee.permissions.add(permission)
+            # Save the employee
+            employee.save()
 
-        if sp_company:
-            #service = Service.objects.get(id=sp)
-            sp_company = SuperProvider.objects.get(id=sp_company)
-            
-            # Create the employee instance
-            employee = Employee.objects.create(
-                user=User.objects.create_user(username=username, email=email, password=password),
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                phone_number=phone_number,
-                position=position,
-                sp=sp_company
-            )
+            return redirect('employee_list')  # Redirect to the employee list page
         else:
-            employee = Employee.objects.create(
-                user=User.objects.create_user(username=username, email=email, password=password),
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                phone_number=phone_number,
-                position=position,
-            )
-
-        # Add permissions to the employee
-        for permission_name in permissions:
-            permission = Permission.objects.get(name=permission_name)
-            employee.permissions.add(permission)
-
-        # Save the employee
-        employee.save()
-
-        return redirect('employee_list')  # Redirect to the employee list page
+            messages.error(request, 'This username already exists.')
+            return redirect('add_employee')
 
     all_sp = SuperProvider.objects.all()
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})

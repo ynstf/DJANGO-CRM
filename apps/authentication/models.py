@@ -21,7 +21,7 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
     #sp_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
