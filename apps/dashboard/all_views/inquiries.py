@@ -244,7 +244,6 @@ def make_inq_done(request,inq_id):
 
     return redirect('inquiries_list')
 
-
 def get_messages(request):
 
     messages = MessageNotify.objects.filter(employee=request.user.employee)
@@ -284,7 +283,6 @@ def messages_list_view(request):
             }
     context = TemplateLayout.init(request, context)
     return render(request, "inquiry/messages.html", context)
-
 
 
 def get_notifications(request):
@@ -1056,14 +1054,17 @@ def messages_view(request, id):
 
     if request.method == 'POST':
         content = request.POST.get('content')
-
         source = request.user.employee
+        sp = inquiry.sp
+        employees = Employee.objects.filter(sp=inquiry.sp)
         
-        message = Message.objects.create(
-            inquiry = inquiry,
-            source = source,
-            content = content
-        )
+        for employee in employees:
+            message = Message.objects.create(
+                inquiry = inquiry,
+                source = source,
+                destination = employee ,
+                content = content
+            )
 
         if request.user.employee.position.name == "call center": 
             #create notification

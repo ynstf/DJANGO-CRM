@@ -67,7 +67,7 @@ class SuperProviderAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('inquiry', 'source')
+    list_display = ('inquiry', 'source', 'destination')
 
 
 @admin.register(QuotationForm)

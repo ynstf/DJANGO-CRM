@@ -259,26 +259,39 @@
 
         <!-- Statistics -->
         {% if position.name == 'admin' %}
-        <li class="menu-item {% if '/forms/' in request.path %}active open{% endif %}">
-          <a href="javascript:void(0)" class="menu-link menu-toggle">
-            <i class="menu-icon mdi mdi-chart-bar"></i>
+          <li class="menu-item {% if '/forms/' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0)" class="menu-link menu-toggle">
+              <i class="menu-icon mdi mdi-chart-bar"></i>
 
 
-            <div class="text-truncate" data-i18n="Form Elements">Statistics</div>
-          </a>
-          <ul class="menu-sub">
-    
-              <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
-                <a href="{% url 'statistics' %}" class="menu-link">
-                  <div class="text-truncate" data-i18n="Basic Inputs">Inquiries</div>
-                </a>
-              </li>
+              <div class="text-truncate" data-i18n="Form Elements">Statistics</div>
+            </a>
+            <ul class="menu-sub">
+      
+                <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+                  <a href="{% url 'statistics' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="Basic Inputs">Inquiries</div>
+                  </a>
+                </li>
 
-          
-    
-          </ul>
+            
+      
+            </ul>
+          </li>
+        {% endif %}
+
+        
+        <li class="menu-header fw-medium mt-4">
+          <span class="menu-header-text">Apps &amp; Pages</span>
         </li>
-      {% endif %}
+        
+          <!-- chat -->
+          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+            <a href="{% url 'chat_page' %}" class="menu-link">
+              <i class="menu-icon tf-icons mdi mdi-message-outline"></i>
+              <div class="text-truncate" data-i18n="Basic Inputs">Chat</div>
+            </a>
+          </li> 
   
     
 

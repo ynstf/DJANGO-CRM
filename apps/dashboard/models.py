@@ -100,6 +100,7 @@ class Inquiry(models.Model):
 class Message(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
     source = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True, related_name='sent_messages')
+    destination = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True, related_name='recive_messages')
     content = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     

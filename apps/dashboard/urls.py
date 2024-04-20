@@ -46,7 +46,11 @@ from .views import (make_inq_connecting, make_inq_sendQ,
 
 
 from .all_views.admin import crm_page, analytics_page
+from .all_views.chat import chat_page
 urlpatterns = [
+    #chat
+    path("chat_page/",chat_page,name="chat_page"),
+
 
     path("dashboard/",dashboard,name="dashboard"),
     path("crm_page/",crm_page,name="crm_page"),
