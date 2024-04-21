@@ -208,6 +208,7 @@ def add_customer_view(request):
         emarate = request.POST.getlist('address-emirate')
         adress_desc = request.POST.getlist('address-description_location')
         location = request.POST.getlist('address-location')
+        location_url = request.POST.getlist('location_url')
 
         #inquiry fields
         inq_date = request.POST.getlist('inquiry-date_inq')
@@ -276,6 +277,7 @@ def add_customer_view(request):
                     emirate=Emirate.objects.get(id=emarate[i]),  # Replace with the actual Emirate retrieval
                     description_location=adress_desc[i],
                     location=location[i],
+                    location_url=location_url[i],
                 )
                 address.save()
                 addresses.append(address)
@@ -286,6 +288,7 @@ def add_customer_view(request):
                     address_name=adress_name[i],
                     description_location=adress_desc[i],
                     location=location[i],
+                    location_url=location_url[i],
                     )
                     address.save()
                     addresses.append(address)
@@ -297,6 +300,7 @@ def add_customer_view(request):
                             type=adress_type[i],
                             description_location=adress_desc[i],
                             location=location[i],
+                            location_url=location_url[i],
                         )
                         address.save()
                         addresses.append(address)
@@ -308,6 +312,7 @@ def add_customer_view(request):
                             emirate=Emirate.objects.get(id=emarate[i]),  # Replace with the actual Emirate retrieval
                             description_location=adress_desc[i],
                             location=location[i],
+                            location_url=location_url[i],
                         )
                         address.save()
                         addresses.append(address)

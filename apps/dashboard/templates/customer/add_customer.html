@@ -1,5 +1,5 @@
 {% extends 'layout/master.html' %}
-
+{% load static %}
 {% block title %}Add Customer{% endblock %}
 
 {% block layout %}
@@ -95,7 +95,7 @@
                     <ul>
                         <div class="col-md-4">
                             <label for="id_customer-whats_apps" > Phone Number : </label>
-                            <input type="text" id="id_customer-phone_numbers" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
+                            <input type="text" id="id_customer-phone_numbers" value="+971" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
                         </div>
                         <div id="additional-phone-numbers"></div>
                         <button type="button" class="btn btn-primary btn-sm" onclick="addNewPhoneNumber()">Add New Phone Number</button>
@@ -112,6 +112,7 @@
                                 var input = document.createElement('input');
                                 input.type = 'text';
                                 input.id = 'id_customer-phone-number-' + phoneNumberCounter;
+                                input.value = '+971';
                                 input.name = 'customer-phone_numbers';
                                 input.className = 'form-control';
                                 input.placeholder = 'Phone Number ' + phoneNumberCounter + '...';
@@ -132,8 +133,6 @@
                         
                                 document.getElementById('additional-phone-numbers').appendChild(container);
                         
-                                // Optionally, you can clear the value of the new input
-                                input.value = '';
                         
                                 phoneNumberCounter++;
                             }
@@ -194,7 +193,7 @@
                         <!-- add WhatsApp forms -->
                         <div class="col-md-4">
                             <label for="id_customer-whats_apps">WhatsApp :</label>
-                            <input type="text" id="id_customer-whats_apps" name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
+                            <input type="text" id="id_customer-whats_apps" value='+971' name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
                         </div>
                         <div id="additional-whatsapps"></div>
                         <button type="button" class="btn btn-primary btn-sm" onclick="addNewWhatsapp()">Add New WhatsApp</button>
@@ -214,6 +213,7 @@
                                 input.id = 'id_customer-whatsapp-' + whatsappCounter;
                                 input.name = 'customer-whats_apps';
                                 input.className = 'form-control';
+                                input.value = '+971';
                                 input.placeholder = 'WhatsApp ' + whatsappCounter + '...';
                                 input.setAttribute('aria-label', 'WhatsApp ' + whatsappCounter);
                         
@@ -232,8 +232,7 @@
                         
                                 document.getElementById('additional-whatsapps').appendChild(container);
                         
-                                // Optionally, you can clear the value of the new input
-                                input.value = '';
+
                         
                                 whatsappCounter++;
                             }
@@ -309,11 +308,61 @@
                 
 
                 <!-- JavaScript code to add new address forms dynamically -->
+                <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
 
                 <script>
+                    
                     var br = document.createElement('br');
                     var addressCounter = 1;
-                     var inqCounters = {};  // Counter for each address
+                    var inqCounters = {};  // Counter for each address
+
+
+
+
+
+                    // Create a function to initialize the map
+
+                    function searchLocation(addressCounter) {
+                        const searchTerm = document.getElementById(`searchInput_${addressCounter}`).value;
+                        if (searchTerm) {
+                            const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${searchTerm}`;
+                            fetch(nominatimUrl)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.length > 0) {
+                                        const coords = data[0];
+                                        const lat = coords.lat;
+                                        const lon = coords.lon;
+                                        const locationUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=16/${lat}/${lon}`;
+                                        console.log(locationUrl)
+                                        const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lon - 0.0000000001}%2C${lat - 0.0000000001}%2C${lon + 0.0000000001}%2C${lat + 0.0000000001}&layer=mapnik&marker=${lat}%2C${lon}`;
+                                        console.log(embedUrl)
+
+                                        
+
+                                        var iframeElement = document.getElementById(`mapIframe_${addressCounter}`);
+                                        // Set the src attribute of the iframe element to the value of the variable
+                                        iframeElement.src = embedUrl;
+                                        
+
+                                        // Get the anchor element by its ID
+                                        var anchorElement = document.getElementById(`mapLink_${addressCounter}`);
+                                        // Set the href attribute of the anchor element to the value of the variable
+                                        anchorElement.href = locationUrl;
+
+                                        var inputElement = document.getElementById(`linkmap_${addressCounter}`);
+                                        inputElement.value = locationUrl;
+                                        map.setView([lat, lon], 16);
+                                        L.marker([lat, lon]).addTo(map).bindPopup(searchTerm).openPopup();
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                    
+                                });
+                        }
+                    }
                                 
                     function addNewAddress() {
 
@@ -324,6 +373,7 @@
                         // Initialize the inquiry counter for this address
                         var addressIndex = addressCounter;
                         inqCounters[addressIndex] = 0;
+
 
                         // Append the HTML for the address section
                         newAddressSection.innerHTML = `
@@ -363,12 +413,23 @@
                                 <label for="id_address-description_location"> Description location : </label>
                                 <textarea name="address-description_location" class="form-control" placeholder="Description location..." aria-label="Description location"></textarea>
                             </div>
+
                             <div class="col-md-4">
-                                <label for="id_address-location"> Location :</label>
-                                <input type="text" name="address-location" class="form-control" placeholder="Location..." aria-label="Location">
-                                <input type="hidden" name="address-customer" id="id_address-customer">
-                            </div>
+
+                                <label for="id_address-location"> Map Location:</label>
+                                <div id="map"></div>
+                            <input type="text" id="searchInput_${addressCounter}"  name="address-location" class="form-control" placeholder="Location..." oninput="searchLocation(${addressCounter})" >
+                            
+                            <input type="text" id="linkmap_${addressCounter}" name="location_url" class="form-control" placeholder="link">
                             <br>
+
+
+                            <br>
+                            <iframe id="mapIframe_${addressCounter}" width="600" height="450" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="" style="border: 1px solid black"></iframe><br/>
+                            <small><a id="mapLink_${addressCounter}" href="">View Larger Map</a></small>
+                            <input type="hidden" name="address-customer" id="id_address-customer">
+                            </div>
+
 
                             <!-- Container for inquiries associated with this address -->
                             <ul class="inq-container" id="inqContainer_${addressCounter}"></ul>
@@ -380,8 +441,10 @@
                             <p>Total Inquiries: <span id="inqCount_${addressIndex}">0</span></p>
                         
                         </ul>
-                        `;
                         
+                        `;
+
+
                         
                         newAddressSection.appendChild(br);
                         
@@ -407,6 +470,10 @@
                         // Append the new address section to the container
                         document.getElementById('newaddressSection').appendChild(newAddressSection);
                         updateInqCountersInput();
+                        document.getElementById(`searchInput_${addressCounter}`).addEventListener("input", searchLocation);
+
+
+
                     }
 
                     var inqCounter = 1;
@@ -544,6 +611,8 @@
                         inqCountersInput.value = JSON.stringify(inqCounters);
                     }
                 </script>
+
+                
 
                 </div>
 

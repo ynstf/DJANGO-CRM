@@ -605,7 +605,7 @@
                             {% if inquiry.state.status.name == "new" %}
                                 <td style="background-color:  #abd08e ; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "connecting" %}
-                                <td style="background-color:  #fce5d7 ; color: black;">{{ inquiry.info.id }}</td>
+                                <td style="background-color:  #ffd4ba ; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "send Q or B" %}
                                 <td style="background-color: #afc1ef; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "pending" %}
@@ -613,9 +613,9 @@
                             {% elif inquiry.state.status.name == "underproccess" %}
                                 <td style="background-color: #ffe699; color: black;">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "cancel" %}
-                                <td style="background-color: #ffffff; color: rgb(224, 20, 20);">{{ inquiry.info.id }}</td>
+                                <td style="background-color: #cfcfcf; color: rgb(224, 20, 20);">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "complain" %}
-                                <td style="background-color: #ff0000; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
+                                <td style="background-color: #ff4546; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "done" %}
                                 <td style="background-color: #ffffff; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
                             {% else %}

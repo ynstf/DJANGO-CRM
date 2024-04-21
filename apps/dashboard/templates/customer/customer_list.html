@@ -420,10 +420,26 @@
                                     {{ inquiry.id }} 
                                 {% endfor %}
                             </td>
-                            {% if customer.statu.name == "cancel" %}
-                                <td style="background-color: #f13333; color: rgb(0, 0, 0);">{{ customer.statu.name }}</td>
+
+
+                            {% if customer.statu.name == "new" %}
+                                <td style="background-color:  #abd08e ; color: black;">{{ customer.statu.name }}</td>
+                            {% elif customer.statu.name == "connecting" %}
+                                <td style="background-color:  #ffd4ba ; color: black;">{{ customer.statu.name }}</td>
+                            {% elif customer.statu.name == "send Q or B" %}
+                                <td style="background-color: #afc1ef; color: black;">{{ customer.statu.name }}</td>
+                            {% elif customer.statu.name == "pending" %}
+                                <td style="background-color: #f4af85; color: black;">{{ customer.statu.name }}</td>
+                            {% elif customer.statu.name == "underproccess" %}
+                                <td style="background-color: #ffe699; color: black;">{{ customer.statu.name }}</td>
+                            {% elif customer.statu.name == "cancel" %}
+                                <td style="background-color: #cfcfcf; color: rgb(224, 20, 20);">{{ customer.statu.name }}</td>
+                            {% elif customer.statu.name == "complain" %}
+                                <td style="background-color: #ff4546; color: rgb(0, 0, 0);">{{ customer.statu.name }}</td>
+                            {% elif customer.statu.name == "done" %}
+                                <td style="background-color: #ffffff; color: rgb(0, 0, 0);">{{ customer.statu.name }}</td>
                             {% else %}
-                                <td style="background-color: #50e061; color: rgb(0, 0, 0);">{{ customer.statu.name }}</td>
+                                <td>{{ customer.statu.name }}</td>
                             {% endif %}
 
                             <td> 

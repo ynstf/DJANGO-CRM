@@ -80,6 +80,7 @@ class Address(models.Model):
     emirate = models.ForeignKey(Emirate, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Emirate model
     description_location = models.TextField(blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
+    location_url = models.URLField(blank=True, null=True)
     # Add other fields as needed
     def __str__(self):
         return f'{self.customer} - {self.address_name}'
