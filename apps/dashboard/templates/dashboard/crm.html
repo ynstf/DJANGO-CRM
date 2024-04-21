@@ -152,7 +152,139 @@
                     </div>
                 </div>
 
-                
+                <!-- info of today -->
+                <div class="col-xl-12 align-self-end">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Informations Today</h5>
+                            <div class="dropdown">
+                            <button class="btn p-0" type="button" id="transactionID" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID" style="">
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Refresh</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Share</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Update</a>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-xl-2">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-primary rounded shadow">
+                                    <i class="mdi mdi-trending-up mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Inquiries Today</div>
+                                    <h5 class="mb-0">{{inquiries_len_today}}</h5>
+                                    <div class="d-flex align-items-end mb-3">
+
+                                        {% if percentage_change_today >= 0 %}
+                                            <small class="text-success">+{{percentage_change_today}}%</small>
+                                        {% elif percentage_change_today < 0 %}
+                                            <small class="text-danger">{{percentage_change_today}}%</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="badge bg-label-primary rounded-pill">Today</div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-success rounded shadow">
+                                    <i class="mdi mdi-account-outline mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Number of operation Today</div>
+                                    <h5 class="mb-0">{{inquiries_len_today_q_or_b}}</h5>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-warning rounded shadow">
+                                    <i class="mdi mdi-cellphone-link mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Booking today</div>
+                                    <h5 class="mb-0">{{bookings_today}}</h5>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- info of yesterday -->
+                <div class="col-xl-12 align-self-end">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Informations Yesterday</h5>
+                            <div class="dropdown">
+                            <button class="btn p-0" type="button" id="transactionID" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID" style="">
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Refresh</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Share</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Update</a>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-xl-2">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-primary rounded shadow">
+                                    <i class="mdi mdi-trending-up mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Inquiries Yesterday</div>
+                                    <h5 class="mb-0">{{inquiries_len_yesterday}}</h5>
+                                    <div class="badge bg-label-primary rounded-pill">Yesterday</div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-success rounded shadow">
+                                    <i class="mdi mdi-account-outline mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Number of operation Yesterday</div>
+                                    <h5 class="mb-0">{{actions_yesterday}}</h5>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-warning rounded shadow">
+                                    <i class="mdi mdi-cellphone-link mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Booking Yesterday</div>
+                                    <h5 class="mb-0">{{bookings_yesterday}}</h5>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="col-xl-6">
                     <div class="card h-100">
@@ -355,6 +487,9 @@
                     </div>
                     </div>
                 </div>
+
+
+
 
 
             </div>

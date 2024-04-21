@@ -11,8 +11,8 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Position, Permission
 from django.http import JsonResponse
-from apps.dashboard.models import (Booking, Inquiry, InvoiceForm, Quotation, QuotationForm,
-    Service, SuperProvider)
+from apps.dashboard.models import (Booking, Inquiry, InvoiceForm, Quotation, QuotationForm,InquiryStatus,
+    Service, Status, SuperProvider)
 from django.shortcuts import render
 from django.db.models import Count
 from django.utils import timezone
@@ -25,6 +25,7 @@ import json
 
 from datetime import datetime, timedelta
 from django.contrib import messages
+from django.utils.timezone import make_aware
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
@@ -33,14 +34,16 @@ def crm_page(request):
 
     
     # Calculate the start and end dates for the last 30 days
-    end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=30)
+    now = make_aware(datetime.now())
+    # Calculate the start date for the last 30 days
+    start_date = now - timedelta(days=30)
     # Filter inquiries created within the last 30 days
-    inquiries_last_30_days = Inquiry.objects.filter(date_inq__range=[start_date, end_date])
+    inquiries_last_30_days = Inquiry.objects.filter(date_inq__range=[start_date, now])
+    # Filter inquiries created within the last 30 days
+    inquiries_last_30_days = Inquiry.objects.filter(date_inq__range=[start_date, now])
     # Get the count of inquiries for the last 30 days
     inquiries_len = inquiries_last_30_days.count()
-
-    end_date = datetime.now().date() - timedelta(days=30)
+    end_date = make_aware(datetime.now()) - timedelta(days=30)
     start_date = end_date - timedelta(days=30)
     inquiries_last_month = Inquiry.objects.filter(date_inq__range=[start_date, end_date])
     inquiries_len_last = inquiries_last_month.count()
@@ -50,6 +53,54 @@ def crm_page(request):
         percentage_change = ((inquiries_len - inquiries_len_last) / inquiries_len_last) * 100
     else:
         percentage_change = 0  # Avoid division by zero error
+
+
+
+    # Get today's date
+    now = datetime.now()
+    # Calculate the start and end datetimes for today
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+    # Filter inquiries created today
+    inquiries_today = Inquiry.objects.filter(date_inq__range=[start_of_day, end_of_day])
+    # Get the count of inquiries for today
+    inquiries_len_today = inquiries_today.count()
+
+
+    # Filter inquiries with status of "send Q or B"
+    new_status = Status.objects.get(name="new")
+    inquiries_today_q_or_b = InquiryStatus.objects.filter(update__range=[start_of_day, end_of_day]).exclude(status=new_status)
+    # Get the count of inquiries for today with status "send Q or B"
+    inquiries_len_today_q_or_b = inquiries_today_q_or_b.count()
+    #bookings_today
+    bookings_today = Booking.objects.filter(booking_date__range=[start_of_day, end_of_day]).count()
+
+
+    # Calculate the start and end dates for the previous day
+    # Get the current date and time
+    today = datetime.now()
+
+    # Calculate the start and end datetimes for yesterday
+    end_of_yesterday = today.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+    start_of_yesterday = end_of_yesterday - timedelta(days=1)
+
+    # Filter inquiries created yesterday
+    inquiries_yesterday = Inquiry.objects.filter(date_inq__range=[start_of_yesterday, end_of_yesterday])
+    actions_yesterday = InquiryStatus.objects.filter(update__range=[start_of_yesterday, end_of_yesterday]).exclude(status=new_status).count()
+    bookings_yesterday = Booking.objects.filter(booking_date__range=[start_of_yesterday, end_of_yesterday]).count()
+
+
+    # Get the count of inquiries for yesterday
+    inquiries_len_yesterday = inquiries_yesterday.count()
+
+    # Calculate the percentage change
+    if inquiries_len_yesterday != 0:
+        percentage_change_today = ((inquiries_len_today - inquiries_len_yesterday) / inquiries_len_yesterday) * 100
+    else:
+        percentage_change_today = 0  # Avoid division by zero error
+
+
+
 
     bookings_len = Booking.objects.all().count()
     sp_len = SuperProvider.objects.all().count()
@@ -81,13 +132,10 @@ def crm_page(request):
             quotations = Quotation.objects.filter(inquiry=inquiry)
             for quotation in quotations:
                 price += float(quotation.total)
-        
         bookings_price += price
-
         if bookPerServiceCount>0:
             line = {'name':service.name,'books':price}
             dic_prices.append(line)
-
     labels_pie_prices = [item['name'] for item in dic_prices]
     numbers_pie_prices = [item['books'] for item in dic_prices]
     # Convert lists to JSON strings
@@ -117,6 +165,14 @@ def crm_page(request):
                 'numbers_pie_prices':numbers_pie_prices_json,
                 'dic_prices':dic_prices,
                 'bookings_price':bookings_price,
+
+                'inquiries_len_today':inquiries_len_today,
+                'inquiries_len_yesterday':inquiries_len_yesterday,
+                'percentage_change_today': percentage_change_today,
+                'inquiries_len_today_q_or_b': inquiries_len_today_q_or_b,
+                'bookings_today': bookings_today,
+                'actions_yesterday':actions_yesterday,
+                'bookings_yesterday':bookings_yesterday,
 
                 }
     context = TemplateLayout.init(request, context)

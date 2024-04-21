@@ -16,7 +16,6 @@ class Permission(models.Model):
     def __str__(self):
         return self.name
 
-
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255)
@@ -24,15 +23,11 @@ class Employee(models.Model):
     email = models.EmailField(blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
-    #sp_service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     permissions = models.ManyToManyField(Permission, blank=True, null=True)
-    # Add more fields as needed
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
-
 
 
 # Create groups for different roles

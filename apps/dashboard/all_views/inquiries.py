@@ -776,13 +776,16 @@ def make_quotation_view(request, id):
 
         original_string = superprovider.reference
         # Find the index of the first digit
-        index_of_first_digit = next((index for index, char in enumerate(original_string) if char.isdigit()), None)
-        # Split the string into two parts based on the index of the first digit
-        prefix = original_string[:index_of_first_digit]
-        suffix = original_string[index_of_first_digit:]
-        new_invoice_ref = f'{prefix}{int(suffix)+1}'
-        superprovider.reference = new_invoice_ref
-        superprovider.save()
+        try:
+            index_of_first_digit = next((index for index, char in enumerate(original_string) if char.isdigit()), None)
+            # Split the string into two parts based on the index of the first digit
+            prefix = original_string[:index_of_first_digit]
+            suffix = original_string[index_of_first_digit:]
+            new_invoice_ref = f'{prefix}{int(suffix)+1}'
+            superprovider.reference = new_invoice_ref
+            superprovider.save()
+        except:
+            pass
 
         for i in range(len(lent)):
             data = []
