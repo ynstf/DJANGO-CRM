@@ -46,6 +46,7 @@ from .views import (make_inq_connecting, make_inq_sendQ,
 
 
 from .all_views.admin import crm_page, analytics_page
+from .all_views.admin import super_provider, super_provider_edit
 from .all_views.chat import chat_page
 urlpatterns = [
     #chat
@@ -67,6 +68,8 @@ urlpatterns = [
     path('add_service/', add_service, name='add_service'),
     path('services_list/', services_list, name='services_list'),
     path('statistics/', statistics, name='statistics'),
+    path('super_provider/<int:id>', super_provider, name='super_provider'),
+    path('super_provider/<int:id>/edit', super_provider_edit, name='super_provider_edit'),
 
     # documents
     path('edit_invoice_doc/', edit_invoice_doc, name='edit_invoice_doc'),

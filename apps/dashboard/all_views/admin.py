@@ -193,6 +193,76 @@ def analytics_page(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard/analytics.html', context)
 
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def super_provider(request,id):
+    title = "super provider info"
+    sp = SuperProvider.objects.get(id=id)
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'title':title,
+                'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'services':Service.objects.all(),
+                'permissions':Permission.objects.all(),
+                'sp':sp,
+                }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/sp_info.html', context)
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def super_provider_edit(request,id):
+    title = "super provider info"
+    sp = SuperProvider.objects.get(id=id)
+
+    if request.method == 'POST':
+        # Handle form submission
+        sp_name = request.POST.get('sp-name')
+        sp_ref = request.POST.get('sp-ref')
+        email = request.POST.get('sp-email')
+        phone_number = request.POST.get('sp-phone_number')
+        sp_services = request.POST.getlist('sp-service')
+        trn = request.POST.get('sp-trn')
+        search_count = request.POST.get('search-count')
+
+        print(sp_services)
+
+        # Clear existing services
+        sp.service.clear()
+
+        sp.name = sp_name
+        sp.reference = sp_ref
+        sp.trn = trn
+        sp.search_number = search_count
+        sp.phone_Number = phone_number
+        sp.email = email
+
+        # Add new services
+        for service_id in sp_services:
+            service = Service.objects.get(id=service_id)
+            sp.service.add(service)
+
+        sp.save()
+
+        return redirect('super_provider', id)  # Redirect to the employee list page
+
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'title':title,
+                'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'services':Service.objects.all(),
+                'permissions':Permission.objects.all(),
+                'sp':sp,
+                }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/sp_edit.html', context)
+    
+
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def add_employee_view(request):

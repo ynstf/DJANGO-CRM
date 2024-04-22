@@ -683,7 +683,7 @@ def inquiry_info_view(request, id):
     whatsapp_link_invoice = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
 
 
-    message1 = f"عزيزي {customer.first_name} {customer.last_name},"
+    """message1 = f"عزيزي {customer.first_name} {customer.last_name},"
     #messag1 = f"%0A"
     message2 = f" نأمل أن تكونوا بخير. نود أن نعبر عن شكرنا لكم على الاتصال بنا ."
     message3 = f"يعتبر استفساركم أمرًا مهمًا بالنسبة لنا، ونقدر الفرصة التي تمنحونا لمساعدتكم. "
@@ -694,9 +694,10 @@ def inquiry_info_view(request, id):
     message8 = "www.technical-24.com"
     message9 = f"{request.user.employee.email}"
     message10 = f"TECHNICAL 24"
+    """
+    #connect_with_customer_whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message1)}%0A{quote(message2)}%0A{quote(message3)}%0A{quote(message4)}%0A{quote(message5)}%0A{quote(message6)}%0A{quote(message7)}%0A{quote(message8)}%0A{quote(message9)}%0A{quote(message10)}'
     
-
-    connect_with_customer_whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message1)}%0A{quote(message2)}%0A{quote(message3)}%0A{quote(message4)}%0A{quote(message5)}%0A{quote(message6)}%0A{quote(message7)}%0A{quote(message8)}%0A{quote(message9)}%0A{quote(message10)}'
+    connect_with_customer_whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number.replace("+","")}'
 
 
     print(schedule_date)

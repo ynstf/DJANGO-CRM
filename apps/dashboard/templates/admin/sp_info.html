@@ -1,6 +1,6 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Super Provider List{% endblock %}
+{% block title %}SP : {{sp.name}}{% endblock %}
 
 {% block layout %}
 <!-- Layout wrapper: Start -->
@@ -26,46 +26,52 @@
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
+
+        <br>
         <div class="container">
-            <center><h2>Super Provider List</h2></center>
+
+            
             <br>
-                
-            <!-- Table to display service information -->
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>super provider Name</th>
-                        <th>Services</th>
-                        <th>TRN</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Search Count</th>
-                        <th>Reference & counter</th>
+            <center><h2>Super provider Information</h2></center>
+            <br>
 
-                        <!-- Add other columns as needed -->
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sp in all_sp %}
-                        <tr>
-                            <td>{{ sp.id }}</td>
-                            <td><a href="{% url 'super_provider' sp.id %}">{{ sp.name }}</a></td>
-                            <td>{% for srvs in sp.service.all %}{{srvs}} , {% endfor %}</td>
-                            <td>{{ sp.trn }}</td>
-                            <td>{{ sp.phone_Number }}</td>
-                            <td>{{ sp.email }}</td>
-                            <td>{{ sp.search_number }}</td>
-                            <td>{% if sp.reference %}{{ sp.reference }}{% endif %}</td>
+            <h3>SP Details</h3>
+            <p>name: {{ sp.name }}</p>
+
+            <p>TRN: {{ sp.trn }}</p>
+            <p>Reference: {{ sp.reference }}</p>
+            <p>Search Number: {{ sp.search_number }}</p>
+            <p>Phone Number: {{ sp.phone_Number }}</p>
+            <p>Email: {{ sp.email }}</p>
+
+            <p>services: 
+                <ul>
+                    {% for srvc in sp.service.all %}
+                    <li>
+                        
+                        <p>{{ srvc.number }} - {{ srvc.name }}</p>
+                        <p>Description: {{ srvc.description }}</p>
+                        <p>Columns: {{ srvc.columns }}</p>
+                        <p>{% if srvc.have_reminder == 'True' %}Reminder : {{ srvc.reminder_time }}{% endif %}</p>
+                        <br>
 
 
-                            <!-- Add other columns as needed -->
-                        </tr>
+                    </li>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                </ul>
+                
+            </p>
+            <!-- Add other customer details as needed -->
+
+            <hr>
         
+
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{% url 'super_provider_edit' sp.id %}" class="btn btn-primary waves-effect waves-light">Edit SP</a>
+        </div>
+
 
 
 <!-- ######################################################################### -->
