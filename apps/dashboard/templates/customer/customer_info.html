@@ -81,7 +81,13 @@
                         <h6>Type: {{ address.type }}</h6>
                         <h6>Emirate: {{ address.emirate }}</h6>
                         <h6>Description Location: {{ address.description_location }}</h6>
-                        <h6>Location: {{ address.location }}</h6>
+                        <h6>
+                        {% if address.location_url %}
+                        Location: <a href="{{ address.location_url }}" target="_blank">{{ address.location }}</a>
+                        {%else%}
+                        Location: {{ address.location }}
+                        {% endif %}
+                        </h6>
                         <!-- Add other address details as needed -->
                     </li>
                     <br>

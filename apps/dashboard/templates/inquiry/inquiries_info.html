@@ -156,7 +156,14 @@
             </script>
 
                 <ul>
-                    <h4>inquiry address of: {{ inquiry.address.address_name }}</h4>
+                    
+                    <h4>inquiry address of: {{ inquiry.address.address_name }} - 
+                        {%if inquiry.address.location_url %}
+                        <a href="{{ inquiry.address.location_url }}" target="_blank">{{ inquiry.address.location }}</a>
+                        {% else %}
+                        {{ inquiry.address.location }}
+                        {% endif %}
+                    </h4>
                     <h6>Date Inq: {{ inquiry.date_inq }}</h6>
                     <h6>Source: {{ inquiry.source }}</h6>
                     <h6>Super Provider: {{ inquiry.sp }}</h6>

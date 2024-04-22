@@ -15,7 +15,7 @@ def dashboard(request):
     messages = MessageNotify.objects.filter(employee=request.user.employee)
     messages_counter = messages.count()
 
-    actions = EmployeeAction.objects.filter(from_employee=request.user.employee)
+    actions = EmployeeAction.objects.filter(from_employee=request.user.employee).order_by('-update')
 
     # Add the employee's position to the context
     context = {'position': request.user.employee.position,
