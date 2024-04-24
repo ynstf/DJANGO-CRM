@@ -8,6 +8,7 @@ from django.shortcuts import render
 
 
 
+
 @login_required(login_url='/')
 def dashboard(request):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)

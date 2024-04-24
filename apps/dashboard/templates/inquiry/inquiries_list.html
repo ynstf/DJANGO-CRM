@@ -549,6 +549,7 @@
                         <th style="cursor: pointer;" onclick="sortTable(10)"><strong>advenced price ></strong></th>
                         <th style="cursor: pointer;" onclick="sortTable(11)"><strong>total price ></strong></th>
                         <th style="cursor: pointer;" onclick="sortTable(12)"><strong>percentage ></strong></th>
+                        <th style="cursor: pointer;" onclick="sortTable(13)"><strong>Map ></strong></th>
 
 
                         <!-- Add other columns as needed -->
@@ -615,7 +616,7 @@
                             {% elif inquiry.state.status.name == "cancel" %}
                                 <td style="background-color: #cfcfcf; color: rgb(224, 20, 20);">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "complain" %}
-                                <td style="background-color: #ff4546; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
+                                <td style="background-color: #ff4646; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
                             {% elif inquiry.state.status.name == "done" %}
                                 <td style="background-color: #ffffff; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
                             {% else %}
@@ -706,6 +707,8 @@
                                 }
 
                             </script>
+
+                            <td> <a href="{{ inquiry.info.address.location_url }}" target="_blank">{{ inquiry.info.address.location }}</a></td>
 
 
 

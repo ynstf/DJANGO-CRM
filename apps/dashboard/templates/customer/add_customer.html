@@ -323,7 +323,7 @@
 
                     // Create a function to initialize the map
 
-                    function searchLocation(addressCounter) {
+                    /*function searchLocation(addressCounter) {
                         const searchTerm = document.getElementById(`searchInput_${addressCounter}`).value;
                         if (searchTerm) {
                             const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${searchTerm}`;
@@ -351,9 +351,8 @@
                                         // Set the href attribute of the anchor element to the value of the variable
                                         anchorElement.href = locationUrl;
 
-                                        var inputElement = document.getElementById(`linkmap_${addressCounter}`);
-                                        inputElement.value = locationUrl;
-                                        map.setView([lat, lon], 16);
+
+                                        map.setView([lat, lon], 400);
                                         L.marker([lat, lon]).addTo(map).bindPopup(searchTerm).openPopup();
                                     }
                                 })
@@ -363,7 +362,43 @@
                                 });
                         }
                     }
-                                
+                       */
+                    function searchLocation(addressCounter) {
+                        const searchTerm = document.getElementById(`searchInput_${addressCounter}`).value;
+                        if (searchTerm) {
+                            const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${searchTerm}`;
+                            fetch(nominatimUrl)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.length > 0) {
+                                        const coords = data[0];
+                                        const lat = coords.lat;
+                                        const lon = coords.lon;
+                                        const locationUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=16/${lat}/${lon}`;
+                                        console.log(locationUrl);
+                                        const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lon}%2C${lat}%2C${lon}%2C${lat}&layer=mapnik&marker=${lat}%2C${lon}`;
+                                        console.log(embedUrl);
+
+                                        var iframeElement = document.getElementById(`mapIframe_${addressCounter}`);
+                                        iframeElement.src = embedUrl;
+
+                                        var anchorElement = document.getElementById(`mapLink_${addressCounter}`);
+                                        anchorElement.href = locationUrl;
+
+                                        // Create a Leaflet LatLng object
+                                        const latlng = L.latLng(lat, lon);
+                                        // Set the view to the specified location at a zoom level of 17
+                                        map.setView(latlng, 17);
+                                        // Add a marker to the map at the specified location
+                                        L.marker(latlng).addTo(map).bindPopup(searchTerm).openPopup();
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                });
+                        }
+                    }
+
                     function addNewAddress() {
 
                         // Create a new div for the address section
@@ -420,13 +455,13 @@
                                 <div id="map"></div>
                             <input type="text" id="searchInput_${addressCounter}"  name="address-location" class="form-control" placeholder="Location..." oninput="searchLocation(${addressCounter})" >
                             
-                            <input type="text" id="linkmap_${addressCounter}" name="location_url" class="form-control" placeholder="link">
-                            <br>
 
 
                             <br>
-                            <iframe id="mapIframe_${addressCounter}" width="600" height="450" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="" style="border: 1px solid black"></iframe><br/>
-                            <small><a id="mapLink_${addressCounter}" href="">View Larger Map</a></small>
+                            <iframe id="mapIframe_${addressCounter}"  frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="" style="border: 1px solid black"></iframe><br/>
+
+
+                            
                             <input type="hidden" name="address-customer" id="id_address-customer">
                             </div>
 

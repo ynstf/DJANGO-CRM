@@ -32,6 +32,8 @@ from django.utils.timezone import make_aware
 def crm_page(request):
     title = "crm"
 
+    building = Service.objects.get(name="building")
+
     
     # Calculate the start and end dates for the last 30 days
     now = make_aware(datetime.now())
@@ -144,6 +146,7 @@ def crm_page(request):
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'title':title,
+                'building':building,
                 'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'services':Service.objects.all(),

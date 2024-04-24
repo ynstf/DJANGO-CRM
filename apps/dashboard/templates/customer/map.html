@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps API Test</title>
+    <style>
+        /* CSS to style the map container */
+        #map-container {
+            height: 400px; /* Adjust height as needed */
+            width: 100%; /* Make map container full width */
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Maps API Test</h1>
+    
+    <!-- Container for the map -->
+    <div id="map-container"></div>
+
+    <!-- JavaScript to handle the map -->
+    <script>
+        function initMap() {
+            // Specify the coordinates for the center of the map
+            var centerLatLng = {lat: 37.7749, lng: -122.4194};
+
+            // Create a new map object, specifying the container element and options
+            var map = new google.maps.Map(document.getElementById('map-container'), {
+                center: centerLatLng, // Set the center of the map
+                zoom: 12 // Set the zoom level
+            });
+        }
+    </script>
+
+    <!-- Include the Google Maps JavaScript API with your API key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXL5HOVt3thpHVV57juGepQnWiiQIUd-4&callback=initMap" async defer></script>
+</body>
+</html>
