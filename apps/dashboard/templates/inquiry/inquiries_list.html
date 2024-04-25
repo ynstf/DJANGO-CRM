@@ -523,222 +523,224 @@
                 }
             </script>
 
+            <div id="update">
 
-            <hr>
-            <h4 style="text-align: center;">we found {{ search_counter }} result</h4>
-            <hr>
+                <hr>
+                <h4 style="text-align: center;">we found {{ search_counter }} result</h4>
+                <hr>
 
-            <!-- Table to display customer information -->
-            <table class="table">
-                <thead>
-                    <tr>
-
-                        <th style="cursor: pointer;" onclick="sortTable(0)"><strong>inquiries id ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(1)"><strong>Customer id ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(2)"><strong>inquiry date ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(3)"><strong>Update date ></strong></th>
-                        {% if user.employee.position.name == 'admin' %}
-                            <th ><strong>Updated with </strong></th>
-                        {% endif %}
-                        <th style="cursor: pointer;" onclick="sortTable(4)"><strong>Customer & Address ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(5)"><strong>services ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(6)"><strong>source ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(7)"><strong>state ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(8)"><strong>have media ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(9)"><strong>canceling causes ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(10)"><strong>advenced price ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(11)"><strong>total price ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(12)"><strong>percentage ></strong></th>
-                        <th style="cursor: pointer;" onclick="sortTable(13)"><strong>Map ></strong></th>
-
-
-                        <!-- Add other columns as needed -->
-                    </tr>
-                </thead>
-
-
-                <script>
-                    var ascending = true; // Flag to track sorting order
-                    
-                    function sortTable(columnIndex) {
-                        var table, rows, switching, i, x, y, shouldSwitch;
-                        table = document.querySelector('.table'); // Assuming your table has the 'table' class
-                        switching = true;
-                        
-                        while (switching) {
-                            switching = false;
-                            rows = table.rows;
-                            
-                            for (i = 1; i < (rows.length - 1); i++) {
-                                shouldSwitch = false;
-                                
-                                x = rows[i].getElementsByTagName("td")[columnIndex];
-                                y = rows[i + 1].getElementsByTagName("td")[columnIndex];
-                                
-                                if (ascending) {
-                                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                                        shouldSwitch = true;
-                                        break;
-                                    }
-                                } else {
-                                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                                        shouldSwitch = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                            if (shouldSwitch) {
-                                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                                switching = true;
-                            }
-                        }
-                        
-                        // Toggle sorting order for next click
-                        ascending = !ascending;
-                    }
-                </script>
-
-
-                <tbody>
-                    {% for inquiry in inquiries %}
+                <!-- Table to display customer information -->
+                <table class="table">
+                    <thead>
                         <tr>
-                            {% if inquiry.state.status.name == "new" %}
-                                <td style="background-color:  #abd08e ; color: black;">{{ inquiry.info.id }}</td>
-                            {% elif inquiry.state.status.name == "connecting" %}
-                                <td style="background-color:  #ffd4ba ; color: black;">{{ inquiry.info.id }}</td>
-                            {% elif inquiry.state.status.name == "send Q or B" %}
-                                <td style="background-color: #afc1ef; color: black;">{{ inquiry.info.id }}</td>
-                            {% elif inquiry.state.status.name == "pending" %}
-                                <td style="background-color: #f4af85; color: black;">{{ inquiry.info.id }}</td>
-                            {% elif inquiry.state.status.name == "underproccess" %}
-                                <td style="background-color: #ffe699; color: black;">{{ inquiry.info.id }}</td>
-                            {% elif inquiry.state.status.name == "cancel" %}
-                                <td style="background-color: #cfcfcf; color: rgb(224, 20, 20);">{{ inquiry.info.id }}</td>
-                            {% elif inquiry.state.status.name == "complain" %}
-                                <td style="background-color: #ff4646; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
-                            {% elif inquiry.state.status.name == "done" %}
-                                <td style="background-color: #ffffff; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
-                            {% else %}
-                                <td>{{ inquiry.info.id }}</td>
-                            {% endif %}
 
-                            <td> {{ inquiry.info.customer.id }} </td>
-
-                            <td>{{ inquiry.info.date_inq }}</td>
-
-                            <td>{{ inquiry.state.update }}</td>
-                            
+                            <th style="cursor: pointer;" onclick="sortTable(0)"><strong>inquiries id ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(1)"><strong>Customer id ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(2)"><strong>inquiry date ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(3)"><strong>Update date ></strong></th>
                             {% if user.employee.position.name == 'admin' %}
-                                <td>{{ inquiry.action.from_employee }}</td>
+                                <th ><strong>Updated with </strong></th>
                             {% endif %}
-
-                            <td>
-                                {% if user.employee.position.name == 'call center' or user.employee.position.name == 'super provider' or user.employee.position.name == 'admin' %}
-                                    <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
-                                {% else %}
-                                    {{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}
-                                {% endif %}
-
-                                {% if user.employee.permissions.all %}
-                                    {% for permission in user.employee.permissions.all %}
-                                        {% if permission.name == "inquiry info" %}
-                                            <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            </td>
-                            
-                            <td>{{ inquiry.info.services }}</td>
-                            <td>{{ inquiry.info.source }}</td>
-                            <td>{{ inquiry.state.status }}</td>
-                            
-                            {% if inquiry.info.cloudinary_urls %} 
-                                <td style="color: #66c31f;"> Yes <div id="mediacount-{{inquiry.info.id}}"></div> </td>
-                                <script>
-                                    var cloudinaryUrls = "{{ inquiry.info.cloudinary_urls }}"; // Get the URLs
-                                    var urlsArray = cloudinaryUrls.split(',**,'); // Split by the delimiter
-                                    var numberOfUrls = urlsArray.length; // Count the number of URLs
-                                    console.log('count: '+numberOfUrls)
-                                    document.getElementById("mediacount-{{inquiry.info.id}}").innerText = numberOfUrls; // Update the cell with the count
-                                </script>
-                            {% else %} 
-                                <td style="color: #dc2215;"> No </td>
-                            {% endif %}
-
-                            <td>{% if inquiry.state.canceling_causes %}{{ inquiry.state.canceling_causes }}{% else %} not canceled {% endif %}</td>
-
-                            {% if inquiry.state.status.name == "underproccess" %}
-                                <td style="min-width: 200px;" >
-                                    <form method="post" action="{% url 'add_advence' inquiry.info.id %}" >
-                                        {% csrf_token %}
-                                        <div style="display: flex;">
-                                            <input id="advence_price" type="number" name="advence_price" class="form-control mr-2">
-                                            <button class="btn btn-sm btn-success" type="submit">Add price</button>
-                                        </div>
-                                    </form>
-                                </td>
-
-                                <td>{{ inquiry.totale }}</td>
-
-                                <td id="percentage-{{inquiry.info.id}}"></td>
-                            {% else %}
-                                <td> Null </td>
-
-                                <td> Null </td>
-
-                                <td> Null </td>
-                            {% endif %}
-
-                            <script>
-                                if (parseInt("{{ inquiry.totale }}") != 0) {
-                                    // Calculate the percentage
-                                    var percentage = (parseInt("{{inquiry.advence.price}}") / parseInt("{{ inquiry.totale }}") ) * 100;
-
-                                    console.log(percentage)
-                                    // Update the content of the <td> element with id "percentage"
-                                    var advencePrice = {{ inquiry.advence.price }};
-                                    var formattedPercentage = '(' + advencePrice + ')' + '<br>' + percentage.toFixed(2) + "%";
-                                    document.getElementById("percentage-{{inquiry.info.id}}").innerHTML  = formattedPercentage;
-
-                                } else {
-                                    document.getElementById("percentage-{{inquiry.info.id}}").textContent = 'None';
-
-                                }
-
-                            </script>
-
-                            <td> <a href="{{ inquiry.info.address.location_url }}" target="_blank">{{ inquiry.info.address.location }}</a></td>
-
-
+                            <th style="cursor: pointer;" onclick="sortTable(4)"><strong>Customer & Address ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(5)"><strong>services ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(6)"><strong>source ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(7)"><strong>state ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(8)"><strong>have media ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(9)"><strong>canceling causes ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(10)"><strong>advenced price ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(11)"><strong>total price ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(12)"><strong>percentage ></strong></th>
+                            <th style="cursor: pointer;" onclick="sortTable(13)"><strong>Map ></strong></th>
 
 
                             <!-- Add other columns as needed -->
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
 
-            <h4>
-                <!-- Add this block above or below your table -->
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if inquiries_with_pages.has_previous %}
-                            <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ inquiries_with_pages.previous_page_number }}">previous</a>
-                        {% endif %}
 
-                        <span class="current">
-                            Page {{ inquiries_with_pages.number }} of {{ inquiries_with_pages.paginator.num_pages }}.
+                    <script>
+                        var ascending = true; // Flag to track sorting order
+                        
+                        function sortTable(columnIndex) {
+                            var table, rows, switching, i, x, y, shouldSwitch;
+                            table = document.querySelector('.table'); // Assuming your table has the 'table' class
+                            switching = true;
+                            
+                            while (switching) {
+                                switching = false;
+                                rows = table.rows;
+                                
+                                for (i = 1; i < (rows.length - 1); i++) {
+                                    shouldSwitch = false;
+                                    
+                                    x = rows[i].getElementsByTagName("td")[columnIndex];
+                                    y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+                                    
+                                    if (ascending) {
+                                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                            shouldSwitch = true;
+                                            break;
+                                        }
+                                    } else {
+                                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                            shouldSwitch = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (shouldSwitch) {
+                                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                    switching = true;
+                                }
+                            }
+                            
+                            // Toggle sorting order for next click
+                            ascending = !ascending;
+                        }
+                    </script>
+
+
+                    <tbody>
+                        {% for inquiry in inquiries %}
+                            <tr>
+                                {% if inquiry.state.status.name == "new" %}
+                                    <td style="background-color:  #abd08e ; color: black;">{{ inquiry.info.id }}</td>
+                                {% elif inquiry.state.status.name == "connecting" %}
+                                    <td style="background-color:  #ffd4ba ; color: black;">{{ inquiry.info.id }}</td>
+                                {% elif inquiry.state.status.name == "send Q or B" %}
+                                    <td style="background-color: #afc1ef; color: black;">{{ inquiry.info.id }}</td>
+                                {% elif inquiry.state.status.name == "pending" %}
+                                    <td style="background-color: #f4af85; color: black;">{{ inquiry.info.id }}</td>
+                                {% elif inquiry.state.status.name == "underproccess" %}
+                                    <td style="background-color: #ffe699; color: black;">{{ inquiry.info.id }}</td>
+                                {% elif inquiry.state.status.name == "cancel" %}
+                                    <td style="background-color: #cfcfcf; color: rgb(224, 20, 20);">{{ inquiry.info.id }}</td>
+                                {% elif inquiry.state.status.name == "complain" %}
+                                    <td style="background-color: #ff4646; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
+                                {% elif inquiry.state.status.name == "done" %}
+                                    <td style="background-color: #ffffff; color: rgb(0, 0, 0);">{{ inquiry.info.id }}</td>
+                                {% else %}
+                                    <td>{{ inquiry.info.id }}</td>
+                                {% endif %}
+
+                                <td> {{ inquiry.info.customer.id }} </td>
+
+                                <td>{{ inquiry.info.date_inq }}</td>
+
+                                <td>{{ inquiry.state.update }}</td>
+                                
+                                {% if user.employee.position.name == 'admin' %}
+                                    <td>{{ inquiry.action.from_employee }}</td>
+                                {% endif %}
+
+                                <td>
+                                    {% if user.employee.position.name == 'call center' or user.employee.position.name == 'super provider' or user.employee.position.name == 'admin' %}
+                                        <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
+                                    {% else %}
+                                        {{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}
+                                    {% endif %}
+
+                                    {% if user.employee.permissions.all %}
+                                        {% for permission in user.employee.permissions.all %}
+                                            {% if permission.name == "inquiry info" %}
+                                                <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                                
+                                <td>{{ inquiry.info.services }}</td>
+                                <td>{{ inquiry.info.source }}</td>
+                                <td>{{ inquiry.state.status }}</td>
+                                
+                                {% if inquiry.info.cloudinary_urls %} 
+                                    <td style="color: #66c31f;"> Yes <div id="mediacount-{{inquiry.info.id}}"></div> </td>
+                                    <script>
+                                        var cloudinaryUrls = "{{ inquiry.info.cloudinary_urls }}"; // Get the URLs
+                                        var urlsArray = cloudinaryUrls.split(',**,'); // Split by the delimiter
+                                        var numberOfUrls = urlsArray.length; // Count the number of URLs
+                                        console.log('count: '+numberOfUrls)
+                                        document.getElementById("mediacount-{{inquiry.info.id}}").innerText = numberOfUrls; // Update the cell with the count
+                                    </script>
+                                {% else %} 
+                                    <td style="color: #dc2215;"> No </td>
+                                {% endif %}
+
+                                <td>{% if inquiry.state.canceling_causes %}{{ inquiry.state.canceling_causes }}{% else %} not canceled {% endif %}</td>
+
+                                {% if inquiry.state.status.name == "underproccess" %}
+                                    <td style="min-width: 200px;" >
+                                        <form method="post" action="{% url 'add_advence' inquiry.info.id %}" >
+                                            {% csrf_token %}
+                                            <div style="display: flex;">
+                                                <input id="advence_price" type="number" name="advence_price" class="form-control mr-2">
+                                                <button class="btn btn-sm btn-success" type="submit">Add price</button>
+                                            </div>
+                                        </form>
+                                    </td>
+
+                                    <td>{{ inquiry.totale }}</td>
+
+                                    <td id="percentage-{{inquiry.info.id}}"></td>
+                                {% else %}
+                                    <td> Null </td>
+
+                                    <td> Null </td>
+
+                                    <td> Null </td>
+                                {% endif %}
+
+                                <script>
+                                    if (parseInt("{{ inquiry.totale }}") != 0) {
+                                        // Calculate the percentage
+                                        var percentage = (parseInt("{{inquiry.advence.price}}") / parseInt("{{ inquiry.totale }}") ) * 100;
+
+                                        console.log(percentage)
+                                        // Update the content of the <td> element with id "percentage"
+                                        var advencePrice = {{ inquiry.advence.price }};
+                                        var formattedPercentage = '(' + advencePrice + ')' + '<br>' + percentage.toFixed(2) + "%";
+                                        document.getElementById("percentage-{{inquiry.info.id}}").innerHTML  = formattedPercentage;
+
+                                    } else {
+                                        document.getElementById("percentage-{{inquiry.info.id}}").textContent = 'None';
+
+                                    }
+
+                                </script>
+
+                                <td> <a href="{{ inquiry.info.address.location_url }}" target="_blank">{{ inquiry.info.address.location }}</a></td>
+
+
+
+
+                                <!-- Add other columns as needed -->
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h4>
+                    <!-- Add this block above or below your table -->
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if inquiries_with_pages.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ inquiries_with_pages.previous_page_number }}">previous</a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ inquiries_with_pages.number }} of {{ inquiries_with_pages.paginator.num_pages }}.
+                            </span>
+
+                            {% if inquiries_with_pages.has_next %}
+                                <a href="?page={{ inquiries_with_pages.next_page_number }}">next</a>
+                                <a href="?page={{ inquiries_with_pages.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
                         </span>
-
-                        {% if inquiries_with_pages.has_next %}
-                            <a href="?page={{ inquiries_with_pages.next_page_number }}">next</a>
-                            <a href="?page={{ inquiries_with_pages.paginator.num_pages }}">last &raquo;</a>
-                        {% endif %}
-                    </span>
-                </div>
-            </h4>
+                    </div>
+                </h4>
+            </div>
 
         </div>
 <!-- ######################################################################### -->
@@ -765,6 +767,30 @@
         </div>
         <!--/ Content wrapper: End -->
     </div>
+
+    <script>
+        // Function to fetch and update content
+        function refreshContent() {
+            $.ajax({
+                url: window.location.href,
+                type: 'GET',
+                success: function(data) {
+                    // Extract the HTML content within the #update element from the response data
+                    var updatedContent = $(data).find('#update').html();
+                    console.log(updatedContent)
+                    
+                    // Replace the content within the #update element with the updated content
+                    $('#update').html(updatedContent);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching content:', error);
+                }
+            });
+        }
+        
+        // Call the refreshContent function every 10 seconds
+        setInterval(refreshContent, 10000); // 10000 milliseconds = 10 seconds
+    </script>
     <!-- / Layout page: End -->
     </div>
 

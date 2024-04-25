@@ -25,7 +25,7 @@
 
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
-    <div class="content-wrapper">
+    <div id="update" class="content-wrapper">
 
         <div class="container">
             <br>
@@ -76,6 +76,29 @@
         </div>
         <!--/ Content wrapper: End -->
     </div>
+    <script>
+        // Function to fetch and update content
+        function refreshContent() {
+            $.ajax({
+                url: window.location.href,
+                type: 'GET',
+                success: function(data) {
+                    // Extract the HTML content within the #update element from the response data
+                    var updatedContent = $(data).find('#update').html();
+                    console.log(updatedContent)
+                    
+                    // Replace the content within the #update element with the updated content
+                    $('#update').html(updatedContent);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching content:', error);
+                }
+            });
+        }
+        
+        // Call the refreshContent function every 10 seconds
+        setInterval(refreshContent, 10000); // 10000 milliseconds = 10 seconds
+    </script>
     <!-- / Layout page: End -->
     </div>
 

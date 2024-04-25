@@ -27,15 +27,15 @@
 
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
-    <div class="content-wrapper">
+    <div id="update" class="content-wrapper">
 
         
         <div class="container-xxl flex-grow-1 container-p-y">
-            <p>{{ building.reminder_time }}</p>
+            
             <div class="row gy-4">
 
                 <!-- inquiries of this month -->
-                <div class="col-xl-3 col-sm-6 mt-5">
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
                     <div class="card">
                         <div class="row">
                             <div class="col-6">
@@ -64,7 +64,7 @@
                 </div>
 
                 <!-- inquiries of last month -->
-                <div class="col-xl-3 col-sm-6 mt-5">
+                <div id="last_month_inquiries" class="col-xl-3 col-sm-6 mt-5">
                     <div class="card">
                         <div class="row">
                             <div class="col-6">
@@ -89,7 +89,7 @@
                 </div>
     
                 <!-- info of all system -->
-                <div class="col-xl-6 align-self-end">
+                <div id="all_system_info" class="col-xl-6 align-self-end">
                     <div class="card">
                         <div class="card-header d-flex align-items-center justify-content-between">
                             <h5 class="card-title m-0 me-2">Transactions</h5>
@@ -151,7 +151,7 @@
                 </div>
 
                 <!-- info of today -->
-                <div class="col-xl-12 align-self-end">
+                <div id="today_info" class="col-xl-12 align-self-end">
                     <div class="card">
                         <div class="card-header d-flex align-items-center justify-content-between">
                             <h5 class="card-title m-0 me-2">Informations Today</h5>
@@ -222,7 +222,7 @@
                 </div>
 
                 <!-- info of yesterday -->
-                <div class="col-xl-12 align-self-end">
+                <div id="yesterday_info" class="col-xl-12 align-self-end">
                     <div class="card">
                         <div class="card-header d-flex align-items-center justify-content-between">
                             <h5 class="card-title m-0 me-2">Informations Yesterday</h5>
@@ -284,6 +284,7 @@
                     </div>
                 </div>
 
+
                 <div class="col-xl-6">
                     <div class="card h-100">
                     <div class="card-header pb-1">
@@ -308,50 +309,49 @@
                         <div class="col-md-6" style="position: relative;">
                             
                             
-                            <!-- Add ApexCharts JavaScript and CSS files -->
-                            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-                            <link href="https://cdn.jsdelivr.net/npm/apexcharts/dist/apexcharts.min.css" rel="stylesheet">
                             <!-- Container element for the donut chart -->
                             <div id="donutChart"></div>
-                            <script>
-                                // JavaScript code for ApexCharts donut chart
-                                const donutChartEl = document.querySelector('#donutChart'),
-                                donutChartConfig = {
-                                    chart: {
-                                        height: 400,
-                                        type: 'donut'
-                                    },
-                                    labels: JSON.parse('{{ labels_pie|escapejs }}'),
-                                    series: JSON.parse('{{ numbers_pie|escapejs }}'),
-                                    colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
-                                    stroke: {
-                                        show: false,
-                                        curve: 'straight'
-                                    },
-                                    dataLabels: {
-                                        enabled: true,
-                                        formatter: function (val, opt) {
-                                        return parseInt(val, 10) + '%';
+                            <div id="booking_chart_js">
+                                <script>
+                                    // JavaScript code for ApexCharts donut chart
+                                    const donutChartEl = document.querySelector('#donutChart'),
+                                    donutChartConfig = {
+                                        chart: {
+                                            height: 400,
+                                            type: 'donut'
+                                        },
+                                        labels: JSON.parse('{{ labels_pie|escapejs }}'),
+                                        series: JSON.parse('{{ numbers_pie|escapejs }}'),
+                                        colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
+                                        stroke: {
+                                            show: false,
+                                            curve: 'straight'
+                                        },
+                                        dataLabels: {
+                                            enabled: true,
+                                            formatter: function (val, opt) {
+                                            return parseInt(val, 10) + '%';
+                                            }
+                                        },
+                                        legend: {
+                                            show: true,
+                                            position: 'bottom',
+                                            labels: {
+                                            colors: '#333'
+                                            }
                                         }
-                                    },
-                                    legend: {
-                                        show: true,
-                                        position: 'bottom',
-                                        labels: {
-                                        colors: '#333'
-                                        }
-                                    }
-                                    };
+                                        };
 
-                                if (typeof donutChartEl !== undefined && donutChartEl !== null) {
-                                    const donutChart = new ApexCharts(donutChartEl, donutChartConfig);
-                                    donutChart.render();
-                                }
-                            </script>
+                                    if (typeof donutChartEl !== undefined && donutChartEl !== null) {
+                                        const donutChart = new ApexCharts(donutChartEl, donutChartConfig);
+                                        donutChart.render();
+                                    }
+                                </script>
+                            </div>
                         
                         
                         <div class="resize-triggers"><div class="expand-trigger"><div style="width: 236px; height: 199px;"></div></div><div class="contract-trigger"></div></div></div>
-                        <div class="col-md-6 mt-3 mt-md-0">
+                        <div id="all_booking" class="col-md-6 mt-3 mt-md-0">
                             <div class="d-flex align-items-center mb-3">
                             <div class="avatar">
                                 <div class="rounded">
@@ -408,51 +408,49 @@
                         <div class="row align-items-center">
                         <div class="col-md-6" style="position: relative;">
                             
-                            
-                            <!-- Add ApexCharts JavaScript and CSS files -->
-                            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-                            <link href="https://cdn.jsdelivr.net/npm/apexcharts/dist/apexcharts.min.css" rel="stylesheet">
                             <!-- Container element for the donut chart -->
                             <div id="donutChartprices"></div>
-                            <script>
-                                // JavaScript code for ApexCharts donut chart
-                                const donutChartEl1 = document.querySelector('#donutChartprices'),
-                                donutChartConfig1 = {
-                                    chart: {
-                                        height: 400,
-                                        type: 'donut'
-                                    },
-                                    labels: JSON.parse('{{ labels_pie_prices|escapejs }}'),
-                                    series: JSON.parse('{{ numbers_pie_prices|escapejs }}'),
-                                    colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
-                                    stroke: {
-                                        show: false,
-                                        curve: 'straight'
-                                    },
-                                    dataLabels: {
-                                        enabled: true,
-                                        formatter: function (val, opt) {
-                                        return parseInt(val, 10) + '%';
+                            <div id="prices">
+                                <script>
+                                    // JavaScript code for ApexCharts donut chart
+                                    const donutChartEl1 = document.querySelector('#donutChartprices'),
+                                    donutChartConfig1 = {
+                                        chart: {
+                                            height: 400,
+                                            type: 'donut'
+                                        },
+                                        labels: JSON.parse('{{ labels_pie_prices|escapejs }}'),
+                                        series: JSON.parse('{{ numbers_pie_prices|escapejs }}'),
+                                        colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
+                                        stroke: {
+                                            show: false,
+                                            curve: 'straight'
+                                        },
+                                        dataLabels: {
+                                            enabled: true,
+                                            formatter: function (val, opt) {
+                                            return parseInt(val, 10) + '%';
+                                            }
+                                        },
+                                        legend: {
+                                            show: true,
+                                            position: 'bottom',
+                                            labels: {
+                                            colors: '#333'
+                                            }
                                         }
-                                    },
-                                    legend: {
-                                        show: true,
-                                        position: 'bottom',
-                                        labels: {
-                                        colors: '#333'
-                                        }
-                                    }
-                                    };
+                                        };
 
-                                if (typeof donutChartEl1 !== undefined && donutChartEl1 !== null) {
-                                    const donutChart1 = new ApexCharts(donutChartEl1, donutChartConfig1);
-                                    donutChart1.render();
-                                }
-                            </script>
+                                    if (typeof donutChartEl1 !== undefined && donutChartEl1 !== null) {
+                                        const donutChart1 = new ApexCharts(donutChartEl1, donutChartConfig1);
+                                        donutChart1.render();
+                                    }
+                                </script>
+                            </div>
                         
                         
                         <div class="resize-triggers"><div class="expand-trigger"><div style="width: 236px; height: 199px;"></div></div><div class="contract-trigger"></div></div></div>
-                        <div class="col-md-6 mt-3 mt-md-0">
+                        <div id="all_booking_income" class="col-md-6 mt-3 mt-md-0">
                             <div class="d-flex align-items-center mb-3">
                             <div class="avatar">
                                 <div class="avatar-initial bg-label-primary rounded">
@@ -517,6 +515,54 @@
         </div>
         <!--/ Content wrapper: End -->
     </div>
+    <script>
+        // Function to fetch and update content
+        
+        function refreshContent() {
+            
+            $.ajax({
+                url: window.location.href,
+                type: 'GET',
+                success: function(data) {
+                    // Extract the HTML content within the #update element from the response data
+                    var updatedContent = $(data).find('#prices').html();
+                    $('#prices').html(updatedContent);
+
+                    var booking_chart_js = $(data).find('#booking_chart_js').html();
+                    $('#booking_chart_js').html(booking_chart_js);
+
+                    var monthly_inquiries = $(data).find('#monthly_inquiries').html();
+                    $('#monthly_inquiries').html(monthly_inquiries);
+
+                    var last_month_inquiries = $(data).find('#last_month_inquiries').html();
+                    $('#last_month_inquiries').html(last_month_inquiries);
+                    
+                    var all_system_info = $(data).find('#all_system_info').html();
+                    $('#all_system_info').html(all_system_info);
+                    
+                    var today_info = $(data).find('#today_info').html();
+                    $('#today_info').html(today_info);
+                    
+                    var yesterday_info = $(data).find('#yesterday_info').html();
+                    $('#yesterday_info').html(yesterday_info);
+
+                    var all_booking = $(data).find('#all_booking').html();
+                    $('#all_booking').html(all_booking);
+
+                    var all_booking_income = $(data).find('#all_booking_income').html();
+                    $('#all_booking_income').html(all_booking_income);
+                    
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching content:', error);
+                }
+            });
+        }
+        
+        // Call the refreshContent function every 10 seconds
+        setInterval(refreshContent, 10000); // 10000 milliseconds = 10 seconds
+    </script>
+    
     <!-- / Layout page: End -->
     </div>
 

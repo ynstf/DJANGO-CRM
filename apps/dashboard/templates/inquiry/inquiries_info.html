@@ -1,6 +1,3 @@
-<div id="content">
-
-
 {% extends 'layout/master.html' %}
 
 {% block title %}Inquiry Information{% endblock %}
@@ -8,7 +5,7 @@
 {% block layout %}
 <!-- Layout wrapper: Start -->
 <div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
-<div class="layout-container">
+<div id="content" class="layout-container">
 
     {% if is_menu %}
     <!-- Menu: Start -->
@@ -45,91 +42,93 @@
         
         <br>
         <div class="container">
-            <br>
-            <center><h2>Inquiry Information</h2></center>
-            <br>
-            <center>
-                {% if inquiry_state.status.name ==  "cancel" %}
-                    <h4 style="color: #941515;">this inquiry canceled</h4>
-                    <h6>canceling causes: {{ canceling_cause }}</h6>
-                {% endif %}
-            </center>
+            <div id="update">
+                <br>
+                <center><h2>Inquiry Information</h2></center>
+                <br>
+                <center>
+                    {% if inquiry_state.status.name ==  "cancel" %}
+                        <h4 style="color: #941515;">this inquiry canceled</h4>
+                        <h6>canceling causes: {{ canceling_cause }}</h6>
+                    {% endif %}
+                </center>
 
-            <h3>Open <a href="{% url 'messages' inquiry.id %}"> Messages</a></h3><br>
+                <h3>Open <a href="{% url 'messages' inquiry.id %}"> Messages</a></h3><br>
 
-            <h3 style="color: #105794;">Customer Details</h3>
-            <ul>
-                <h6>First Name: {{ customer.first_name }}</h6>
-                <h6>Last Name: {{ customer.last_name }}</h6>
-                <h6>Nationality: {{ customer.nationality }}</h6>
-            </ul>
+                <h3 style="color: #105794;">Customer Details</h3>
+                <ul>
+                    <h6>First Name: {{ customer.first_name }}</h6>
+                    <h6>Last Name: {{ customer.last_name }}</h6>
+                    <h6>Nationality: {{ customer.nationality }}</h6>
+                </ul>
 
-            <br><hr>
-        
-            <h3 style="color: #105794;">Contact Information</h3>
-
-            <ul>
-                
+                <br><hr>
             
-                {% for number in customer.landline_set.all %}
-                    {% if number.landline %}
-                        <h6>Landlines: {{ number.landline }} <a href="tel:{{ number.landline }}" class="btn btn-primary waves-effect waves-light">Call {{ number.landline }}</a></h6>
-                    {% endif %}
-                {% endfor %}
+                <h3 style="color: #105794;">Contact Information</h3>
 
-
-                {% for number in customer.phonenumber_set.all %}
-                    {% if number.number %}
-                        <h6>Phone Numbers: {{ number.number }} <a href="tel:{{ number.number }}" class="btn btn-primary waves-effect waves-light">Call {{ number.number }}</a></h6>
-                    {% endif %}
-                {% endfor %}
-
-                {% for whatsApp in customer.whatsapp_set.all %}
-                    {% if whatsApp.whatsapp %}
-                        <h6>WhatsApp Numbers: {{ whatsApp.whatsapp }}</h6>
-                        
-                    {% endif %}
-                {% endfor %}
-
-                {% for email in customer.email_set.all %}
-                    {% if email.email %}
-                        <h6>Emails: {{ email.email }}</h6>
-                    {% endif %}
-                {% endfor %}
-
-            </ul>
-
-            <br>
-
-            {% if user.employee.position.name == "super provider" %}
-                {% if inquiry_state.status.name == "new" %}
-                    <!--<a id="connect_via_whatsapp" href="{{ connect_with_customer_whatsapp_link }}" class="btn btn-success" style="background-color: #146fba ;">  </a>-->
-                    <a id="make_inq_connect" href="{% url 'make_inq_connecting' inquiry.id %}" >
-                        <button id="connect_via_whatsapp_and_make_inq_connect" class="btn btn-primary waves-effect waves-light" >
-                            Contact has been made with the client
-                        </button>
-                    </a>
-
-                    <a href="{{ connect_with_customer_whatsapp_link }}" target="_blank">
-                    <button id="connect_via_whatsapp_and_make_inq_connect" class="btn btn-success" >
-                        <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon"> Contact via WhatsApp
-                    </button>
-                    </a>
+                <ul>
                     
-                {% elif inquiry_state.status.name ==  "connecting" %}
-                    <a href="{% url 'make_inq_new' inquiry.id %}" class="btn btn-primary" style="background-color: #e81010 ;"> Contact Canceling </a>
-                {% endif %}
-            {% endif %}
+                
+                    {% for number in customer.landline_set.all %}
+                        {% if number.landline %}
+                            <h6>Landlines: {{ number.landline }} <a href="tel:{{ number.landline }}" class="btn btn-primary waves-effect waves-light">Call {{ number.landline }}</a></h6>
+                        {% endif %}
+                    {% endfor %}
 
-            <hr>
-        
-            <h3 style="color:#479d1f;">Inquiry
-                {% if user.employee.position.name == "call center" or user.employee.position.name == "super provider" %}
-                    {% if not booking_number and quotations %}
-                        <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
+
+                    {% for number in customer.phonenumber_set.all %}
+                        {% if number.number %}
+                            <h6>Phone Numbers: {{ number.number }} <a href="tel:{{ number.number }}" class="btn btn-primary waves-effect waves-light">Call {{ number.number }}</a></h6>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% for whatsApp in customer.whatsapp_set.all %}
+                        {% if whatsApp.whatsapp %}
+                            <h6>WhatsApp Numbers: {{ whatsApp.whatsapp }}</h6>
+                            
+                        {% endif %}
+                    {% endfor %}
+
+                    {% for email in customer.email_set.all %}
+                        {% if email.email %}
+                            <h6>Emails: {{ email.email }}</h6>
+                        {% endif %}
+                    {% endfor %}
+
+                </ul>
+
+                <br>
+
+                {% if user.employee.position.name == "super provider" %}
+                    {% if inquiry_state.status.name == "new" %}
+                        <!--<a id="connect_via_whatsapp" href="{{ connect_with_customer_whatsapp_link }}" class="btn btn-success" style="background-color: #146fba ;">  </a>-->
+                        <a id="make_inq_connect" href="{% url 'make_inq_connecting' inquiry.id %}" >
+                            <button id="connect_via_whatsapp_and_make_inq_connect" class="btn btn-primary waves-effect waves-light" >
+                                Contact has been made with the client
+                            </button>
+                        </a>
+
+                        <a href="{{ connect_with_customer_whatsapp_link }}" target="_blank">
+                        <button id="connect_via_whatsapp_and_make_inq_connect" class="btn btn-success" >
+                            <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon"> Contact via WhatsApp
+                        </button>
+                        </a>
+                        
+                    {% elif inquiry_state.status.name ==  "connecting" %}
+                        <a href="{% url 'make_inq_new' inquiry.id %}" class="btn btn-primary" style="background-color: #e81010 ;"> Contact Canceling </a>
                     {% endif %}
                 {% endif %}
-            </h3>
+
+                <hr>
+            
+                <h3 style="color:#479d1f;">Inquiry
+                    {% if user.employee.position.name == "call center" or user.employee.position.name == "super provider" %}
+                        {% if not booking_number and quotations %}
+                            <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
+                        {% endif %}
+                    {% endif %}
+                </h3>
+            </div>
 
             <form id="cancel_form" method="post" action="{% url 'make_inq_cancel' inquiry.id %}">
                 {% csrf_token %}
@@ -139,25 +138,26 @@
                     <textarea name="canceling_causes" id="cause" cols="30" rows="5" class="form-control"></textarea>
                     <button type="submit" class="btn btn-dark btn-sm">Confirm Canceling</button>
                 </div>
+                <!-- Add your JavaScript code here -->
+                <script>
+                    document.getElementById('cancel_button').addEventListener('click', function() {
+                        var causesForm = document.getElementById('causes_form');
+                        var cancelButton = document.getElementById('cancel_button');
+                        
+                        if (causesForm.style.maxHeight === '0px' || causesForm.style.maxHeight === '') {
+                            // If the form is hidden, show it
+                            causesForm.style.maxHeight = '200px'; // Adjust the max-height value as needed
+                            cancelButton.style.display = 'none';
+                        } else {
+                            // If the form is visible, hide it
+                            causesForm.style.maxHeight = '0';
+                            cancelButton.style.display = 'block';
+                        }
+                    });
+                </script>
             </form>
-            <!-- Add your JavaScript code here -->
-            <script>
-                document.getElementById('cancel_button').addEventListener('click', function() {
-                    var causesForm = document.getElementById('causes_form');
-                    var cancelButton = document.getElementById('cancel_button');
-                    
-                    if (causesForm.style.maxHeight === '0px' || causesForm.style.maxHeight === '') {
-                        // If the form is hidden, show it
-                        causesForm.style.maxHeight = '200px'; // Adjust the max-height value as needed
-                        cancelButton.style.display = 'none';
-                    } else {
-                        // If the form is visible, hide it
-                        causesForm.style.maxHeight = '0';
-                        cancelButton.style.display = 'block';
-                    }
-                });
-            </script>
 
+            <div id="update1">
                 <ul>
                     
                     <h4>inquiry address of: {{ inquiry.address.address_name }} - 
@@ -257,21 +257,22 @@
                         modal.style.display = "none";
                     }
                     </script>
-                    
 
-
-
-                    <form id="image" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="col-md-4">
-                            <!-- Other form fields -->
-                            <input type="file" class="form-control" name="images" accept="image/*" multiple>
-                            <button class="btn btn-success" type="submit">Add images</button>
-                        </div>
-                    </form>
                     
                 </ul>
-                
+            </div>
+            <ul>
+                <form id="image" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-md-4">
+                        <!-- Other form fields -->
+                        <input type="file" class="form-control" name="images" accept="image/*" multiple>
+                        <button class="btn btn-success" type="submit">Add images</button>
+                    </div>
+                </form>
+            </ul>
+            
+            <div id="update2">
                 <br>
                 {% if user.employee.position.name == "super provider" %}
                     <div style="text-align: center;">
@@ -381,15 +382,16 @@
             <hr>
             
 
+            
+            </div>
+
             <style>
                 #complainFormContainer {
                     display: none;
                     transition: display 0.9s ease-in-out;
                 }
             </style>
-
             <button id="toggleFormBtn" style="background-color: #fc9292;" class="btn btn-white">Complain</button>
-            
             <div id="complainFormContainer">
                 <br>
                 <h3 style="color:#6f1212;">Complain </h3>
@@ -433,35 +435,6 @@
                 });
             </script>
             
-
-            <!--<form action="{% url 'make_complain' inquiry.id %}" method="post">
-                {% csrf_token %}
-                <div class="col-md-4">
-                    <label for="id_open">Open complain date:</label>
-                    <input type="date" id="id_open" value="{{complain.opened|date:'Y-m-d'}}" name="open" class="form-control" placeholder="open..." required>
-                </div>
-                <div class="col-md-4">
-                    <label for="id_detail">Problem details:</label>
-                    <textarea id="id_detail" name="detail" class="form-control" cols="30" rows="10" placeholder="detail...">{{ complain.detail }}</textarea>
-                </div>
-                <div class="col-md-4">
-                    <label for="id_closed">Close complain date:</label>
-                    <input type="date" id="id_closed" value="{{complain.closed|date:'Y-m-d'}}" name="closed" class="form-control" placeholder="closed...">
-                </div>
-                <div class="col-md-4">
-                    <label for="id_fixe_detail">How fixed details : </label>
-                    <textarea id="id_fixe_detail" name="fixe_detail" class="form-control" cols="30" rows="10" placeholder="Fixed details...">{{ complain.fixe_detail }}</textarea>
-                </div>
-                <br>
-                {% if user.employee.position.name == "call center" or  user.employee.position.name == "admin" %}
-                    <button type="submit" class="btn btn-danger btn-sm">Make Complain</button>
-                {% endif %}
-            </form>-->
-            
-
-
-
-
         </div>
 
     {% else %}
@@ -494,6 +467,31 @@
         </div>
         <!--/ Content wrapper: End -->
     </div>
+    <script>
+        // Function to fetch and update content
+        function refreshContent() {
+            $.ajax({
+                url: window.location.href,
+                type: 'GET',
+                success: function(data) {
+                    // Extract the HTML content within the #update element from the response data
+                    var updatedContent = $(data).find('#update').html();
+                    $('#update').html(updatedContent);
+                    var updatedContent1 = $(data).find('#update1').html();
+                    $('#update1').html(updatedContent1);
+                    var updatedContent2 = $(data).find('#update2').html();
+                    $('#update2').html(updatedContent2);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching content:', error);
+                }
+            });
+        }
+        
+        // Call the refreshContent function every 10 seconds
+        setInterval(refreshContent, 10000); // 10000 milliseconds = 10 seconds
+    </script>
+    
     <!-- / Layout page: End -->
     </div>
 
@@ -503,29 +501,10 @@
     {% endif %}
     <!-- Drag Target Area To SlideIn Menu On Small Screens -->
     <div class="drag-target"></div>
+
+
 </div>
 
 <!-- Layout wrapper: End -->
 {% endblock layout %}
-</div>
 
-<script>
-    // Function to fetch and update content
-    function refreshContent() {
-        $.ajax({
-            url: window.location.href,
-            type: 'GET',
-            success: function(data) {
-                console.log(data)
-                // Update the content on the page
-                $('#content').replaceWith(data);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching content:', error);
-            }
-        });
-    }
-
-    // Call the refreshContent function every 10 seconds
-    setInterval(refreshContent, 10000); // 10000 milliseconds = 10 seconds
-</script>

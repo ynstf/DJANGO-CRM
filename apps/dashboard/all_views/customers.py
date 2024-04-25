@@ -269,9 +269,14 @@ def add_customer_view(request):
         addresses = []
         for i in range(len(adress_name)):
 
-            coords = location[i].split(",")
-            latitude = coords[0]
-            longitude = coords[1]
+            try:
+                coords = location[i].split(",")
+                latitude = coords[0]
+                longitude = coords[1]
+            except:
+                latitude = 0
+                longitude = 0
+
             google_maps_link = f"https://www.google.com/maps?q={latitude},{longitude}"
 
             if emarate[i] and adress_type[i] :
