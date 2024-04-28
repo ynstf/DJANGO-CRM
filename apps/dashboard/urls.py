@@ -48,12 +48,14 @@ from .views import (make_inq_connecting, make_inq_sendQ,
 from .all_views.admin import crm_page, analytics_page
 from .all_views.admin import super_provider, super_provider_edit
 from .all_views.chat import chat_page
+from .all_views.inquiries import map
 urlpatterns = [
     #chat
     path("chat_page/",chat_page,name="chat_page"),
 
 
     path("dashboard/",dashboard,name="dashboard"),
+    path("map/",map,name="map"),
     path("crm_page/",crm_page,name="crm_page"),
     path("analytics_page/",analytics_page,name="analytics_page"),
 

@@ -469,7 +469,7 @@ def edit_employee_view(request, id):
         email = request.POST.get('employee-email')
         phone_number = request.POST.get('employee-phone_number')
         position_name = request.POST.get('employee-position')
-        sp = request.POST.get('employee-sp')
+        sp = request.POST.get('sp_company')
         permissions = request.POST.getlist('employee-permissions')
         username = request.POST.get('employee-username')
         password = request.POST.get('employee-password')
@@ -478,9 +478,7 @@ def edit_employee_view(request, id):
         if position_name:
             position = Position.objects.get(name=position_name)
 
-        # Retrieve the selected super provider service
-        if sp:
-            service = Service.objects.get(id=sp)
+
 
         # Retrieve the employee instance
         employee = Employee.objects.get(id=id)
@@ -491,7 +489,11 @@ def edit_employee_view(request, id):
         employee.email = email
         employee.phone_number = phone_number
         employee.position = position
-        employee.sp_service = service
+        # Retrieve the selected super provider service
+        if sp:
+            Service_provider = SuperProvider.objects.get(id=sp)
+            employee.sp = Service_provider
+        
         employee.permissions.set(Permission.objects.filter(name__in=permissions))
 
         # Update user instance associated with the employee
@@ -520,6 +522,7 @@ def edit_employee_view(request, id):
         'employee': Employee.objects.get(id=id),
         'permissions': Permission.objects.all(),
         'positions': Position.objects.all(),
+        'all_sp':SuperProvider.objects.all()
     }
     context = TemplateLayout.init(request, context)
     return render(request, "admin/edit_employee.html", context)

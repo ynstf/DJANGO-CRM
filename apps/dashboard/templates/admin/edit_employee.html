@@ -73,34 +73,39 @@
                         </div>
 
                         {% if employee.position.name == "super provider" %}
-                            <div class="col-md-4" id="super-provider-container" style="display: blocky;">
-                                <label for="id_employee-sp">Super Provider:</label>
-                                <select id="id_employee-sp" name="employee-sp" class="form-control">
-                                    {% for service in Services %}
-                                        {% if service.name == employee.sp_service.name %}
-                                        <option value="{{ service.id }}" selected>{{ service.id }} - {{ service.name }}</option>
-                                        {% else %}
-                                        <option value="{{ service.id }}">{{ service.id }} - {{ service.name }}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                                </select>
-                            </div>
+                        <div class="col-md-4" id="super-provider-container" style="display: none;">
+                            <label for="id_employee-sp">Super Provider:</label>
+                            <select id="id-sp" name="sp_company" class="form-control">
+                                <option value="" selected disabled>Select sp Company...</option>
+                                {% for sp in all_sp %}
+                                    {% if sp.name == employee.sp.name %}
+                                        <option value="{{ sp.id }}" selected>{{ sp.name }}</option>
+                                    {% else %}
+                                        <option value="{{ sp.id }}" >{{ sp.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+
+                        </div>
                         {% else %}
                             <div class="col-md-4" id="super-provider-container" style="display: none;">
                                 <label for="id_employee-sp">Super Provider:</label>
-                                <select id="id_employee-sp" name="employee-sp" class="form-control">
-                                    {% for service in Services %}
-                                        {% if service.name == employee.sp_service.name %}
-                                        <option value="{{ service.id }}" selected>{{ service.id }} - {{ service.name }}</option>
+                                <select id="id-sp" name="sp_company" class="form-control">
+                                    <option value="" selected disabled>Select sp Company...</option>
+                                    {% for sp in all_sp %}
+                                        {% if sp.name == employee.sp.name %}
+                                            <option value="{{ sp.id }}" selected>{{ sp.name }}</option>
                                         {% else %}
-                                        <option value="{{ service.id }}">{{ service.id }} - {{ service.name }}</option>
+                                            <option value="{{ sp.id }}" >{{ sp.name }}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
+
                             </div>
                         {% endif %}
                         <!-- JavaScript to toggle Super Provider select box -->
                         <script>
+                            
                             $(document).ready(function() {
                                 // When Position select box changes
                                 $("#id_employee-position").change(function() {
@@ -111,6 +116,8 @@
                                         $("#super-provider-container").hide();
                                     }
                                 });
+                            // Trigger the change event when the page is loaded
+                            $("#id_employee-position").change();
                             });
                         </script>
         

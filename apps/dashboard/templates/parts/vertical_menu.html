@@ -291,6 +291,14 @@
               <i class="menu-icon tf-icons mdi mdi-message-outline"></i>
               <div class="text-truncate" data-i18n="Basic Inputs">Chat</div>
             </a>
+          </li>
+          
+          <!-- map -->
+          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+            <a href="{% url 'map' %}" class="menu-link">
+              <i class="menu-icon tf-icons mdi mdi-map-outline"></i>
+              <div class="text-truncate" data-i18n="Basic Inputs">Map</div>
+            </a>
           </li> 
   
     

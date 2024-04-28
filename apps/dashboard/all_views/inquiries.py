@@ -22,6 +22,8 @@ from datetime import timedelta
 from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain, Message, MessageNotify, IsEmployeeReadMessage
 import cloudinary
 import cloudinary.uploader
+import json
+from datetime import datetime
 
 ################# permissions ############
 """
@@ -31,6 +33,74 @@ make quotation
 edit quotation
 extract quotations
 """
+def map(request):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+
+    status = request.GET.get('status')
+    start = request.GET.get('start')
+    finish = request.GET.get('finish')
+    service = request.GET.get('service')
+    sp = request.GET.get('sp')
+
+
+    inquiries = Inquiry.objects.all()
+
+    if status :
+        st = Status.objects.get(id=status)
+        inquiries = Inquiry.objects.filter(inquirystatus__status=st)
+        status=int(status)
+
+    if start or finish :
+        start_date = datetime.strptime(start, '%Y-%m-%d').date()
+        finish_date = datetime.strptime(finish, '%Y-%m-%d').date()
+        inquiries = inquiries.filter(date_inq__range=[start_date, finish_date])
+    
+    if service :
+        inquiries = inquiries.filter(services=service)
+        service = int(service)
+    
+    if sp :
+        inquiries = inquiries.filter(sp=sp)
+        sp = int(sp)
+    
+    
+    coord = []
+    for i in inquiries:
+        data = i.address.location.split(',')
+        if len(data)==2:
+            coord.append(data)
+
+
+    search_str = {
+        'status':status,
+        'start':start,
+        'finish':finish,
+        'service': service,
+        'sp' : sp,
+    }
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
+            'messages':messages,
+            'messages_counter':messages_counter,
+
+            'services':Service.objects.all(),
+            'states':Status.objects.all(),
+            'service_providers':SuperProvider.objects.all(),
+            'coord':json.dumps(coord),
+            'search_str':search_str,
+
+            }
+    context = TemplateLayout.init(request, context)
+
+    return render(request,"map.html",context)
 
 
 ################# inquiries ###################
@@ -356,10 +426,6 @@ def inquiries_list_view(request):
     messages = MessageNotify.objects.filter(employee=request.user.employee)
     messages_counter = messages.count()
 
-    print("teest")
-    print(notifications)
-    print("counter")
-    print(notifications_counter)
 
 
     # Handle search form submission
@@ -403,7 +469,6 @@ def inquiries_list_view(request):
                                 'value':add_name_query})
             inquiries = inquiries.filter(address__address_name__icontains=add_name_query)
         
-
         if source_query:
             search_fields.append({'name':'source',
                                 'value':source_query})
@@ -472,7 +537,6 @@ def inquiries_list_view(request):
             #inquiries = inquiries.filter(services=srvc_id)
             sp_id = employee.sp.id
             inquiries = inquiries.filter(sp=sp_id)
-            print(sp_id)
         except:
             pass
 
@@ -486,6 +550,44 @@ def inquiries_list_view(request):
         except:
             inquiries = inquiries.order_by('-inquirystatus__update')
         search_counter = inquiries.count()
+
+
+
+        sort_fields = request.GET.getlist('sort_field')
+        sortSence= []
+        for d in sort_fields :
+            sortSence.append(request.GET.get(d))
+
+        merged_list = list(zip(sort_fields, sortSence))
+
+        for column in merged_list:
+            if column[0] == "inq_id":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('id')
+                else:
+                    inquiries = inquiries.order_by('-' + 'id')
+
+            if column[0] == "customer_id":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('customer__id')
+                else:
+                    inquiries = inquiries.order_by('-' + 'customer__id')
+
+            if column[0] == "creation":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('date_inq')
+                else:
+                    inquiries = inquiries.order_by('-' + 'date_inq')
+
+            if column[0] == "update":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('inquirystatus__update')
+                else:
+                    inquiries = inquiries.order_by('-' + 'inquirystatus__update')
+
+
+
+
 
         # Pagination
         page = request.GET.get('page', 1)
@@ -508,12 +610,9 @@ def inquiries_list_view(request):
         try:
             # Assuming 'i' is the specific inquiry instance
             quotations = Quotation.objects.filter(inquiry=i)
-            print(i)
-            print(quotations)
             totale = 0
             for q in quotations:
                 totale = totale + float(q.total)
-            print(totale)
         except:
             totale = 0
             
@@ -545,6 +644,9 @@ def inquiries_list_view(request):
                 'messages_counter':messages_counter,
 
                 'search_fields':search_fields,
+
+                "data":merged_list,
+                
                 }
     
 
