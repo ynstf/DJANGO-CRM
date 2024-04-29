@@ -34,6 +34,143 @@
             
             <div class="row gy-4">
 
+                <!-- booking of all time -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">All Bookings</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{bookings_len}}</h4>
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">All time</div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="padding: 50px;" class="avatar">
+                                        <div  class="rounded">
+                                            <br>
+                                            <img  src="{% static 'res-icon.webp' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- inquiries of all time -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">All Inquiries</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{all_inq}}</h4>
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">All time</div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="padding: 50px;" class="avatar">
+                                        <div  class="rounded">
+                                            <br>
+                                            <img  src="{% static 'inquiries.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- efficency of all time -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">Efficiency</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{efficiency}}%</h4>
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">All time</div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="padding: 50px;" class="avatar">
+                                        <div  class="rounded">
+                                            <br>
+                                            <img  src="{% static 'percebtage.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- complain of all time -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">Complaints</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{complaints}}</h4>
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">All time</div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="padding: 50px;" class="avatar">
+                                        <div  class="rounded">
+                                            <br>
+                                            <img  src="{% static 'complain.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- inquiries of this month -->
                 <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
                     <div class="card">
@@ -285,6 +422,79 @@
                 </div>
 
 
+
+
+
+
+                <div class="col-xxl-6 mb-4 order-5 order-xxl-0">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title mb-0 me-2">Vehicles overview</h5>
+                            <div class="dropdown">
+                            <button class="btn p-0" type="button" id="topic" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topic" style="">
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Highest Views</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">See All</a>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-none d-lg-flex vehicles-progress-labels mb-3">
+                                {% for source in sources_data %}
+                                
+                                    <div class="vehicles-progress-label on-the-way-text" style="width: {{source.percentage}}%; writing-mode: vertical-lr;color: {{source.color}};">{{source.name}}</div>
+
+                                {% endfor %}
+                            </div>
+                            <div class="vehicles-overview-progress progress rounded mb-3" style="height: 46px;">
+                                {% for source in sources_data %}
+                                    <div class="progress-bar fs-big fw-medium text-start px-1 px-lg-3"
+                                        style="width: {{source.percentage}}%; background-color: {{source.color}};"
+                                        role="progressbar"
+                                        aria-valuenow="{{source.percentage}}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100">
+                                        <small>{{source.percentage}}%</small>
+                                        
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                            <div class="table-responsive">
+                            <table class="table card-table">
+                                <tbody class="table-border-bottom-0">
+                                
+                                {% for source in sources_data %}
+                                    <tr>
+                                        <td class="w-50 ps-0">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <div class="me-2">
+                                                <i class="text-heading mdi mdi-source-branch"></i>
+
+                                            </div>
+                                            <h6 class="mb-0 fw-normal">{{source.name}}</h6>
+                                        </div>
+                                        </td>
+                                        <td class="text-end pe-0 text-nowrap">
+                                        <h6 class="mb-0">{{source.count}}</h6>
+                                        </td>
+                                        <td class="text-end pe-0">
+                                        <span>{{source.percentage}}%</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+
+
                 <div class="col-xl-6">
                     <div class="card h-100">
                     <div class="card-header pb-1">
@@ -466,6 +676,208 @@
 
                             <div class="row g-4">
                                 {% for line in dic_prices %}
+                                    {% if line.books > 0 %}
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="badge badge-dot bg-primary me-2"></div>
+                                            <p class="text-heading mb-0">{{line.name}}</p>
+                                            </div>
+                                            <p class="fw-medium mb-0">{{line.books}} $</p>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xl-6">
+                    <div class="card h-100">
+                    <div class="card-header pb-1">
+                        <div class="d-flex justify-content-between">
+                        <h5 class="mb-0">Quotations Overview</h5>
+                        <div class="dropdown">
+                            <button class="btn p-0" type="button" id="salesOverviewDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="salesOverviewDropdown" style="">
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last 28 Days</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Month</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Year</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-body pt-lg-4 mt-lg-1">
+                        <div class="row align-items-center">
+                        <div class="col-md-6" style="position: relative;">
+                            
+                            
+                            <!-- Container element for the donut chart -->
+                            <div id="donutQuotaions"></div>
+                            <div id="booking_chart_js">
+                                <script>
+                                    // JavaScript code for ApexCharts donut chart
+                                    const donutChartEl3 = document.querySelector('#donutQuotaions'),
+                                    donutChartConfig3 = {
+                                        chart: {
+                                            height: 400,
+                                            type: 'donut'
+                                        },
+                                        labels: JSON.parse('{{ labels_pie_quot|escapejs }}'),
+                                        series: JSON.parse('{{ numbers_pie_quot|escapejs }}'),
+                                        colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
+                                        stroke: {
+                                            show: false,
+                                            curve: 'straight'
+                                        },
+                                        dataLabels: {
+                                            enabled: true,
+                                            formatter: function (val, opt) {
+                                            return parseInt(val, 10) + '%';
+                                            }
+                                        },
+                                        legend: {
+                                            show: true,
+                                            position: 'bottom',
+                                            labels: {
+                                            colors: '#333'
+                                            }
+                                        }
+                                        };
+
+                                    if (typeof donutChartEl3 !== undefined && donutChartEl3 !== null) {
+                                        const donutChart3 = new ApexCharts(donutChartEl3, donutChartConfig3);
+                                        donutChart3.render();
+                                    }
+                                </script>
+                            </div>
+                        
+                        
+                        <div class="resize-triggers"><div class="expand-trigger"><div style="width: 236px; height: 199px;"></div></div><div class="contract-trigger"></div></div></div>
+                        <div id="all_booking" class="col-md-6 mt-3 mt-md-0">
+                            <div class="d-flex align-items-center mb-3">
+                            <div class="avatar">
+                                <div class="rounded">
+                                    <img src="{% static 'res-icon.webp' %}" alt="">
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex flex-column">
+                                <p class="mb-1">Number of Inquiries with quotation</p>
+                                <h5 class="mb-1">{{inqwithquot}}</h5>
+                            </div>
+                            </div>
+                            <hr>
+
+                            <div class="row g-4">
+                                {% for line in quots %}
+                                    {% if line.books > 0 %}
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="badge badge-dot bg-primary me-2"></div>
+                                            <p class="text-heading mb-0">{{line.name}}</p>
+                                            </div>
+                                            <p class="fw-medium mb-0">{{line.books}}</p>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+
+
+                <div class="col-xl-6">
+                    <div class="card h-100">
+                    <div class="card-header pb-1">
+                        <div class="d-flex justify-content-between">
+                        <h5 class="mb-0">Income of all Quotations</h5>
+                        <div class="dropdown">
+                            <button class="btn p-0" type="button" id="salesOverviewDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="salesOverviewDropdown" style="">
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last 28 Days</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Month</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Year</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-body pt-lg-4 mt-lg-1">
+                        <div class="row align-items-center">
+                        <div class="col-md-6" style="position: relative;">
+                            
+                            <!-- Container element for the donut chart -->
+                            <div id="donutChartquotations"></div>
+                            <div id="prices">
+                                <script>
+                                    // JavaScript code for ApexCharts donut chart
+                                    const donutChartEl0 = document.querySelector('#donutChartquotations'),
+                                    donutChartConfig0 = {
+                                        chart: {
+                                            height: 400,
+                                            type: 'donut'
+                                        },
+                                        labels: JSON.parse('{{ labels_pie_quot_prices|escapejs }}'),
+                                        series: JSON.parse('{{ numbers_pie_quot_prices|escapejs }}'),
+                                        colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
+                                        stroke: {
+                                            show: false,
+                                            curve: 'straight'
+                                        },
+                                        dataLabels: {
+                                            enabled: true,
+                                            formatter: function (val, opt) {
+                                            return parseInt(val, 10) + '%';
+                                            }
+                                        },
+                                        legend: {
+                                            show: true,
+                                            position: 'bottom',
+                                            labels: {
+                                            colors: '#333'
+                                            }
+                                        }
+                                        };
+
+                                    if (typeof donutChartEl0 !== undefined && donutChartEl0 !== null) {
+                                        const donutChart0 = new ApexCharts(donutChartEl0, donutChartConfig0);
+                                        donutChart0.render();
+                                    }
+                                </script>
+                            </div>
+                        
+                        
+                        <div class="resize-triggers"><div class="expand-trigger"><div style="width: 236px; height: 199px;"></div></div><div class="contract-trigger"></div></div></div>
+                        <div id="all_booking_income" class="col-md-6 mt-3 mt-md-0">
+                            <div class="d-flex align-items-center mb-3">
+                            <div class="avatar">
+                                <div class="avatar-initial bg-label-primary rounded">
+                                    <i class="mdi mdi-currency-usd mdi-24px"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex flex-column">
+                                <p class="mb-1">Quotations income</p>
+                                <h5 class="mb-1">{{quotation_price}} $</h5>
+                            </div>
+                            </div>
+                            <hr>
+
+                            <div class="row g-4">
+                                {% for line in quot_prices %}
                                     {% if line.books > 0 %}
                                         <div class="col-6">
                                             <div class="d-flex align-items-center mb-2">

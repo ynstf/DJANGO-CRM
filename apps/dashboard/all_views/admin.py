@@ -11,8 +11,8 @@ from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from apps.authentication.models import Employee, Position, Permission
 from django.http import JsonResponse
-from apps.dashboard.models import (Booking, Inquiry, InvoiceForm, Quotation, QuotationForm,InquiryStatus,
-    Service, Status, SuperProvider)
+from apps.dashboard.models import (Booking, Complain, Inquiry, InquiryStatus, InvoiceForm,
+    Quotation, QuotationForm, Service, Source, Status, SuperProvider)
 from django.shortcuts import render
 from django.db.models import Count
 from django.utils import timezone
@@ -121,6 +121,25 @@ def crm_page(request):
     numbers_pie_json = json.dumps(numbers_pie)
 
 
+    inqwithquot = []
+    qs = Quotation.objects.all()
+    for q in qs:
+        if q.inquiry not in inqwithquot:
+            inqwithquot.append(q.inquiry)
+
+    quots = []
+    for service in all_services:
+        quotPerService = Quotation.objects.filter(quotation_service=service).count()
+        if quotPerService>0:
+            line = {'name':service.name,'books':quotPerService}
+            quots.append(line)
+    labels_quots_pie = [item['name'] for item in quots]
+    numbers_quots_pie = [item['books'] for item in quots]
+    # Convert lists to JSON strings
+    labels_quots_pie_json = json.dumps(labels_quots_pie)
+    numbers_quots_pie_json = json.dumps(numbers_quots_pie)
+
+
     dic_prices = []
     bookings_price = 0
     for service in all_services:
@@ -142,12 +161,59 @@ def crm_page(request):
     labels_pie_prices_json = json.dumps(labels_pie_prices)
     numbers_pie_prices_json = json.dumps(numbers_pie_prices)
 
+
+
+    quot_prices = []
+    quotation_price = 0
+    for service in all_services:
+        quotationPerService = Quotation.objects.filter(quotation_service=service)
+        quotationPerServiceCount = Quotation.objects.filter(quotation_service=service).count()
+        price = 0
+        for quot in quotationPerService:
+            inquiry = quot.inquiry
+            quotations = Quotation.objects.filter(inquiry=inquiry)
+            for quotation in quotations:
+                price += float(quotation.total)
+        quotation_price += price
+        if quotationPerServiceCount>0:
+            line = {'name':service.name,'books':price}
+            quot_prices.append(line)
+    labels_pie_quot_prices = [item['name'] for item in quot_prices]
+    numbers_pie_quot_prices = [item['books'] for item in quot_prices]
+    # Convert lists to JSON strings
+    labels_pie_quot_prices_json = json.dumps(labels_pie_quot_prices)
+    numbers_pie_quot_prices_json = json.dumps(numbers_pie_quot_prices)
+
+
+
+    import random
+
+    # Function to generate a random hex color code
+    def generate_random_color():
+        return '#{:06x}'.format(random.randint(0, 0xFFFFFF))
+
+
+    sources = Source.objects.all()
+    sources_data = []
+    for source in sources:
+        inquiries_with_source = Inquiry.objects.filter(source=source).count()
+        percentage = round((inquiries_with_source / Inquiry.objects.all().count()) * 100, 1)
+        color = generate_random_color()  # Generate a random color for each source
+        if inquiries_with_source>0:
+            sources_data.append({"name": source.name, "count": inquiries_with_source, "percentage": str(percentage), "color": color})
+
+
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'title':title,
                 'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'services':Service.objects.all(),
                 'permissions':Permission.objects.all(),
+
+                'all_inq':Inquiry.objects.all().count(),
+                'efficiency':round((bookings_len/Inquiry.objects.all().count())*100,2),
+                'complaints':Complain.objects.all().count(),
 
                 'inquiries_len':inquiries_len,
                 'inquiries_len_last':inquiries_len_last,
@@ -161,10 +227,21 @@ def crm_page(request):
                 'labels_pie':labels_pie_json,
                 'numbers_pie':numbers_pie_json,
 
+                'quots':quots,
+                'labels_pie_quot':labels_quots_pie_json,
+                'numbers_pie_quot':numbers_quots_pie_json,
+                'inqwithquot':len(inqwithquot),
+
+
                 'labels_pie_prices':labels_pie_prices_json,
                 'numbers_pie_prices':numbers_pie_prices_json,
                 'dic_prices':dic_prices,
                 'bookings_price':bookings_price,
+
+                'labels_pie_quot_prices':labels_pie_quot_prices_json,
+                'numbers_pie_quot_prices':numbers_pie_quot_prices_json,
+                'quot_prices':quot_prices,
+                'quotation_price':quotation_price,
 
                 'inquiries_len_today':inquiries_len_today,
                 'inquiries_len_yesterday':inquiries_len_yesterday,
@@ -173,6 +250,8 @@ def crm_page(request):
                 'bookings_today': bookings_today,
                 'actions_yesterday':actions_yesterday,
                 'bookings_yesterday':bookings_yesterday,
+
+                'sources_data':sources_data,
 
                 }
     context = TemplateLayout.init(request, context)
