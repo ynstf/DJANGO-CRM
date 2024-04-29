@@ -99,7 +99,7 @@ class Inquiry(models.Model):
         return f'{self.customer} - {self.address}'
 
 class Message(models.Model):
-    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
     source = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True, related_name='sent_messages')
     destination = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True, related_name='recive_messages')
     content = models.TextField(blank=True, null=True)
