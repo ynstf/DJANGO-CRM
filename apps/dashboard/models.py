@@ -109,7 +109,8 @@ class Message(models.Model):
         return f'{self.inquiry} source:{self.source} destination:{self.destination} '
 
 class MessageNotify(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True, related_name='me')
+    source = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True, related_name='of')
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)

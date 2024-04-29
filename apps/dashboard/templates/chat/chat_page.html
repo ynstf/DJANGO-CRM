@@ -72,8 +72,29 @@
                                         </div>
                                         <div class="chat-contact-info flex-grow-1 ms-3">
                                             <div class="d-flex justify-content-between align-items-center">
-                                            <h6 class="chat-contact-name text-truncate fw-normal m-0">{{message.destination}} {% if message.destination.position.name == 'super provider' %}<small>({{message.destination.sp}})</small>{% endif %}</h6>
+                                            <h6 class="chat-contact-name text-truncate fw-normal m-0">
+                                                {% if message.haveNotify %}
+                                                    
+                                                    <strong>{{message.destination}} {% if message.destination.position.name == 'super provider' %}<small>({{message.destination.sp}})</small>{% endif %}</strong>
+                                                    <div class="unread-dot"></div>
+                                                {% else %}
+                                                    {{message.destination}} {% if message.destination.position.name == 'super provider' %}<small>({{message.destination.sp}})</small>{% endif %}
+                                                {% endif %}
+                                            
+                                            </h6>
+                                            
                                             <small class="text-muted">{{message.date}}</small>
+                                            
+                                            <style>
+                                                .unread-dot {
+                                                    width: 10px;
+                                                    height: 10px;
+                                                    background-color: green;
+                                                    border-radius: 50%; /* to make it a circle */
+                                                    margin-right: 10px; /* Adjust as needed */
+                                                    display: inline-block;
+                                                }
+                                            </style>
                                             </div>
                                             <p class="chat-contact-status text-truncate mb-0 text-muted">{{message.last_content}}</p>
                                         </div>
@@ -108,8 +129,8 @@
                             const searchInput = document.getElementById('search-input');
                             const resultList = document.getElementById('searchUpdate');
                         
-                            searchInput.addEventListener('input', function() {
-                                const searchQuery = this.value.trim();
+                            function fetchDataAndUpdate() {
+                                const searchQuery = searchInput.value.trim();
                         
                                 // Send GET request with search query
                                 fetch(`?search=${searchQuery}`)
@@ -118,17 +139,23 @@
                                         // Create a temporary div element to hold the response HTML
                                         const tempDiv = document.createElement('div');
                                         tempDiv.innerHTML = data;
-
+                        
                                         // Extract the HTML content for the result list from the temporary div
                                         const updatedContent = tempDiv.querySelector('#searchUpdate').innerHTML;
-                                        console.log(updatedContent);
-
+                        
                                         // Update the HTML content of the result list
                                         resultList.innerHTML = updatedContent;
                                     })
                                     .catch(error => console.error('Error:', error));
-                            });
+                            }
+                        
+                            // Call fetchDataAndUpdate when input changes
+                            searchInput.addEventListener('input', fetchDataAndUpdate);
+                        
+                            // Call fetchDataAndUpdate every 5 seconds
+                            setInterval(fetchDataAndUpdate, 5000); // 5000 milliseconds = 5 seconds
                         </script>
+                        
                         
                         
                         <script>

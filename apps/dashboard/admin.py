@@ -103,7 +103,7 @@ class IsEmployeeNotifiedAdmin(admin.ModelAdmin):
 
 @admin.register(MessageNotify)
 class MessageNotifyAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'inquiry', 'service','sp')
+    list_display = ('employee', 'source','inquiry', 'service','sp')
 
 @admin.register(IsEmployeeReadMessage)
 class IsEmployeeReadMessageAdmin(admin.ModelAdmin):
