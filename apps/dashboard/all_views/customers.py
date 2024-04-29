@@ -324,6 +324,7 @@ def add_customer_view(request):
                             location=location[i],
                             location_url=google_maps_link,
                         )
+                    
                         address.save()
                         addresses.append(address)
 
@@ -355,6 +356,14 @@ def add_customer_view(request):
                                 
                             )
                             inquiry.save()
+                            employees = Employee.objects.filter(sp=current_sp)
+                            for employee in employees:
+                                inquiry.handler.add(employee)
+                                inquiry.save()
+                            inquiry.handler.add(request.user.employee)
+                            inquiry.save()
+
+
 
                             new = Status.objects.get(name = "new")
                             inq_state = InquiryStatus(
@@ -379,37 +388,6 @@ def add_customer_view(request):
                                     notified = False
                                 )
                                 isnotify.save()
-
-                        else :
-                            inquiry = Inquiry(
-                            customer=customer,
-                            address=address,
-                            source = current_inq_source,
-                            services=services_set,
-                            sp=current_sp,
-                            description=inq_desc[q]
-                            
-                            )
-                            inquiry.save()
-
-                            new = Status.objects.get(name = "new")
-                            inq_state = InquiryStatus(
-                                inquiry = inquiry,
-                                status= new
-                            )
-                            inq_state.save()
-
-                            all_employees = Employee.objects.filter(sp_service=services_set)
-                            
-                            for employee in all_employees:
-                                notification = InquiryNotify(
-                                    employee = employee,
-                                    inquiry = inquiry,
-                                    sp = current_sp,
-                                    action = "new"
-                                )
-                                notification.save()
-
 
                         q+=1
 

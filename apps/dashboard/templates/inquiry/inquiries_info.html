@@ -62,7 +62,42 @@
                     <h6>Nationality: {{ customer.nationality }}</h6>
                 </ul>
 
-                <br><hr>
+                <br><br>
+
+                {% if user.employee in handlers %}
+                    <hr>
+                    <h3 style="color: #105794;">State</h3>
+                    <ul>
+                            <form>
+                                {% for state in status %}
+                                    {% if inquiry_state.status.name == state.name %}
+                                    <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" checked>
+                                    <label for="{{state.name}}">{{state.name}}</label><br>
+                                    {% else %}
+                                    <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('{{state.name}}')">
+                                    <label for="{{state.name}}">{{state.name}}</label><br>
+                                    {% endif %}
+                                {% endfor %}
+                            </form>
+                            <script>
+                                function makeInq(state) {
+                                    $.ajax({
+                                        type: "GET",
+                                        url: `/make_inq_${state}/{{inquiry.id}}`, // Replace inq_id with the actual inquiry ID
+                                        success: function(data) {
+                                            // Handle success response if needed
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error('Error:', error);
+                                        }
+                                    });
+                                }
+                            </script>
+                            
+                        
+                    </ul>
+                    <br><hr>
+                {% endif %}
             
                 <h3 style="color: #105794;">Contact Information</h3>
 

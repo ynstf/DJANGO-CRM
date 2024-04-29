@@ -114,7 +114,10 @@ def make_inq_cancel(request,inq_id):
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = cancel
-    inq_state.canceling_causes = canceling_causes
+    try:
+        inq_state.canceling_causes = canceling_causes
+    except:
+        inq_state.canceling_causes = "None"
     inq_state.save()
 
     #create action
@@ -313,6 +316,7 @@ def make_inq_done(request,inq_id):
         isnotify.save()
 
     return redirect('inquiries_list')
+
 
 def get_messages(request):
 
@@ -784,26 +788,13 @@ def inquiry_info_view(request, id):
     absolute_pdf_url = request.build_absolute_uri(pdf_url)
     whatsapp_link_invoice = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
 
-
-    """message1 = f"عزيزي {customer.first_name} {customer.last_name},"
-    #messag1 = f"%0A"
-    message2 = f" نأمل أن تكونوا بخير. نود أن نعبر عن شكرنا لكم على الاتصال بنا ."
-    message3 = f"يعتبر استفساركم أمرًا مهمًا بالنسبة لنا، ونقدر الفرصة التي تمنحونا لمساعدتكم. "
-    message4 = f"لفهم احتياجاتكم بشكل أفضل وتقديم المساعدة الأكثر دقة ممكنة، نرجو منكم تزويدنا بمزيد من المعلومات حول {inquiry.services}. "
-    message5 = f"بالإضافة إلى ذلك، إذا كان لديكم تفضيلات خاصة بطريقة التواصل أو أي تفضيلات محددة بشأن كيفية المتابعة، فلا تترددوا في إعلامنا."
-    message6 = f" تأكدوا من أن فريقنا ملتزم بضمان رضاكم، ونحن ملتزمون بتقديم أعلى مستوى من الخدمة. نتطلع إلى الاستماع منكم قريبًا ومساعدتكم بشكل أفضل. شكرًا لكم مرة أخرى على النظر في TECHNICAL 24."
-    message7 = f"{request.user.employee.first_name} {request.user.employee.last_name}"
-    message8 = "www.technical-24.com"
-    message9 = f"{request.user.employee.email}"
-    message10 = f"TECHNICAL 24"
-    """
-    #connect_with_customer_whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message1)}%0A{quote(message2)}%0A{quote(message3)}%0A{quote(message4)}%0A{quote(message5)}%0A{quote(message6)}%0A{quote(message7)}%0A{quote(message8)}%0A{quote(message9)}%0A{quote(message10)}'
     
     connect_with_customer_whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number.replace("+","")}'
 
 
     print(schedule_date)
     print(booking_number)
+    print('haaaaaaaaaaaaaaaaaaaaaaa',Inquiry.objects.get(id=id).handler.all())
 
     try:
         complain = Complain.objects.get(inquiry=inquiry)
@@ -835,7 +826,10 @@ def inquiry_info_view(request, id):
             'whatsapp_link_invoice':whatsapp_link_invoice,
             'connect_with_customer_whatsapp_link':connect_with_customer_whatsapp_link,
             'canceling_cause': inquiry_state.canceling_causes,
-            'images': images
+            'images': images,
+
+            'status':Status.objects.all(),
+            'handlers':inquiry.handler.all(),
 
             }
     context = TemplateLayout.init(request, context)
