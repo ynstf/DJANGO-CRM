@@ -672,6 +672,7 @@
                                 <strong style="cursor: pointer;" onclick="sortTable(7)">state ></strong>
                             </th>
 
+                            <th ><strong>Service Provider </strong></th>
                             <th style="cursor: pointer;" onclick="sortTable(8)"><strong>have media ></strong></th>
                             <th style="cursor: pointer;" onclick="sortTable(9)"><strong>canceling causes ></strong></th>
                             <th style="cursor: pointer;" onclick="sortTable(10)"><strong>advenced price ></strong></th>
@@ -807,6 +808,10 @@
                                     <div class="line">Service : {{ inquiry.info.services }}</div>
                                     <div class="line">Source : {{ inquiry.info.source }}</div> 
                                     <div class="line">Status : {{ inquiry.state.status }}</div>
+                                </td>
+
+                                <td>
+                                    <div class="line">{{ inquiry.info.sp }}</div>
                                 </td>
                                 
                                 {% if inquiry.info.cloudinary_urls %} 

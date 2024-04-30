@@ -554,7 +554,53 @@
                                 }
                             });
                         });
+                    
+                        $('#superProvider_'+addressIndex+'_'+inqCounters[addressIndex]).change();
                     });
+
+
+                    $(document).ready(function() {
+
+                        $('#superProvider_'+addressIndex+'_'+inqCounters[addressIndex]).change(function() {
+                            var superProviderId = $(this).val();
+                            console.log(superProviderId)
+                            $.ajax({
+                                type: 'GET',
+                                url: '/get_employees_by_sp/',
+                                data: {
+                                    'super_provider_id': superProviderId
+                                },
+                                dataType: 'json',
+                                success: function(response) {
+                                    $('#employeeList_'+addressIndex+'_'+inqCounters[addressIndex]).empty();
+                                    if (response.employees && response.employees.length > 0) {
+                                        var selectElement = $('<select>', {
+                                            id: 'inquiry-employees',
+                                            name: 'inquiry-employees',
+                                            required: true,
+                                            class:"form-control"
+                                        });
+                                        $.each(response.employees, function(index, employeeName) {
+                                            console.log(employeeName)
+                                            var option = $('<option>', {
+                                                value: employeeName.id,
+                                                text: employeeName.id + " - " + employeeName.name
+                                            });
+                                            selectElement.append(option);
+                                        });
+                                        $('#employeeList_'+addressIndex+'_'+inqCounters[addressIndex]).append(selectElement);
+                                    } else {
+                                        $('#employeeList_'+addressIndex+'_'+inqCounters[addressIndex]).text('No employees available');
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error:', error);
+                                }
+                            });
+                        });
+
+                        $('#superProvider_'+addressIndex+'_'+inqCounters[addressIndex]).change();
+                        });
 
                         // Create a new div for the inquiry section
                         var newInqSection = document.createElement('li');
@@ -599,9 +645,14 @@
                                             {% endfor %}
                                         </select>
 
-                                        <label for="serviceList">services:</label>
+                                        <label for="serviceList">Services:</label>
                                         <div id="serviceList_${addressIndex}_${inqCounters[addressIndex]}">
                                             <!-- Services will be displayed here -->
+                                        </div>
+
+                                        <label for="employeeList">Employees owner:</label>
+                                        <div id="employeeList_${addressIndex}_${inqCounters[addressIndex]}">
+                                            <!-- Employees will be displayed here -->
                                         </div>
                                     </div>
 

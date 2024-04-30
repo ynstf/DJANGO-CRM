@@ -36,7 +36,7 @@ from .views import (delete_number, delete_whatsApp,
 # importation for get informations
 from .views import (get_languages, get_status, get_nationalities,
                     get_sources, get_services, get_notify_state,
-                    get_services_by_sp)
+                    get_services_by_sp,get_employees_by_sp)
 
 # importation for make inquiry state change
 from .views import (make_inq_connecting, make_inq_sendQ,
@@ -103,6 +103,7 @@ urlpatterns = [
     path('get_services', get_services, name='get_services'),
     path('get_status', get_status, name='get_status'),
     path('get_services_by_sp/', get_services_by_sp, name='get_services_by_sp'),
+    path('get_employees_by_sp/', get_employees_by_sp, name='get_employees_by_sp'),
 
     # notifications
     path('notifications', notifications, name='notifications'),

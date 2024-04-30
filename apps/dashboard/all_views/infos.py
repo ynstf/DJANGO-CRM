@@ -1,5 +1,8 @@
+
+import django.contrib.auth
 from django.http import JsonResponse
 from ..models import Language, Nationality, Source, Service, Status, SuperProvider
+from apps.authentication.models import Employee
 
 def get_languages_view(request):
     languages = [l.name for l in Language.objects.all()]
@@ -35,6 +38,30 @@ def get_services_by_sp_view(request):
                 service_names = [ {"name":service.name,"id":service.number} for service in services]
         
                 return JsonResponse({'services': service_names})
+            #{"name":service_names,'id':}
+            except SuperProvider.DoesNotExist:
+                return JsonResponse({'error': 'Super provider not found.'}, status=404)
+        else:
+            return JsonResponse({'error': 'Super provider ID is required.'}, status=400)
+    else:
+        # Handle non-AJAX requests
+        return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
+
+
+def get_employees_by_sp_view(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Retrieve the super provider ID from the request parameters
+        super_provider_id = request.GET.get('super_provider_id')
+
+        # Retrieve services based on the super provider ID
+        if super_provider_id:
+            try:
+                super_provider = SuperProvider.objects.get(id=super_provider_id)
+                # Get all employees with the specific SuperProvider
+                employees_with_sp = Employee.objects.filter(sp=super_provider)
+                employees = [ {"name":f'{employee.first_name} {employee.last_name}',"id":employee.id} for employee in employees_with_sp]
+        
+                return JsonResponse({'employees': employees})
             #{"name":service_names,'id':}
             except SuperProvider.DoesNotExist:
                 return JsonResponse({'error': 'Super provider not found.'}, status=404)

@@ -213,6 +213,7 @@ def add_customer_view(request):
         inq_date = request.POST.getlist('inquiry-date_inq')
         inq_source = request.POST.getlist('customer-source')
         inq_service = request.POST.getlist('inquiry-services')
+        inq_employees = request.POST.getlist('inquiry-employees')
         sp = request.POST.getlist('inquiry-superprovider')
         print("suuuuuuuuuuuuuuuui: ")
         print(sp)
@@ -338,6 +339,7 @@ def add_customer_view(request):
                         print(adress_name[i-1])
                         address = addresses[i-1]
                         services_set = Service.objects.get(name=inq_service[q])
+                        owner = Employee.objects.get(id=inq_employees[q])
                         print(inq_source[q])
                         current_inq_source_id = inq_source[q]
                         current_inq_source = Source.objects.get(id=current_inq_source_id)
@@ -352,7 +354,8 @@ def add_customer_view(request):
                                 source = current_inq_source,
                                 services=services_set,
                                 sp=current_sp,
-                                description=inq_desc[q]
+                                description=inq_desc[q],
+                                owner=owner
                                 
                             )
                             inquiry.save()

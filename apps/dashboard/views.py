@@ -107,13 +107,15 @@ make_inq_done = make_inq_done
 ############### get infos ###########
 from .all_views.infos import (get_languages_view, get_nationalities_view,
                                 get_sources_view, get_services_view,
-                                get_status_view,get_services_by_sp_view)
+                                get_status_view,get_services_by_sp_view,
+                                get_employees_by_sp_view)
 get_languages = get_languages_view
 get_nationalities = get_nationalities_view
 get_sources = get_sources_view
 get_services = get_services_view
 get_status = get_status_view
 get_services_by_sp = get_services_by_sp_view
+get_employees_by_sp = get_employees_by_sp_view
 
 
 ############### delete actions ###############
