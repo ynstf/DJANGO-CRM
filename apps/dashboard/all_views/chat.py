@@ -11,10 +11,8 @@ from django.utils import timezone
 
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee, Permission, Position
-from apps.dashboard.models import (EmployeeAction, Inquiry, InquiryNotify, InquiryReminder,
-    InquiryStatus, IsEmployeeNotified, Language, Nationality, Quotation, Source, Status,
-    SuperProvider)
-from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain, Message, MessageNotify, IsEmployeeReadMessage
+from apps.dashboard.models import (EmployeeAction, Inquiry, InquiryNotify, InquiryReminder)
+from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain, Message, MessageNotify, IsEmployeeReadMessage, GroupMessenger, MessageGroup
 from django.db.models import Q
 
 
@@ -43,6 +41,7 @@ def chat_page(request):
 
     # Extract sources from the retrieved MessageNotify objects
     myNotifies = MessageNotify.objects.filter(employee=request.user.employee)
+    myNotifies = myNotifies.filter(from_group=False)
     sources = [notify.source for notify in myNotifies]
     
     
@@ -155,7 +154,8 @@ def conversation_view(request, Myid, Otherid):
 
         notification = MessageNotify(
             employee = employee,
-            source = Employee.objects.get(id=Myid)
+            source = Employee.objects.get(id=Myid),
+            from_group = False,
         )
         notification.save()
 
@@ -188,3 +188,178 @@ def conversation_view(request, Myid, Otherid):
         }
     context = TemplateLayout.init(request, context)
     return render(request, 'chat/conversation.html', context)
+
+
+def create_group_view(request):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    if request.method == 'POST':
+        name = request.POST.get('group-name')
+        members = request.POST.getlist('employees')
+
+        print(name,members)
+        newgroup = GroupMessenger(name = name)
+        newgroup.save()
+        for member in members:
+            newgroup.members.add(member)
+            newgroup.save()
+
+        newgroup.members.add(request.user.employee)
+        newgroup.save()
+        
+        return redirect("conversation_group_view", groupid=newgroup.id)
+
+
+
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'notifications':notifications,
+        'notifications_counter':notifications_counter,
+        'messages': messages, 
+        'messages_counter':messages_counter,
+        'employees':Employee.objects.all(),
+
+
+        }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'chat/newgroup.html', context)
+
+
+
+def groups_page(request):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    # Extract sources from the retrieved MessageNotify objects
+    myNotifies = MessageNotify.objects.filter(employee=request.user.employee)
+    myNotifies = myNotifies.filter(from_group=True)
+    grps = [notify.group for notify in myNotifies]
+
+    gs = GroupMessenger.objects.filter(members=request.user.employee)
+    groups = []
+    for g in gs:
+
+        last_message = MessageGroup.objects.filter(group=g).last()
+        try:
+            date = MessageGroup.objects.filter(group=g).order_by('-created').first().created
+            date = format_time_difference(date)
+        except:
+            date = 'Make it now !'
+
+        try:
+            last_date = last_message.created
+        except:
+            last_date = g.created
+
+        if g in grps:
+            line = {'id':g.id,'name':g.name,'last_message':last_message,'date':date,'haveNotify':True,'last_date':last_date}
+        else :
+            line = {'id':g.id,'name':g.name,'last_message':last_message,'date':date,'haveNotify':False,'last_date':last_date}
+        groups.append(line)
+
+        groups = sorted(groups, key=lambda x: x['last_date'], reverse=True)
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'notifications':notifications,
+        'notifications_counter':notifications_counter,
+        'messages': messages, 
+        'messages_counter':messages_counter,
+        'employees':Employee.objects.all(),
+        'groups':groups,
+
+
+        }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'chat/groups_page.html', context)
+
+
+
+
+
+def conversation_group_view(request,groupid):
+
+
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    group = GroupMessenger.objects.get(id=groupid)
+    messages = MessageGroup.objects.filter(group=group).order_by('created')
+
+
+
+    # delete the notification for this this two id
+    try :
+        the_notifications = MessageNotify.objects.filter(Q(group = group , employee=request.user.employee))
+        for notify in the_notifications:
+                notify.delete()
+                notify_info = IsEmployeeReadMessage.objects.filter(employee = request.user.employee)
+                notify_info.delete()
+    except :
+        pass
+
+
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        source = request.user.employee
+
+        message = MessageGroup.objects.create(
+                group = group,
+                source = source,
+                content = content
+            )
+
+
+
+        #create notification
+        employees = group.members.exclude(user=request.user)
+        for employee in employees:
+        
+            notification = MessageNotify(
+                employee = employee,
+                source = source,
+                from_group = True,
+                group = group,
+            )
+            notification.save()
+
+            isnotify = IsEmployeeReadMessage(
+                        employee = employee,
+                        notified = False,
+                    )
+            isnotify.save()
+
+
+
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'notifications':notifications,
+        'notifications_counter':notifications_counter,
+        'messages': messages, 
+        'messages_counter':messages_counter,
+        'employees':Employee.objects.all(),
+        'group':group,
+
+
+        }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'chat/group_conversation.html', context)

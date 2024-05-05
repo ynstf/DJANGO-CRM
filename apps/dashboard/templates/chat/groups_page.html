@@ -48,7 +48,6 @@
                                     <input type="text" id="search-input" name="search" class="form-control chat-search-input" placeholder="Search..." aria-label="Search..." aria-describedby="basic-addon-search31">
                                     
                                 </div>
-                                <a href="{% url 'create_group_view' %}" style="background-color:rgb(255, 255, 255);" class="form-control"><center>New group</center></a>
                                 
                             </div>
                             <i class="mdi mdi-close mdi-20px cursor-pointer position-absolute top-0 end-0 mt-2 me-2 fs-4 d-lg-none d-block" data-overlay="" data-bs-toggle="sidebar" data-target="#app-chat-contacts"></i>
@@ -59,34 +58,35 @@
                             <!-- Chats -->
                             <ul class="list-unstyled chat-contact-list" id="chat-list">
                                 <li class="chat-contact-list-item chat-contact-list-item-title">
-                                    <h5 class="text-primary mb-0">Chats</h5>
+                                    <h5 class="text-primary mb-0">Groups</h5>
                                 </li>
                                 <li class="chat-contact-list-item chat-list-item-0 d-none">
                                     <h6 class="text-muted mb-0">No Chats Found</h6>
                                 </li>
 
 
-                                {% for message in messages %}
+                                {% for group in groups %}
                                     <li class="chat-contact-list-item">
                                     
-                                        <a href="{% url 'conversation' Myid=user.employee.id Otherid=message.destination.id %}" class="d-flex align-items-center">
+                                        <a href="{% url 'conversation_group_view' groupid=group.id %}" class="d-flex align-items-center">
                                         <div class="flex-shrink-0 avatar avatar-online">
                                             <img src="{% static 'img/avatars/1.png' %}" alt="Avatar" class="rounded-circle">
                                         </div>
                                         <div class="chat-contact-info flex-grow-1 ms-3">
                                             <div class="d-flex justify-content-between align-items-center">
                                             <h6 class="chat-contact-name text-truncate fw-normal m-0">
-                                                {% if message.haveNotify %}
-                                                    
-                                                    <strong>{{message.destination}} {% if message.destination.position.name == 'super provider' %}<small>({{message.destination.sp}})</small>{% endif %}</strong>
+                                                {% if group.haveNotify %}
+                                                    <strong>{{group.name}}</strong>
                                                     <div class="unread-dot"></div>
                                                 {% else %}
-                                                    {{message.destination}} {% if message.destination.position.name == 'super provider' %}<small>({{message.destination.sp}})</small>{% endif %}
+                                                    {{group.name}}
                                                 {% endif %}
+
+                                                
                                             
                                             </h6>
                                             
-                                            <small class="text-muted">{{message.date}}</small>
+                                            <small class="text-muted">{{group.date}}</small>
                                             
                                             <style>
                                                 .unread-dot {
@@ -99,7 +99,7 @@
                                                 }
                                             </style>
                                             </div>
-                                            <p class="chat-contact-status text-truncate mb-0 text-muted">{{message.last_content}}</p>
+                                            <p class="chat-contact-status text-truncate mb-0 text-muted">{{group.last_message.content}}</p>
                                         </div>
                                         </a>
                                     </li>
@@ -107,24 +107,6 @@
                                 {% endfor %}
 
 
-                                {% for distination in distinations %}
-                                    <li class="chat-contact-list-item">
-                                    
-                                        <a href="{% url 'conversation' Myid=user.employee.id Otherid=distination.id %}" class="d-flex align-items-center">
-                                        <div class="flex-shrink-0 avatar avatar-online">
-                                            <img src="{% static 'img/avatars/1.png' %}" alt="Avatar" class="rounded-circle">
-                                        </div>
-                                        <div class="chat-contact-info flex-grow-1 ms-3">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                            <h6 class="chat-contact-name text-truncate fw-normal m-0">{{distination}} {% if distination.position.name == 'super provider' %}<small>({{distination.sp}})</small>{% endif %}</h6>
-                                            <small class="text-muted">Make it now!</small>
-                                            </div>
-                                            <p class="chat-contact-status text-truncate mb-0 text-muted">Send your first message</p>
-                                        </div>
-                                        </a>
-                                    </li>
-                                    <!--<li class="chat-contact-list-item active">-->
-                                {% endfor %}
                             </ul>
                         </div>
 

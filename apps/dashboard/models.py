@@ -110,12 +110,33 @@ class Message(models.Model):
     def __str__(self):
         return f'{self.inquiry} source:{self.source} destination:{self.destination} '
 
+class GroupMessenger(models.Model):
+    name = models.CharField(max_length=80, blank=True, null=True)
+    members = models.ManyToManyField(Employee, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.name
+
+class MessageGroup(models.Model):
+    group = models.ForeignKey(GroupMessenger, on_delete=models.CASCADE, blank=True, null=True)
+    source = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.group} source:{self.source}'
+
 class MessageNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True, related_name='me')
     source = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True, related_name='of')
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
+    from_group = models.BooleanField(default=False)
+    group = models.ForeignKey(GroupMessenger, on_delete=models.CASCADE, blank=True, null=True)
+
 
     def __str__(self):
         return f'message for {self.sp} {self.inquiry} inquiry'
@@ -128,6 +149,9 @@ class IsEmployeeReadMessage(models.Model):
 
     def __str__(self):
         return f'employee :{self.employee}'
+
+
+
 
 class Complain(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)

@@ -47,11 +47,14 @@ from .views import (make_inq_connecting, make_inq_sendQ,
 
 from .all_views.admin import crm_page, analytics_page
 from .all_views.admin import super_provider, super_provider_edit
-from .all_views.chat import chat_page,conversation_view
+from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
 from .all_views.inquiries import map
 urlpatterns = [
     #chat
     path("chat_page/",chat_page,name="chat_page"),
+    path("groups_page/",groups_page,name="groups_page"),
+    path("create_group/",create_group_view,name="create_group_view"),
+    path("conversation_group/<int:groupid>",conversation_group_view,name="conversation_group_view"),
     path("conversation/<int:Myid>/<int:Otherid>",conversation_view,name="conversation"),
 
 

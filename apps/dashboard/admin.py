@@ -4,7 +4,7 @@ from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber
 from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
 from .models import Status,InquiryStatus, IsEmployeeNotified
 from .models import Service, InquiryReminder,SuperProvider
-from .models import InvoiceForm, QuotationForm, Advence, Complain, Message, MessageNotify, IsEmployeeReadMessage
+from .models import InvoiceForm, QuotationForm, Advence, Complain, Message, MessageNotify, IsEmployeeReadMessage, GroupMessenger, MessageGroup
 
 
 # Register your models here.
@@ -28,6 +28,14 @@ class LanguageAdmin(admin.ModelAdmin):
 @admin.register(Nationality)
 class NationalityAdmin(admin.ModelAdmin):
     list_display = ('name',)
+
+@admin.register(GroupMessenger)
+class GroupMessengerAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(MessageGroup)
+class MessageGroupAdmin(admin.ModelAdmin):
+    list_display = ('group',)
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
