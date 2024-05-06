@@ -664,21 +664,147 @@
                                 <th ><strong>Updated with </strong></th>
                             {% endif %}
 
-                            <th style="cursor: pointer;" onclick="sortTable(4)"><strong>Customer & Address ></strong></th>
-
-                            <th >
-                                <strong style="cursor: pointer;" onclick="sortTable(5)">services ></strong><br>
-                                <strong style="cursor: pointer;" onclick="sortTable(6)">source ></strong><br>
-                                <strong style="cursor: pointer;" onclick="sortTable(7)">state ></strong>
+                            <th>
+                                <strong id="customer_sort" style="cursor: pointer;" >Customer & Address <span>&#8595;</span></strong>
+                                <script>
+                                    // Get the inquiry_id_sort element
+                                    var customerSort = document.getElementById("customer_sort");
+                                
+                                    // Read the current sort order from the query parameters in the URL
+                                    var urlParams = new URLSearchParams(window.location.search);
+                                    var currentSortOrdercustomer = urlParams.get('customer');
+                                
+                                    // Set the initial arrow icon based on the current sort order
+                                    var arrowIcon = customerSort.querySelector("span");
+                                    arrowIcon.innerHTML = currentSortOrdercustomer === "asc" ? "&#8593;" : "&#8595;";
+                                
+                                    // Add a click event listener to the element
+                                    customerSort.addEventListener("click", function() {
+                                        // Toggle the sort order
+                                        var newSortOrder = currentSortOrdercustomer === "asc" ? "desc" : "asc";
+                                
+                                        // Update the link href with the new sort field and sort order
+                                        customerSort.href = '{{ inquiries_list }}' + "?sort_field=customer&customer=" + newSortOrder;
+                                        
+                                        // Redirect to the new URL with the sort field and sort order
+                                        window.location.href = "?sort_field=customer&customer=" + newSortOrder;
+                                    });
+                                </script>
                             </th>
 
-                            <th ><strong>Service Provider </strong></th>
-                            <th style="cursor: pointer;" onclick="sortTable(8)"><strong>have media ></strong></th>
-                            <th style="cursor: pointer;" onclick="sortTable(9)"><strong>canceling causes ></strong></th>
-                            <th style="cursor: pointer;" onclick="sortTable(10)"><strong>advenced price ></strong></th>
-                            <th ><strong style="cursor: pointer;" onclick="sortTable(11)">total price ></strong></th>
-                            <th style="cursor: pointer;" onclick="sortTable(12)"><strong>percentage ></strong></th>
-                            <th style="cursor: pointer;" onclick="sortTable(13)"><strong>Map ></strong></th>
+                            <th >
+                                <strong id="service_sort" style="cursor: pointer;" >services <span>&#8595;</span></strong><br>
+                                <script>
+                                    // Get the inquiry_id_sort element
+                                    var serviceSort = document.getElementById("service_sort");
+                                
+                                    // Read the current sort order from the query parameters in the URL
+                                    var urlParams = new URLSearchParams(window.location.search);
+                                    var currentSortOrderservice = urlParams.get('service_sort');
+                                
+                                    // Set the initial arrow icon based on the current sort order
+                                    var arrowIcon = serviceSort.querySelector("span");
+                                    arrowIcon.innerHTML = currentSortOrderservice === "asc" ? "&#8593;" : "&#8595;";
+                                
+                                    // Add a click event listener to the element
+                                    serviceSort.addEventListener("click", function() {
+                                        // Toggle the sort order
+                                        var newSortOrder = currentSortOrderservice === "asc" ? "desc" : "asc";
+                                
+                                        // Update the link href with the new sort field and sort order
+                                        serviceSort.href = '{{ inquiries_list }}' + "?sort_field=service_sort&service_sort=" + newSortOrder;
+                                        
+                                        // Redirect to the new URL with the sort field and sort order
+                                        window.location.href = "?sort_field=service_sort&service_sort=" + newSortOrder;
+                                    });
+                                </script>
+
+                                <strong id="source_sort" style="cursor: pointer;" >source <span>&#8595;</span></strong><br>
+                                <script>
+                                    // Get the inquiry_id_sort element
+                                    var sourceSort = document.getElementById("source_sort");
+                                
+                                    // Read the current sort order from the query parameters in the URL
+                                    var urlParams = new URLSearchParams(window.location.search);
+                                    var currentSortOrdersource = urlParams.get('source_sort');
+                                
+                                    // Set the initial arrow icon based on the current sort order
+                                    var arrowIcon = sourceSort.querySelector("span");
+                                    arrowIcon.innerHTML = currentSortOrdersource === "asc" ? "&#8593;" : "&#8595;";
+                                
+                                    // Add a click event listener to the element
+                                    sourceSort.addEventListener("click", function() {
+                                        // Toggle the sort order
+                                        var newSortOrder = currentSortOrdersource === "asc" ? "desc" : "asc";
+                                
+                                        // Update the link href with the new sort field and sort order
+                                        sourceSort.href = '{{ inquiries_list }}' + "?sort_field=source_sort&source_sort=" + newSortOrder;
+                                        
+                                        // Redirect to the new URL with the sort field and sort order
+                                        window.location.href = "?sort_field=source_sort&source_sort=" + newSortOrder;
+                                    });
+                                </script>
+
+                                <strong id="state_sort" style="cursor: pointer;" >state <span>&#8595;</span></strong>
+                                <script>
+                                    // Get the inquiry_id_sort element
+                                    var stateSort = document.getElementById("state_sort");
+                                
+                                    // Read the current sort order from the query parameters in the URL
+                                    var urlParams = new URLSearchParams(window.location.search);
+                                    var currentSortOrderstate = urlParams.get('state_sort');
+                                
+                                    // Set the initial arrow icon based on the current sort order
+                                    var arrowIcon = stateSort.querySelector("span");
+                                    arrowIcon.innerHTML = currentSortOrderstate === "asc" ? "&#8593;" : "&#8595;";
+                                
+                                    // Add a click event listener to the element
+                                    stateSort.addEventListener("click", function() {
+                                        // Toggle the sort order
+                                        var newSortOrder = currentSortOrderstate === "asc" ? "desc" : "asc";
+                                
+                                        // Update the link href with the new sort field and sort order
+                                        stateSort.href = '{{ inquiries_list }}' + "?sort_field=state_sort&state_sort=" + newSortOrder;
+                                        
+                                        // Redirect to the new URL with the sort field and sort order
+                                        window.location.href = "?sort_field=state_sort&state_sort=" + newSortOrder;
+                                    });
+                                </script>
+                            </th>
+
+                            <th>
+                                <strong id="sp_sort" style="cursor: pointer;">Service Provider <span>&#8595;</span></strong>
+                                <script>
+                                    // Get the inquiry_id_sort element
+                                    var spSort = document.getElementById("sp_sort");
+                                    
+                                    // Read the current sort order from the query parameters in the URL
+                                    var urlParams = new URLSearchParams(window.location.search);
+                                    var currentSortOrdersp = urlParams.get('sp_sort');
+                                    
+                                    // Set the initial arrow icon based on the current sort order
+                                    var arrowIcon = spSort.querySelector("span");
+                                    arrowIcon.innerHTML = currentSortOrdersp === "asc" ? "&#8593;" : "&#8595;";
+                                    
+                                    // Add a click event listener to the element
+                                    spSort.addEventListener("click", function() {
+                                        // Toggle the sort order
+                                        var newSortOrder = currentSortOrdersp === "asc" ? "desc" : "asc";
+                                    
+                                        // Update the link href with the new sort field and sort order
+                                        spSort.href = '{{ inquiries_list }}' + "?sort_field=sp_sort&sp_sort=" + newSortOrder;
+                                        
+                                        // Redirect to the new URL with the sort field and sort order
+                                        window.location.href = "?sort_field=sp_sort&sp_sort=" + newSortOrder;
+                                    });
+                                </script>
+                            </th>
+                            <th style="cursor: pointer;" ><strong>have media </strong></th>
+                            <th style="cursor: pointer;" ><strong>canceling causes </strong></th>
+                            <th style="cursor: pointer;" ><strong>advenced price </strong></th>
+                            <th ><strong style="cursor: pointer;" >total price </strong></th>
+                            <th style="cursor: pointer;"><strong>percentage </strong></th>
+                            <th style="cursor: pointer;"><strong>Map </strong></th>
 
 
                             <!-- Add other columns as needed -->

@@ -589,6 +589,40 @@ def inquiries_list_view(request):
                 else:
                     inquiries = inquiries.order_by('-' + 'inquirystatus__update')
 
+            if column[0] == "customer":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('customer__first_name')
+                    print(inquiries)
+                else:
+                    inquiries = inquiries.order_by('-' + 'customer__first_name')
+
+            if column[0] == "service_sort":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('services')
+                    print(inquiries)
+                else:
+                    inquiries = inquiries.order_by('-' + 'services')
+
+            if column[0] == "source_sort":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('source')
+                    print(inquiries)
+                else:
+                    inquiries = inquiries.order_by('-' + 'source')
+
+            if column[0] == "state_sort":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('inquirystatus__status')
+                    print(inquiries)
+                else:
+                    inquiries = inquiries.order_by('-' + 'inquirystatus__status')
+
+            if column[0] == "sp_sort":
+                if column[1] == 'asc':
+                    inquiries = inquiries.order_by('sp')
+                    print(inquiries)
+                else:
+                    inquiries = inquiries.order_by('-' + 'sp')
 
 
 
