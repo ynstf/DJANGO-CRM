@@ -2,7 +2,7 @@ import django.urls
 from django.urls import reverse
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
-from apps.authentication.models import Employee, Permission
+from apps.authentication.models import Employee, Permission, Position
 from django.shortcuts import render, redirect, get_object_or_404
 from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotation, Service, Source, SuperProvider
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
@@ -214,6 +214,7 @@ def add_customer_view(request):
         inq_source = request.POST.getlist('customer-source')
         inq_service = request.POST.getlist('inquiry-services')
         inq_employees = request.POST.getlist('inquiry-employees')
+        team_leader = request.POST.getlist('inquiry-team_leader')
         sp = request.POST.getlist('inquiry-superprovider')
         print("suuuuuuuuuuuuuuuui: ")
         print(sp)
@@ -340,6 +341,7 @@ def add_customer_view(request):
                         address = addresses[i-1]
                         services_set = Service.objects.get(name=inq_service[q])
                         owner = Employee.objects.get(id=inq_employees[q])
+                        team = Employee.objects.get(id=team_leader[q])
                         print(inq_source[q])
                         current_inq_source_id = inq_source[q]
                         current_inq_source = Source.objects.get(id=current_inq_source_id)
@@ -355,7 +357,8 @@ def add_customer_view(request):
                                 services=services_set,
                                 sp=current_sp,
                                 description=inq_desc[q],
-                                owner=owner
+                                owner=owner,
+                                team_leader=team,
                                 
                             )
                             inquiry.save()
@@ -450,7 +453,8 @@ def add_customer_view(request):
                 'Languages':Languages,
                 'Emirates':Emirates,
                 'types':types,
-                'all_sp':all_sp
+                'all_sp':all_sp,
+                'team_leaders':Employee.objects.filter(position=Position.objects.get(name='team leader')),
 
                 }
     

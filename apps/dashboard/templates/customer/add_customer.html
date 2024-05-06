@@ -654,6 +654,14 @@
                                         <div id="employeeList_${addressIndex}_${inqCounters[addressIndex]}">
                                             <!-- Employees will be displayed here -->
                                         </div>
+
+                                        <label for="team_leader">Team Leader:</label>
+                                        <select id="team_leader" class="form-control" name="inquiry-team_leader" required>
+                                            <!-- Populate dropdown menu with super providers -->
+                                            {% for team_leader in team_leaders %}
+                                                <option value="{{ team_leader.id }}">{{ team_leader.first_name }} {{ team_leader.last_name }}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
 
                                     <div class="col-md-4">
@@ -661,6 +669,8 @@
                                         <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number"></textarea>
                                     </div>
                                     <br>
+
+
 
 
                         `;

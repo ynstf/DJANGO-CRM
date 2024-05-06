@@ -96,6 +96,7 @@ class Inquiry(models.Model):
     cloudinary_urls = models.TextField(blank=True, null=True)
     handler = models.ManyToManyField(Employee, blank=True, null=True)
     owner = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True, related_name='owner')
+    team_leader = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True, related_name='tl')
     # Add other fields as needed
     def __str__(self):
         return f'{self.customer} - {self.address}'
