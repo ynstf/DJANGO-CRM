@@ -64,9 +64,9 @@
 
                 <br><br>
 
-                {% if user.employee == inquiry.owner %}
+                {% if user.employee == inquiry.owner or user.employee.position.name == "call center" %}
                     <hr>
-                    <h3 style="color: #105794;">State</h3>
+                    <h3 style="color: #105794;">{{user.employee.position.name}} update State</h3>
                     <ul>
                             <form>
                                 {% for state in status %}
@@ -74,8 +74,14 @@
                                     <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" checked>
                                     <label for="{{state.name}}">{{state.name}}</label><br>
                                     {% else %}
-                                    <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('{{state.name}}')">
-                                    <label for="{{state.name}}">{{state.name}}</label><br>
+                                        {% if state.name == "send Q or B" %}
+
+                                            <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('sendQ')">
+                                            <label for="{{state.name}}">{{state.name}}</label><br>
+                                        {% else %}
+                                            <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('{{state.name}}')">
+                                            <label for="{{state.name}}">{{state.name}}</label><br>
+                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             </form>

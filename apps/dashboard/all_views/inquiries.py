@@ -801,6 +801,17 @@ def inquiry_info_view(request, id):
     except:
         complain = None
 
+
+    status = []
+    call_center_actions = ['pending','new','cancel','done','complain','underproccess']
+    service_provider_actions = ['connecting','send Q or B','underproccess','new']
+    for state in Status.objects.all():
+        if request.user.employee.position.name == "call center" and state.name in call_center_actions :
+            status.append(state)
+        elif request.user.employee.position.name == "super provider" and state.name in service_provider_actions :
+            status.append(state)
+
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
@@ -828,7 +839,7 @@ def inquiry_info_view(request, id):
             'canceling_cause': inquiry_state.canceling_causes,
             'images': images,
 
-            'status':Status.objects.all(),
+            'status':status,
             'handlers':inquiry.handler.all(),
 
             }
