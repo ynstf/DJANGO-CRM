@@ -432,8 +432,10 @@ def add_sp_view(request):
         sp_services = request.POST.getlist('sp-service')
         trn = request.POST.get('sp-trn')
         search_count = request.POST.get('search-count')
+        selected_columns = request.POST.getlist('selected_columns')
 
-        print(sp_services)
+        columns = "*,*".join(selected_columns)
+        print(selected_columns)
 
         new_sp = SuperProvider(
             name = sp_name,
@@ -442,6 +444,7 @@ def add_sp_view(request):
             search_number = search_count,
             phone_Number = phone_number,
             email = email,
+            columns = columns,
             )
         new_sp.save()  # Save the SuperProvider object first
 

@@ -666,6 +666,11 @@ def inquiries_list_view(request):
             inquiry.append({'info':i,
                         })
 
+    try:
+        cols = request.user.employee.sp.columns.split("*,*")
+    except:
+        cols = "all"
+
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     
@@ -684,6 +689,7 @@ def inquiries_list_view(request):
                 'search_fields':search_fields,
 
                 "data":merged_list,
+                "cols":cols,
                 
                 }
     
