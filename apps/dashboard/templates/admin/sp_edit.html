@@ -88,6 +88,100 @@
                     <input type="text" id="id_email" name="sp-email" class="form-control" value="{{ sp.email }}" placeholder="Email ...">
                 </div>
 
+                <label for="id_email">Columns :</label><br>
+                <div id="columnForm" >
+
+                    {% for column in all_columns %}
+                        {% if column in columns %}
+                            <input type="checkbox" id="inquiryIdCheckbox" name="{{column}}" checked>
+                            <label for="inquiryIdCheckbox">{{column}}</label><br>
+                        {% else %}
+                            <input type="checkbox" id="inquiryIdCheckbox" name="{{column}}" >
+                            <label for="inquiryIdCheckbox">{{column}}</label><br>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Add checkboxes for other columns -->
+                </div>
+                <script>
+                    // Get all checkboxes
+                    var checkboxes = document.querySelectorAll("input[type='checkbox']");
+                
+                    // Add event listener to each checkbox
+                    checkboxes.forEach(function(checkbox) {
+                        checkbox.addEventListener("change", function(event) {
+                            
+                            // Get the form element
+                            var columnForm = document.getElementById("columnForm");
+                
+                            // Get all selected checkboxes
+                            var selectedCheckboxes = document.querySelectorAll("input[type='checkbox']:checked");
+                
+                            // Clear existing hidden inputs for selected columns
+                            var existingHiddenInputs = document.querySelectorAll("input[name='selected_columns']");
+                            existingHiddenInputs.forEach(function(input) {
+                                input.remove();
+                            });
+                
+                            // Create a hidden input field for each selected checkbox
+                            selectedCheckboxes.forEach(function(checkbox) {
+                                var input = document.createElement("input");
+                                input.type = "hidden";
+                                input.name = "selected_columns";
+                                input.value = checkbox.name;
+                                columnForm.appendChild(input);
+                            });
+                
+                            // Submit the form
+                            columnForm.submit();
+                        });
+                    });
+                    
+                </script>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        // Function to add hidden inputs for initially checked checkboxes
+                        function addHiddenInputsForChecked() {
+                            var columnForm = document.getElementById("columnForm");
+                            var selectedCheckboxes = document.querySelectorAll("input[type='checkbox']:checked");
+                            
+                            selectedCheckboxes.forEach(function(checkbox) {
+                                var input = document.createElement("input");
+                                input.type = "hidden";
+                                input.name = "selected_columns";
+                                input.value = checkbox.name;
+                                columnForm.appendChild(input);
+                            });
+                        }
+
+                        // Trigger the function to add hidden inputs for initially checked checkboxes
+                        addHiddenInputsForChecked();
+                    });
+                </script>
+                
+                <script>
+                    // Get the form element
+                    var columnForm = document.getElementById("columnForm");
+                
+                    // Add event listener to form
+                    columnForm.addEventListener("change", function(event) {
+                        // Get the target checkbox
+                        var checkbox = event.target;
+                
+                        // Get the column name
+                        var columnName = checkbox.name;
+                
+                        // Get all th elements with the corresponding column name
+                        var columnHeaders = document.querySelectorAll("th[id^='" + columnName + "']");
+                
+                        // Toggle the visibility of each column header based on the checkbox status
+                        columnHeaders.forEach(function(header) {
+                            header.style.display = checkbox.checked ? "table-cell" : "none";
+                        });
+                    });
+                </script>
+
                 
         
                 <!-- Add more fields as needed -->

@@ -307,6 +307,9 @@ def super_provider_edit(request,id):
         trn = request.POST.get('sp-trn')
         search_count = request.POST.get('search-count')
 
+        selected_columns = request.POST.getlist('selected_columns')
+        columns = "*,*".join(selected_columns)
+
         print(sp_services)
 
         # Clear existing services
@@ -318,6 +321,7 @@ def super_provider_edit(request,id):
         sp.search_number = search_count
         sp.phone_Number = phone_number
         sp.email = email
+        sp.columns = columns
 
         # Add new services
         for service_id in sp_services:
@@ -330,6 +334,12 @@ def super_provider_edit(request,id):
 
 
 
+    columns = []
+    if sp.columns :
+        columns = sp.columns.split("*,*")
+
+    all_columns = ["ids","dates","customer","source","sp","have_media","canceling_causes","advenced_price","total_price","percentage","map"]
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'title':title,
                 'position': request.user.employee.position,
@@ -337,6 +347,8 @@ def super_provider_edit(request,id):
                 'services':Service.objects.all(),
                 'permissions':Permission.objects.all(),
                 'sp':sp,
+                'columns':columns,
+                'all_columns':all_columns,
                 }
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/sp_edit.html', context)
