@@ -257,20 +257,6 @@ def crm_page(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard/crm.html', context)
 
-@login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
-def analytics_page(request):
-    title = "analytics"
-
-    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-    context = {'title':title,
-                'position': request.user.employee.position,
-                'layout_path': layout_path,
-                'services':Service.objects.all(),
-                'permissions':Permission.objects.all(),
-                }
-    context = TemplateLayout.init(request, context)
-    return render(request, 'dashboard/analytics.html', context)
 
 
 @login_required(login_url='/')
@@ -772,12 +758,40 @@ def services_list_view(request):
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def statistics_view(request):
 
+    status = request.GET.get('status')
+    start = request.GET.get('start')
+    finish = request.GET.get('finish')
+    service = request.GET.get('service')
+    sp = request.GET.get('sp')
+
     # Calculate the date range for the last 30 days
     end_date = timezone.now().date()
     start_date = end_date - timedelta(days=29)
     # Query the database to get the counts of inquiries for each date within the last 30 days
     inquiry_counts = defaultdict(int)
-    inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date))
+    #inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date))
+
+    inquiries = Inquiry.objects.all()
+
+    if status :
+        st = Status.objects.get(id=status)
+        inquiries = Inquiry.objects.filter(inquirystatus__status=st)
+        status=int(status)
+
+    if start or finish :
+        start_date = datetime.strptime(start, '%Y-%m-%d').date()
+        finish_date = datetime.strptime(finish, '%Y-%m-%d').date()
+        inquiries = inquiries.filter(date_inq__range=[start_date, finish_date])
+    
+    if service :
+        inquiries = inquiries.filter(services=service)
+        service = int(service)
+    
+    if sp :
+        inquiries = inquiries.filter(sp=sp)
+        sp = int(sp)
+
+
     for inquiry in inquiries:
         inquiry_date = inquiry.date_inq.strftime('%Y-%m-%d')
         inquiry_counts[inquiry_date] += 1
@@ -850,6 +864,11 @@ def statistics_view(request):
         'services_list': services_list,
         'services_counts': services_counts,
         'service_colors_json': service_colors_json,
+
+        
+        'services':Service.objects.all(),
+        'states':Status.objects.all(),
+        'service_providers':SuperProvider.objects.all(),
     }
     context = TemplateLayout.init(request, context)
 

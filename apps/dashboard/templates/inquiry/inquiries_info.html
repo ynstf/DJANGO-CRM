@@ -99,8 +99,7 @@
                                     });
                                 }
                             </script>
-                            
-                        
+
                     </ul>
                     <br><hr>
                 {% endif %}
@@ -168,8 +167,12 @@
                             <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
                         {% endif %}
                     {% endif %}
+
+                    <a href="{% url 'edit_inquiry' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Edit  </a>
                 </h3>
             </div>
+
+            
 
             <form id="cancel_form" method="post" action="{% url 'make_inq_cancel' inquiry.id %}">
                 {% csrf_token %}

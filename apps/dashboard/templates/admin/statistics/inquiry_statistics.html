@@ -26,6 +26,9 @@
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
+
+        
+
         <style>
             /* Optional: Add custom CSS styles here */
             .container {
@@ -42,6 +45,76 @@
         <br>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <div class="container">
+
+            <form action="" method="get">
+
+                <div class="row">
+    
+                    <div class="col-md-2">
+                        <label for="">status : </label>
+                        <select name="status"  class="form-control">
+                            <option value="" selected>State</option>
+                            {% for state in states %}
+    
+                                {% if state.id == search_str.status %}
+                                    <option value="{{state.id}}" selected>{{state}}</option>
+                                {% else %}
+                                    <option value="{{state.id}}">{{state}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+    
+                    <div class="col-md-2">
+                        <label for="">start date : </label>
+                        <input type="date" value="{{request.GET.start}}" name="start"  class="form-control" required>
+                    </div>
+                    
+                
+                    <div class="col-md-2">
+                        <label for="">finish date : </label>
+                        <input type="date" value="{{request.GET.finish}}" name="finish"  class="form-control" required>
+                    </div>
+    
+                    <div class="col-md-2">
+                        <label for="">service : </label>
+                        <select name="service"  class="form-control">
+                            <option value="" selected>Service</option>
+                            {% for service in services %}
+                                {% if service.id == search_str.service %}
+                                    <option value="{{service.id}}" selected>{{service}}</option>
+                                {% else %}
+                                    <option value="{{service.id}}">{{service}}</option>
+                                {% endif %}                            
+                            {% endfor %}
+                        </select>
+                    </div>
+    
+                    <div class="col-md-2">
+                        <label for="">SP : </label>
+                        <select name="sp"  class="form-control">
+                            <option value="" selected>Service Provider</option>
+                            {% for serviceProvider in service_providers %}
+                                {% if serviceProvider.id == search_str.sp %}
+                                    <option value="{{serviceProvider.id}}" selected>{{serviceProvider}}</option>
+                                {% else %}
+                                    <option value="{{serviceProvider.id}}">{{serviceProvider}}</option>
+                                {% endif %}                            
+                            {% endfor %}
+                        </select>
+                    </div>
+    
+                </div>
+                
+                <center>
+                    <div class="col-md-2">
+                        <br>
+                        <button type="submit"  class="form-control">search</button>
+                        <br>
+                    </div>
+                </center>
+    
+            </form>
 
             <br>
             <center><h2>Inquiries counter in last 30 day</h2></center>

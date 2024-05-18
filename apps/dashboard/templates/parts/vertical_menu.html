@@ -21,7 +21,7 @@
   
   <ul class="menu-inner py-1">
     {% if user.employee.position.name == 'admin' %}
-      <li class="menu-item {% if 'title' == 'crm' or '/crm_page/' in request.path or 'title' == 'analytics' or '/analytics_page/' in request.path or '/dashboard/' in request.path %}active open{% endif %}">
+      <li class="menu-item {% if 'title' == 'crm' or '/crm_page/' in request.path or 'title' == 'analytics' or '/statistics/' in request.path or '/dashboard/' in request.path %}active open{% endif %}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons mdi mdi-home-outline"></i>
           <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
@@ -33,8 +33,8 @@
               <div class="text-truncate" data-i18n="CRM">CRM</div>
             </a>
           </li>
-          <li class="menu-item {% if 'analytics_page' == request.resolver_match.url_name or title == 'analytics' %}active{% endif %}">
-            <a href="{% url 'analytics_page' %}" class="menu-link">
+          <li class="menu-item {% if 'statistics' == request.resolver_match.url_name or title == 'analytics' %}active{% endif %}">
+            <a href="{% url 'statistics' %}" class="menu-link">
               <div class="text-truncate" data-i18n="Analytics">Analytics</div>
             </a>
           </li>
@@ -257,28 +257,6 @@
           </li>
         {% endif %}
 
-        <!-- Statistics -->
-        {% if position.name == 'admin' %}
-          <li class="menu-item {% if '/forms/' in request.path %}active open{% endif %}">
-            <a href="javascript:void(0)" class="menu-link menu-toggle">
-              <i class="menu-icon mdi mdi-chart-bar"></i>
-
-
-              <div class="text-truncate" data-i18n="Form Elements">Statistics</div>
-            </a>
-            <ul class="menu-sub">
-      
-                <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
-                  <a href="{% url 'statistics' %}" class="menu-link">
-                    <div class="text-truncate" data-i18n="Basic Inputs">Inquiries</div>
-                  </a>
-                </li>
-
-            
-      
-            </ul>
-          </li>
-        {% endif %}
 
         
         <li class="menu-header fw-medium mt-4">

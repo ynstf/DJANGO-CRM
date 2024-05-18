@@ -45,11 +45,12 @@ from .views import (make_inq_connecting, make_inq_sendQ,
                     make_inq_complain, make_inq_done)
 
 
-from .all_views.admin import crm_page, analytics_page
+from .all_views.admin import crm_page
 from .all_views.admin import super_provider, super_provider_edit
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
-from .all_views.inquiries import map
+from .all_views.inquiries import map,edit_inquiry
 urlpatterns = [
+
     #chat
     path("chat_page/",chat_page,name="chat_page"),
     path("groups_page/",groups_page,name="groups_page"),
@@ -62,7 +63,6 @@ urlpatterns = [
     path("dashboard/",dashboard,name="dashboard"),
     path("map/",map,name="map"),
     path("crm_page/",crm_page,name="crm_page"),
-    path("analytics_page/",analytics_page,name="analytics_page"),
 
     # admin
     path('add_employee/', add_employee, name='add_employee'),
@@ -127,6 +127,7 @@ urlpatterns = [
     path('add_advence/<int:id>', add_advence, name='add_advence'),
     path('make_quotation/<int:id>', make_quotation, name='make_quotation'),
     path('edit_quotation/<int:id>', edit_quotation, name='edit_quotation'),
+    path('edit_inquiry/<int:id>', edit_inquiry, name='edit_inquiry'),
     path('make_complain/<int:id>', make_complain, name='make_complain'),
     path('messages/<int:id>', messages, name='messages'),
     path('make_booking/<int:id>', make_booking, name='make_booking'),

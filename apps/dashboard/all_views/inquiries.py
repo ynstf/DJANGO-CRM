@@ -8,6 +8,7 @@ from web_project.template_helpers.theme import TemplateHelper
 from web_project import TemplateLayout
 from xhtml2pdf import pisa
 import io
+from apps.dashboard.models_com import SuperProvider
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee, Permission, Position
 from apps.dashboard.models import (EmployeeAction, Inquiry, InquiryNotify, InquiryReminder,
@@ -1063,6 +1064,69 @@ def edit_quotation_view(request,id):
     
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiry/edit_quotation.html',context)
+
+@login_required(login_url='/')
+def edit_inquiry(request,id):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+    inquiry = Inquiry.objects.get(id = id)
+
+    if request.method == 'POST':
+        inq_source = request.POST.get('customer-source')
+        inq_service = request.POST.get('inquiry-services')
+        team_leader = request.POST.get('inquiry-team_leader')
+        inq_employees = request.POST.get('inquiry-employees')
+        sp = request.POST.get('inquiry-superprovider')
+        inq_desc = request.POST.get('inquiry-description')
+
+        srv = Service.objects.get(number=inq_service)
+        src = Source.objects.get(id=inq_source)
+        tl = Employee.objects.get(id=team_leader)
+        sup = SuperProvider.objects.get(id=sp)
+        owner = Employee.objects.get(id=inq_employees)
+        desc = inq_desc
+        print("service:" ,srv)
+        print("source :",src)
+        print("team :",tl)
+        print("sp: ",sup)
+        print("desc:",desc)
+        print("owner",owner)
+
+        inquiry.services = srv
+        inquiry.source = src
+        inquiry.sp = sup
+        inquiry.owner = owner
+        inquiry.description = desc
+        inquiry.team_leader = tl
+
+        inquiry.save()
+
+        return redirect("inquiry_info",id=id)
+
+
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'notifications':notifications,
+                'notifications_counter':notifications_counter,
+                'inquiry': Inquiry.objects.get(id=id),
+
+
+                'services':Service.objects.all(),
+                'messages':messages,
+                'messages_counter':messages_counter,
+                'all_sp':SuperProvider.objects.all(),
+                'Sources':Source.objects.all(),
+                'team_leaders':Employee.objects.filter(position=Position.objects.get(name='team leader')),
+
+
+                }
+    
+    context = TemplateLayout.init(request, context)
+    return render(request, 'inquiry/edit_inquiry.html',context)
 
 
 def generate_pdf_view(request, id):
