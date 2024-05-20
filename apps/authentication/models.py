@@ -26,6 +26,9 @@ class Employee(models.Model):
     sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     permissions = models.ManyToManyField(Permission, blank=True, null=True)
 
+    search_number = models.IntegerField(blank=True, null=True)
+    columns = models.TextField(blank=True, null=True)
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 

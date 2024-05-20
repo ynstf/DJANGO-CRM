@@ -61,6 +61,7 @@
                         <th>Email</th>
                         <th>Phone Number</th>
                         <th>Position</th>
+                        <th>Search interval</th>
                         <th>Delete</th>
                         <!-- Add other columns as needed -->
                     </tr>
@@ -84,6 +85,8 @@
                                 <small>({{ employee.sp.name }})</small>
                                 {% endif %}
                             </td>
+
+                            <td>{{ employee.search_number }} Day</td>
 
                             <td>
                                 {% if employee.user.id != user.id %}

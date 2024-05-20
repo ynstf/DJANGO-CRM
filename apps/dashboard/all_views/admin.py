@@ -298,10 +298,7 @@ def super_provider_edit(request,id):
         phone_number = request.POST.get('sp-phone_number')
         sp_services = request.POST.getlist('sp-service')
         trn = request.POST.get('sp-trn')
-        search_count = request.POST.get('search-count')
 
-        selected_columns = request.POST.getlist('selected_columns')
-        columns = "*,*".join(selected_columns)
 
         print(sp_services)
 
@@ -311,10 +308,8 @@ def super_provider_edit(request,id):
         sp.name = sp_name
         sp.reference = sp_ref
         sp.trn = trn
-        sp.search_number = search_count
         sp.phone_Number = phone_number
         sp.email = email
-        sp.columns = columns
 
         # Add new services
         for service_id in sp_services:
@@ -326,13 +321,6 @@ def super_provider_edit(request,id):
         return redirect('super_provider', id)  # Redirect to the employee list page
 
 
-
-    columns = []
-    if sp.columns :
-        columns = sp.columns.split("*,*")
-
-    all_columns = ["ids","dates","customer","source","sp","have_media","canceling_causes","advenced_price","total_price","percentage","map"]
-
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'title':title,
                 'position': request.user.employee.position,
@@ -340,8 +328,6 @@ def super_provider_edit(request,id):
                 'services':Service.objects.all(),
                 'permissions':Permission.objects.all(),
                 'sp':sp,
-                'columns':columns,
-                'all_columns':all_columns,
                 }
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/sp_edit.html', context)
@@ -362,10 +348,14 @@ def add_employee_view(request):
         #sp = request.POST.get('employee-sp')
         sp_company = request.POST.get('sp_company')
         permissions = request.POST.getlist('employee-permissions')
+        search_count = request.POST.get('search-count')
+        selected_columns = request.POST.getlist('selected_columns')
         username = request.POST.get('employee-username')
         password = request.POST.get('employee-password')
 
         print(permissions)
+        columns = "*,*".join(selected_columns)
+        print(selected_columns)
 
         # Retrieve the selected position
         if position_name:
@@ -387,7 +377,9 @@ def add_employee_view(request):
                     email=email,
                     phone_number=phone_number,
                     position=position,
-                    sp=sp_company
+                    sp=sp_company,
+                    search_number = search_count,
+                    columns = columns,
                 )
             else:
                 employee = Employee.objects.create(
@@ -397,6 +389,8 @@ def add_employee_view(request):
                     email=email,
                     phone_number=phone_number,
                     position=position,
+                    search_number = search_count,
+                    columns = columns,
                 )
             # Add permissions to the employee
             for permission_name in permissions:
@@ -436,20 +430,16 @@ def add_sp_view(request):
         phone_number = request.POST.get('sp-phone_number')
         sp_services = request.POST.getlist('sp-service')
         trn = request.POST.get('sp-trn')
-        search_count = request.POST.get('search-count')
-        selected_columns = request.POST.getlist('selected_columns')
 
-        columns = "*,*".join(selected_columns)
-        print(selected_columns)
+
+
 
         new_sp = SuperProvider(
             name = sp_name,
             reference = sp_ref,
             trn=trn,
-            search_number = search_count,
             phone_Number = phone_number,
             email = email,
-            columns = columns,
             )
         new_sp.save()  # Save the SuperProvider object first
 
@@ -558,8 +548,14 @@ def edit_employee_view(request, id):
         position_name = request.POST.get('employee-position')
         sp = request.POST.get('sp_company')
         permissions = request.POST.getlist('employee-permissions')
+        search_count = request.POST.get('search-count')
+        selected_columns = request.POST.getlist('selected_columns')
         username = request.POST.get('employee-username')
         password = request.POST.get('employee-password')
+
+
+        columns = "*,*".join(selected_columns)
+        print(selected_columns)
 
         # Retrieve the selected position
         if position_name:
@@ -576,6 +572,9 @@ def edit_employee_view(request, id):
         employee.email = email
         employee.phone_number = phone_number
         employee.position = position
+        employee.search_number = search_count
+        employee.columns = columns
+
         # Retrieve the selected super provider service
         if sp:
             Service_provider = SuperProvider.objects.get(id=sp)
@@ -600,6 +599,13 @@ def edit_employee_view(request, id):
     # If the request is not a POST request, display the edit form
     Services = Service.objects.all()
 
+    columns = []
+    if Employee.objects.get(id=id).columns :
+        columns = Employee.objects.get(id=id).columns.split("*,*")
+
+    all_columns = ["ids","dates","customer","source","sp","have_media","canceling_causes","advenced_price","total_price","percentage","map"]
+
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
 
     context = {
@@ -609,7 +615,9 @@ def edit_employee_view(request, id):
         'employee': Employee.objects.get(id=id),
         'permissions': Permission.objects.all(),
         'positions': Position.objects.all(),
-        'all_sp':SuperProvider.objects.all()
+        'all_sp':SuperProvider.objects.all(),
+        'columns':columns,
+        'all_columns':all_columns,
     }
     context = TemplateLayout.init(request, context)
     return render(request, "admin/edit_employee.html", context)

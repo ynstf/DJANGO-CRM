@@ -549,9 +549,13 @@ def inquiries_list_view(request):
         search_counter = inquiries.count()
 
         try :
-            search_number = request.user.employee.sp.search_number
+            search_number = request.user.employee.search_number
             #order inquiries by last updated
-            inquiries = inquiries.order_by('-inquirystatus__update')[:search_number]
+
+            date_limit = timezone.now() - timedelta(days=int(search_number))
+            inquiries = inquiries.filter(date_inq__gte=date_limit)
+            
+            inquiries = inquiries.order_by('-inquirystatus__update')
         except:
             inquiries = inquiries.order_by('-inquirystatus__update')
         search_counter = inquiries.count()
@@ -668,7 +672,7 @@ def inquiries_list_view(request):
                         })
 
     try:
-        cols = request.user.employee.sp.columns.split("*,*")
+        cols = request.user.employee.columns.split("*,*")
     except:
         cols = "all"
 

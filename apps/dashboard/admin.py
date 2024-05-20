@@ -71,7 +71,7 @@ class ComplainAdmin(admin.ModelAdmin):
 
 @admin.register(SuperProvider)
 class SuperProviderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'trn', 'search_number')
+    list_display = ('name', 'trn')
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
