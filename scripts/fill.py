@@ -4,93 +4,21 @@ from apps.dashboard.models import Language, Source, Nationality, Emirate, Servic
 from apps.authentication.models import Position, Permission
 
 def run():
-    Languages = [
-        "Arabic",
-        "French",
-        "English",
-        "Spanish",
-    ]
+    Languages = ["Arabic", "French", "English", "Spanish"]
 
-    Nationalities = [
-        "Unknown",
-        "arabic expat male",
-        "arabic expat female",
-        "company",
-        "UAE male",
-        "UAE female",
-        "Euroupe&american&Australia&Russia male",
-        "Euroupe&american&Australia&Russia female",
-        "asia&africa male",
-        "asia&africa Female",
-    ]
+    Nationalities = ["Unknown", "arabic expat male", "arabic expat female", "company", "UAE male", "UAE female", "Euroupe&american&Australia&Russia male", "Euroupe&american&Australia&Russia female", "asia&africa male", "asia&africa Female"]
 
-    Sources = [
-        "from service provider",
-        "website",
-        "Direct booking",
-        "from points",
-        "affiliate marketing",
-        "inbound calls",
-        "out bound calls",
-        "Instagram",
-        "facebook",
-        "linkedin",
-        "tiktok",
-        "snapchat",
-        "telegram",
-        "recommended customer",
-        "whats up broadcast",
-        "whats up marketing",
-        "sms campaign",
-        "email marketing",
-    ]
+    Sources = ["from service provider", "website", "Direct booking", "from points", "affiliate marketing", "inbound calls", "out bound calls", "Instagram", "facebook", "linkedin", "tiktok", "snapchat", "telegram", "recommended customer", "whats up broadcast", "whats up marketing", "sms campaign", "email marketing"]
 
-    Emirates = [
-        "Emara 1",
-        "Emara 2",
-        "Emara 3",
-    ]
+    Emirates = ["Emara 1", "Emara 2", "Emara 3"]
 
-    Services = [
-        {'name':"electric",'column':'details,price,quantity'},
-        {'name':"climatisation",'column':'details,price,quantity'},
-        {'name':"plumber",'column':'details,price,quantity'},
-    ]
+    Services = [{'name':"electric",'column':'details,price,quantity'}, {'name':"climatisation",'column':'details,price,quantity'}, {'name':"plumber",'column':'details,price,quantity'}]
 
-    Positions = [
-        'admin',
-        'call center',
-        'super provider',
-        'team leader'
-    ]
+    Positions = ['admin', 'call center', 'super provider', 'team leader']
 
-    Permissions = [
-        "extract quotations",
+    Permissions = ["extract quotations", "customer list", "see customer info", "edit customer", "add customer", "inquiry list", "inquiry info", "make quotation", "edit quotation"]
 
-        "customer list",
-        "see customer info",
-        "edit customer",
-        "add customer",
-
-        "inquiry list",
-        "inquiry info",
-        "make quotation",
-        "edit quotation",
-
-    ]
-
-    status = [
-        "new",
-        "connecting",
-        "pending",
-        "cancel",
-        "done",
-        "underproccess",
-        "send Q or B",
-        "complain",
-        'reminder'
-
-    ]
+    status = ["new", "connecting", "pending", "cancel", "done", "underproccess", "send Q or B", "complain", 'reminder']
 
     # Create Languages
     for language in Languages:
@@ -118,19 +46,17 @@ def run():
 
     # Create Services
     for service in Services:
-        srv, created = Service.objects.get_or_create(name=service['name'],
-                                                    columns=service['column']
-                                                    )
+        srv, created = Service.objects.get_or_create(name=service['name'], columns=service['column'])
         if created:
             srv.save()
 
-    # Create Position
+    # Create Positions
     for position in Positions:
         ps, created = Position.objects.get_or_create(name=position)
         if created:
             ps.save()
 
-    # Create Permission
+    # Create Permissions
     for permission in Permissions:
         prm, created = Permission.objects.get_or_create(name=permission)
         if created:

@@ -228,7 +228,7 @@ def add_customer_view(request):
 
         user_already_exist = False
         common_element = set(phone_form) & set(list(PhoneNumber.objects.values_list('number',flat=True)))
-        if common_element :
+        if common_element and '+971' not in set(phone_form) :
             phone = list(common_element)[0]
             print('already exist :',phone)
             customer = PhoneNumber.objects.get(number = phone).customer

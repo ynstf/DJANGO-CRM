@@ -1,9 +1,9 @@
 import django.urls
 from web_project import TemplateLayout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+import django.shortcuts
 from apps.dashboard.models import InquiryNotify, EmployeeAction, MessageNotify
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 
@@ -17,6 +17,9 @@ def dashboard(request):
     messages_counter = messages.count()
 
     actions = EmployeeAction.objects.filter(from_employee=request.user.employee).order_by('-update')
+
+    if request.user.employee.position.name == "admin":
+        return redirect("crm_page")
 
     # Add the employee's position to the context
     context = {'position': request.user.employee.position,

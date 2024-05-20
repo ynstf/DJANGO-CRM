@@ -83,39 +83,29 @@ WSGI_APPLICATION = 'base.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
-
-"""import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Get environment variables
-NAME = os.getenv('NAME')
-USER = os.getenv('USER')
-PASSWORD = os.getenv('PASSWORD')
-HOST = os.getenv('HOST')
-PORT = int(os.getenv('PORT', 5432))
+}"""
 
 
-
+# Replace the DATABASES section of your settings.py with this
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': NAME,
-        'USER': USER,
-        'PASSWORD': PASSWORD,
-        'HOST': HOST,
-        'PORT': PORT,
-        'OPTIONS': {'sslmode': 'require'},
+        'NAME': 'tech24',
+        'USER': 'tech24_owner',
+        'PASSWORD': 'fH8DoEu1Qbwg',
+        'HOST': 'ep-wandering-band-a2d52x2b.eu-central-1.aws.neon.tech',
+        'PORT': 5432,
+        'OPTIONS': {
+        'sslmode': 'require',
+        },
+        'DISABLE_SERVER_SIDE_CURSORS': True,
     }
-}"""
+}
 
 
 # Password validation

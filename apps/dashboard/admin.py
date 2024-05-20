@@ -11,7 +11,7 @@ from .models import InvoiceForm, QuotationForm, Advence, Complain, Message, Mess
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name','columns')
+    list_display = ('name','number','columns','description','reminder_time')
 
 @admin.register(Emirate)
 class EmirateAdmin(admin.ModelAdmin):

@@ -1,0 +1,205 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}edit Service{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            <br>
+            <center><h2>Edit service</h2></center>
+            <br>
+        
+            <form method="post" id="serviceForm">
+                {% csrf_token %}
+        
+                <h3>Service Details</h3>
+        
+                <div class="col-md-4">
+                    <label for="id_service-number">Number id :</label>
+                    <input type="number" id="id_service-number" value="{{service.number}}" name="service-number" class="form-control" placeholder="Number ID..." aria-label="number" required>
+                    <span id="error-message" style="color: red; display: none;">Invalid number or This number already exists</span>
+                </div>
+
+                <script>
+                    // List of numbers
+                    var numbers = {{services_id}};
+                
+                    // Reference to the input field and error message span
+                    var inputField = document.getElementById("id_service-number");
+                    var errorMessage = document.getElementById("error-message");
+                
+                    // Function to validate the input
+                    function validateInput() {
+                        var inputValue = parseInt(inputField.value);
+                        if (isNaN(inputValue) || numbers.includes(inputValue)) {
+                            errorMessage.style.display = "inline";
+                            return false;
+                        } else {
+                            errorMessage.style.display = "none";
+                            return true;
+                        }
+                    }
+                
+                    // Add event listener to the input field
+                    inputField.addEventListener("input", validateInput);
+                </script>
+                
+
+                <div class="col-md-4">
+                    <label for="id_service-name">Name :</label>
+                    <input type="text" id="id_service-name" value="{{service.name}}" name="service-name" class="form-control" placeholder="name..." aria-label="name" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_service-description">Description :</label>
+                    <textarea id="id_service-description" name="service-description" class="form-control" placeholder="description..." cols="30" rows="10">{{service.description}}</textarea>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="remainder_check">Remainder:</label>
+                    <input type="checkbox" id="remainder_check" name="remainder_check" onclick="toggleReminder()" {% if service.have_reminder == 'True' %} checked {% endif %}>
+                </div>
+                
+                
+                <div class="col-md-4" id="reminderField" style="display: none;">
+                    <label for="id_service-reminder">Reminder (months):</label>
+                    <input type="number" value="{{service.reminder_time}}" id="id_service-reminder" name="service-reminder" class="form-control" placeholder="Reminder..." aria-label="Reminder">
+                </div>
+                <script>
+                    function toggleReminder() {
+                        var reminderField = document.getElementById('reminderField');
+                        var checkbox = document.getElementById('remainder_check');
+                        var input = document.getElementById('id_service-reminder');
+                        
+                        if (checkbox.checked) {
+                            reminderField.style.display = 'block';
+                            input.setAttribute('required', 'required');
+                        } else {
+                            reminderField.style.display = 'none';
+                            input.removeAttribute('required');
+                        }
+                    }
+                    toggleReminder();
+                </script>
+
+                <br><br>
+                
+                <!-- Add a container to hold the dynamic fields -->
+                <div id="dynamic-fields-container">
+                    <h5>Columns details</h5>
+
+                <div class="col-md-4">
+                    <label for="id_service-columns">Column's name :</label>
+                    <input type="text" class="form-control service-column" name="service-column" value="details" readonly>
+                </div>
+
+
+                    
+                </div>
+                <button class="btn btn-sm btn-primary" type="button" onclick="addNewField()">Add New Column field</button>
+
+                <script>
+                    // Function to add a new input field
+                    function addNewField() {
+                        var container = document.getElementById('dynamic-fields-container');
+                        var newField = document.createElement('div');
+                        newField.className = 'col-md-4';
+                        newField.innerHTML = `
+                            <label for="id_service-columns">Column's name :</label>
+                            <input type="text" class="form-control" name="service-column" placeholder="Columns name..." aria-label="name">
+                            <button class="btn btn-sm btn-danger" type="button" onclick="removeField(this)">Remove</button>
+                        `;
+                        container.appendChild(newField);
+                    }
+                
+                    // Function to remove the clicked input field
+                    function removeField(button) {
+                        var container = document.getElementById('dynamic-fields-container');
+                        var field = button.parentNode;
+                        container.removeChild(field);
+                    }
+                </script>
+
+
+                <div class="col-md-4">
+                    <label for="id_service-columns">Column's name :</label>
+                    <input type="text" class="form-control service-column" name="service-column" value="price" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_service-columns">Column's name :</label>
+                    <input type="text" class="form-control service-column" name="service-column" value="quantity" readonly>
+                </div>
+
+                <!-- Add more fields as needed -->
+        
+                <br><br>
+                <button class="btn btn-success" type="submit">Edit Service</button>
+            </form>
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

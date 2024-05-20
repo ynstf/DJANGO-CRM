@@ -1,6 +1,6 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Service List{% endblock %}
+{% block title %}Service Information{% endblock %}
 
 {% block layout %}
 <!-- Layout wrapper: Start -->
@@ -26,38 +26,32 @@
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
-        <div class="container">
-            <center><h2>Service List</h2></center>
-            <br>
-                
-            <!-- Table to display service information -->
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Service Name</th>
-                        <th>Columns Name</th>
-                        <th>Reminder (months)</th>
 
-                        <!-- Add other columns as needed -->
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for service in services %}
-                        <tr>
-                            <td>{{ service.id }}</td>
-                            
-                            <td><a href="{% url 'service_info' service.id %}">{{ service.number }} - {{ service.name }}</a></td>
-                            <td>{{ service.columns }}</td>
-                            <td>{% if service.reminder_time  %}{{ service.reminder_time }} {% endif %}</td>
-
-                            <!-- Add other columns as needed -->
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <br>
         
+        <div class="container">
+
+            
+            <br>
+            <center><h2>Service Information</h2></center>
+            <br>
+
+            <h3>Service Details</h3>
+            <p>Name: {{ service.number }} - {{ service.name }}</p>
+            <p>Description : {{ service.description }}</p>
+            <p>columns: {{ service.columns }}</p>
+            {% if service.have_reminder == 'True' %}
+                <p>reminder_time: {{ service.reminder_time }}</p>
+            {% endif %}
+            
+                
+            <!-- Add other customer details as needed -->
+
+            <hr>
+            <a style="text-align: right;" href="{% url 'service_edit' service.id %}" class="btn btn-primary">Edit Information</a>
+        
+
+        </div>
 
 
 <!-- ######################################################################### -->

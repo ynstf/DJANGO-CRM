@@ -197,13 +197,20 @@ def crm_page(request):
     sources_data = []
     for source in sources:
         inquiries_with_source = Inquiry.objects.filter(source=source).count()
-        percentage = round((inquiries_with_source / Inquiry.objects.all().count()) * 100, 1)
+        try:
+            percentage = round((inquiries_with_source / Inquiry.objects.all().count()) * 100, 1)
+        except:
+            percentage = 0.0
         color = generate_random_color()  # Generate a random color for each source
         if inquiries_with_source>0:
             sources_data.append({"name": source.name, "count": inquiries_with_source, "percentage": str(percentage), "color": color})
 
 
-
+    try:
+        effic = round((bookings_len/Inquiry.objects.all().count())*100,2) 
+    except:
+        effic = 0.0
+        
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'title':title,
                 'position': request.user.employee.position,
@@ -212,7 +219,7 @@ def crm_page(request):
                 'permissions':Permission.objects.all(),
 
                 'all_inq':Inquiry.objects.all().count(),
-                'efficiency':round((bookings_len/Inquiry.objects.all().count())*100,2),
+                'efficiency':effic,
                 'complaints':Complain.objects.all().count(),
 
                 'inquiries_len':inquiries_len,
@@ -756,6 +763,85 @@ def services_list_view(request):
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def service_info(request,id):
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'services':Service.objects.all(),
+        'service':Service.objects.get(id=id),
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/service_info.html',context)
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def service_edit(request,id):
+    if request.method == 'POST':
+        number_id = request.POST.get('service-number')
+        service_name = request.POST.get('service-name')
+        description = request.POST.get('service-description')
+        
+        remainder_checked = request.POST.get('remainder_check')
+        reminder = request.POST.get('service-reminder')
+        columns = request.POST.getlist('service-column')
+
+        print(remainder_checked)
+        
+        # Convert the list to a comma-separated string
+        print(columns)
+        not_empty = []
+        for c in columns:
+            if c != "":
+                not_empty.append(c)
+        columns_str = ",".join(not_empty)
+
+
+        # Fetch the existing Service instance
+        this_service = Service.objects.get(id=id)
+
+        # Update the Service instance with new values
+        this_service.number = number_id
+        this_service.name = service_name
+        this_service.description = description
+        this_service.columns = columns_str
+
+        # Update the 'have_reminder' field based on the value of remainder_checked
+        if remainder_checked == "on":
+            this_service.have_reminder = True
+            this_service.reminder_time = reminder  # Assuming `reminder` is the field for reminder time
+        else:
+            this_service.have_reminder = False
+            this_service.reminder_time = None  # Reset reminder time if not needed
+
+        # Save the updated Service instance
+        this_service.save()
+
+
+        return redirect('services_list')
+    
+    services_id = []
+    for srv in Service.objects.all():
+        if srv.number:
+            services_id.append(srv.number)
+    
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+        'services_id': services_id,
+        'service': Service.objects.get(id=id),
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/service_edit.html',context)
+
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def statistics_view(request):
 
     status = request.GET.get('status')
@@ -772,11 +858,13 @@ def statistics_view(request):
     #inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date))
 
     inquiries = Inquiry.objects.all()
+    search_str = {}
 
     if status :
         st = Status.objects.get(id=status)
         inquiries = Inquiry.objects.filter(inquirystatus__status=st)
         status=int(status)
+        search_str["status"]=status
 
     if start or finish :
         start_date = datetime.strptime(start, '%Y-%m-%d').date()
@@ -786,10 +874,12 @@ def statistics_view(request):
     if service :
         inquiries = inquiries.filter(services=service)
         service = int(service)
+        search_str["service"]=service
     
     if sp :
         inquiries = inquiries.filter(sp=sp)
         sp = int(sp)
+        search_str["sp"]=sp
 
 
     for inquiry in inquiries:
@@ -809,7 +899,7 @@ def statistics_view(request):
     services_list = []
     services_counter = defaultdict(int)
     for service in services:
-        count = Inquiry.objects.filter(services=service).count()
+        count = inquiries.filter(services=service).count()
         services_counter[count] += 1
         services_list.append(service.name)
     services_counts = list(services_counter.keys())
@@ -820,8 +910,7 @@ def statistics_view(request):
     # Calculate the date range for the last 30 days
     service_colors = {}  # Dictionary to store colors for each service
     random.seed(24)  # Seed the random number generator for reproducibility
-    end_date = timezone.now().date()
-    start_date = end_date - timedelta(days=29)
+
     # Query the database to get the counts of inquiries for each date and service within the last 30 days
     service_data = defaultdict(lambda: defaultdict(int))
     services = Service.objects.all()
@@ -869,6 +958,7 @@ def statistics_view(request):
         'services':Service.objects.all(),
         'states':Status.objects.all(),
         'service_providers':SuperProvider.objects.all(),
+        'search_str':search_str,
     }
     context = TemplateLayout.init(request, context)
 
