@@ -26,6 +26,13 @@
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
+        {% if messages %}
+            {% for message in messages %}
+                <center>
+                    <div class="alert {% if message.tags %} alert-{{message.tags}} {% endif %}">{{ message }}</div>
+                </center>
+            {% endfor %}
+        {% endif %}
         <div class="container">
             <center><h2>Customer List</h2></center>
             <br>

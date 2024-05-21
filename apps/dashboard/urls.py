@@ -49,6 +49,7 @@ from .all_views.admin import crm_page
 from .all_views.admin import super_provider, super_provider_edit, service_info,service_edit
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
 from .all_views.inquiries import map,edit_inquiry
+from .all_views.infos import check_phone_number
 urlpatterns = [
 
     #chat
@@ -109,6 +110,7 @@ urlpatterns = [
     path('get_status', get_status, name='get_status'),
     path('get_services_by_sp/', get_services_by_sp, name='get_services_by_sp'),
     path('get_employees_by_sp/', get_employees_by_sp, name='get_employees_by_sp'),
+    path('check-phone-number/', check_phone_number, name='check_phone_number'),
 
     # notifications
     path('notifications', notifications, name='notifications'),

@@ -1,7 +1,7 @@
 
 import django.contrib.auth
 from django.http import JsonResponse
-from ..models import Language, Nationality, Source, Service, Status, SuperProvider
+from ..models import Language, Nationality, Source, Service, Status, SuperProvider, PhoneNumber
 from apps.authentication.models import Employee
 
 def get_languages_view(request):
@@ -70,3 +70,21 @@ def get_employees_by_sp_view(request):
     else:
         # Handle non-AJAX requests
         return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
+
+
+
+def check_phone_number(request):
+    phone_number = request.GET.get('phone_number', None)
+    if phone_number:
+        try:
+            phone_record = PhoneNumber.objects.get(number=phone_number)
+            customer = phone_record.customer
+            customer_data = {
+                'first_name': customer.first_name,
+                'last_name': customer.last_name,
+                'id': customer.id
+            }
+            return JsonResponse({'exists': True, 'customer': customer_data})
+        except PhoneNumber.DoesNotExist:
+            return JsonResponse({'exists': False})
+    return JsonResponse({'exists': False})

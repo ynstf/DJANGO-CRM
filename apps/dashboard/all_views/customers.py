@@ -189,6 +189,8 @@ def customer_list_view(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'customer/customer_list.html', context)
 
+
+
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="add customer") in u.employee.permissions.all()))
 def add_customer_view(request):
@@ -201,6 +203,11 @@ def add_customer_view(request):
         whatsapp_form = request.POST.getlist('customer-whats_apps')
         landline_form = request.POST.getlist('customer-landlines')
         email_form = request.POST.getlist('customer-emails')
+        merge_option = request.POST.get('merge_option')
+        merge = merge_option == 'yes'
+        print(f'Merge: {merge}')
+        print(f'pppppppppppppppppppppppppppppppppppppppppppppp')
+        print(f'Merge: {merge_option}')
 
         #address fields
         adress_name = request.POST.getlist('address-address_name')
@@ -228,7 +235,7 @@ def add_customer_view(request):
 
         user_already_exist = False
         common_element = set(phone_form) & set(list(PhoneNumber.objects.values_list('number',flat=True)))
-        if common_element and '+971' not in set(phone_form) :
+        if merge and common_element and '+971' not in set(phone_form) :
             phone = list(common_element)[0]
             print('already exist :',phone)
             customer = PhoneNumber.objects.get(number = phone).customer
@@ -400,6 +407,8 @@ def add_customer_view(request):
                 except:
                     pass
 
+
+        """
         if not user_already_exist:
             return redirect('customer_list')  # Redirect to the customer list page
         else:
@@ -408,6 +417,15 @@ def add_customer_view(request):
             for adr in addresses:
                 id_addresses.append(adr.id)
             return render(request, 'customer/merge_confirmation.html', {'customer': customer, 'id_addresses':id_addresses, 'phone':phone})
+        """
+        if merge:
+            messages.success(request, "The two customers have been successfully merged.")
+            return redirect("customer_info", id=customer.id)
+        else :
+            messages.info(request, "The merge operation has been canceled.")
+            return redirect('customer_list')
+        
+    
     else:
         # Creating instances of forms with prefixes
         customer_form = CustomerForm(prefix='customer')
@@ -480,12 +498,7 @@ def merge_customer(request, id):
     else:
         # Handle GET request if needed
         return redirect("customer_list")
-"""
-def merge_customer(request,id):
-    messages.success(request, "this number user already exist so we merge the two customer successfully")
-    return redirect("customer_info" , id=id)
 
-"""
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="see customer info") in u.employee.permissions.all()) )
 def customer_info_view(request, id):

@@ -94,9 +94,56 @@
                     <!-- add Phone Number forms -->
                     <ul>
                         <div class="col-md-4">
-                            <label for="id_customer-whats_apps" > Phone Number : </label>
+                            <div id="merge" style="display: none;">
+                                <p>Phone number already exists for <span id="existing-customer-name"></span>. Do you want to merge?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="merge_option" id="merge-yes" value="yes">
+                                    <label class="form-check-label" for="merge-yes">Merge</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="merge_option" id="merge-no" value="no">
+                                    <label class="form-check-label" for="merge-no">No Merge</label>
+                                </div>
+                            </div>
+                        
+                            <input type="hidden" id="merge-option-selected" name="merge_option_selected" value="">
+                            <label for="id_customer-phone_numbers"> Phone Number: </label>
                             <input type="text" id="id_customer-phone_numbers" value="+971" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
                         </div>
+                        
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            $(document).ready(function(){
+                                $('#id_customer-phone_numbers').on('change', function(){
+                                    var phoneNumber = $(this).val();
+                                    $.ajax({
+                                        url: '{% url "check_phone_number" %}',  // The URL for your AJAX view
+                                        data: { 'phone_number': phoneNumber },
+                                        success: function(data){
+                                            if (data.exists) {
+                                                $('#existing-customer-name').text(`${data.customer.first_name} ${data.customer.last_name}`);
+                                                $('#merge').show();
+                                            } else {
+                                                $('#merge').hide();
+                                            }
+                                        }
+                                    });
+                                });
+
+                                $('input[name="merge_option"]').on('change', function(){
+                                    $('#merge-option-selected').val(this.value);
+                                });
+                            });
+                        </script>
+
+                        
+
+                        
+
+
+
+
+
                         <div id="additional-phone-numbers"></div>
                         <button type="button" class="btn btn-primary btn-sm" onclick="addNewPhoneNumber()">Add New Phone Number</button>
                         <script>
