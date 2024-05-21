@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from web_project import TemplateLayout
@@ -142,11 +142,22 @@ def conversation_view(request, Myid, Otherid):
         source = request.user.employee
         employees = Employee.objects.get(id=Otherid)
 
-        message = Message.objects.create(
+
+        if '@' in content and content.replace('\n',' ').split('@')[-1].split(" ")[0].isdigit():
+            inq_id = int(content.replace('\n',' ').split('@')[1].split(" ")[0])
+            message = Message.objects.create(
+                inquiry = Inquiry.objects.filter(id=inq_id).first() ,
                 source = source,
                 destination = employees ,
                 content = content
             )
+
+        else:
+            message = Message.objects.create(
+                    source = source,
+                    destination = employees ,
+                    content = content
+                )
 
 
         #create notification
@@ -188,6 +199,7 @@ def conversation_view(request, Myid, Otherid):
         }
     context = TemplateLayout.init(request, context)
     return render(request, 'chat/conversation.html', context)
+
 
 
 def create_group_view(request):
@@ -284,8 +296,6 @@ def groups_page(request):
         }
     context = TemplateLayout.init(request, context)
     return render(request, 'chat/groups_page.html', context)
-
-
 
 
 

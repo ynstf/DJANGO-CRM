@@ -279,7 +279,8 @@
               <div class="text-truncate" data-i18n="Basic Inputs">Groups</div>
             </a>
           </li>
-          
+
+          {% if position.name == 'admin' %}
           <!-- map -->
           <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
             <a href="{% url 'map' %}" class="menu-link">
@@ -287,6 +288,7 @@
               <div class="text-truncate" data-i18n="Basic Inputs">Map</div>
             </a>
           </li> 
+          {% endif %}
   
     
 

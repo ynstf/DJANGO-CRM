@@ -111,6 +111,17 @@
                         <div id="messagesContainer" class="message-container">
                             {% for message in messages %}
                                 {% if message.source == user.employee %}
+
+                                    {% if message.inquiry %}
+                                        <a href="{% url 'inquiry_info' message.inquiry.id %}">
+                                            <div class="message-from-user" style="display: flex;justify-content: center;align-items: center;text-align: center;">
+                                                <div class="message-content" style="display: flex;justify-content: center;align-items: center;text-align: center;">
+                                                    <span class="message-text"  >{{ message.inquiry.address }}</span><br>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {% endif %}
+
                                     <div class="message-from-user">
                                         
                                         <div class="message-content">
@@ -118,9 +129,25 @@
                                             <span class="message-text">{{ message.content }}</span><br>
                                             <span class="message-time">Sent at: {{ message.created }}</span><br>
                                         </div>
+
+                                        
+
+
                                         <img src="{% static 'img/avatars/1.png' %}" style="margin: 0px 0px 0px 10px;" alt class="avatar">
                                     </div>
+
                                 {% else %}
+
+                                    {% if message.inquiry %}
+                                        <a href="{% url 'inquiry_info' message.inquiry.id %}">
+                                            <div class="message-from-other" style="display: flex;justify-content: center;align-items: center;text-align: center;">
+                                                <div class="message-content" style="display: flex;justify-content: center;align-items: center;text-align: center;">
+                                                    <span class="message-text"  >{{ message.inquiry.address }}</span><br>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {% endif %}
+
                                     <div class="message-from-other">
                                         <img src="{% static 'img/avatars/1.png' %}" alt class="avatar">
                                         <div class="message-content">

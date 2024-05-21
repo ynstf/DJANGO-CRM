@@ -429,6 +429,7 @@
             
             </div>
 
+            {% if user.employee.position.name != "super provider" %}
             <style>
                 #complainFormContainer {
                     display: none;
@@ -463,6 +464,7 @@
                     </form>
                 </ul>
             </div>
+            {% endif %}
         
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
