@@ -72,7 +72,7 @@ def get_employees_by_sp_view(request):
         return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
 
 
-
+"""
 def check_phone_number(request):
     phone_number = request.GET.get('phone_number', None)
     if phone_number:
@@ -82,6 +82,27 @@ def check_phone_number(request):
             customer_data = {
                 'first_name': customer.first_name,
                 'last_name': customer.last_name,
+                'id': customer.id
+            }
+            return JsonResponse({'exists': True, 'customer': customer_data})
+        except PhoneNumber.DoesNotExist:
+            return JsonResponse({'exists': False})
+    return JsonResponse({'exists': False})
+
+"""
+def check_phone_number(request):
+    phone_number = request.GET.get('phone_number', None)
+    if phone_number:
+        try:
+            phone_record = PhoneNumber.objects.get(number=phone_number)
+            customer = phone_record.customer
+            customer_data = {
+                'first_name': customer.first_name,
+                'last_name': customer.last_name,
+                'gender': customer.gender,
+                'nationality': customer.nationality.id if customer.nationality else None,
+                'language': customer.language.id if customer.language else None,
+                'trn': customer.trn,
                 'id': customer.id
             }
             return JsonResponse({'exists': True, 'customer': customer_data})

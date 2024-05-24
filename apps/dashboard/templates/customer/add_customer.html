@@ -38,10 +38,148 @@
             <form method="post" id="customerForm"  enctype="multipart/form-data">
                 {% csrf_token %}
                 <!-- {{ customer_form.as_p }} -->
+                <div><ul>
+
+
+
+                <br><br>
+                
+                </ul></div>
 
                 <h3>Customer Details</h3>
                 <div>
                     <ul>
+
+                        <div class="col-md-4">
+                            <div id="merge" style="display: none;">
+                                <p>Phone number already exists for <a href="" id="customer-link"><span id="existing-customer-name"></span></a>. Do you want to merge?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="merge_option" id="merge-yes" value="yes">
+                                    <label class="form-check-label" for="merge-yes">Merge</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="merge_option" id="merge-no" value="no">
+                                    <label class="form-check-label" for="merge-no">No Merge</label>
+                                </div>
+                            </div>
+                        
+                            <input type="hidden" id="merge-option-selected" name="merge_option_selected" value="">
+                            <label for="id_customer-phone_numbers"> Phone Number: </label>
+                            <input type="text" id="id_customer-phone_numbers" value="+971" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
+                        </div>
+                        
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            $(document).ready(function(){
+                                $('#id_customer-phone_numbers').on('change', function(){
+                                    var phoneNumber = $(this).val();
+                                    $.ajax({
+                                        url: '{% url "check_phone_number" %}',  // The URL for your AJAX view
+                                        data: { 'phone_number': phoneNumber },
+                                        success: function(data){
+                                            if (data.exists) {
+                                                $('#existing-customer-name').text(`${data.customer.first_name} ${data.customer.last_name}`);
+                                                
+                                                var idValue = data.customer.id;
+                                                        if (idValue) {
+                                                            var url = '{% url "customer_info" 0 %}'.replace('0', idValue);
+                                                            $('#customer-link').attr('href', url);
+                                                        } else {
+                                                            // Handle the case where idValue is empty or not provided
+                                                            console.error('Customer id not found.');
+                                                        }
+                                                
+                                                $('#merge').show();
+                                                $('#merge-yes').on('change', function(){
+                                                    if ($(this).is(':checked')) {
+
+                                                         // Set specific input fields to readonly
+                                                        $('#id_customer-first_name').prop('readonly', true);
+                                                        $('#id_customer-last_name').prop('readonly', true);
+                                                        $('#id_customer-gender').prop('disabled', true);
+                                                        $('#id_customer-nationality').prop('disabled', true);
+                                                        $('#id_customer-language').prop('disabled', true);
+                                                        $('#id_customer-trn').prop('readonly', true);
+
+                                                        $('#id_customer-first_name').val(data.customer.first_name);
+                                                        $('#id_customer-last_name').val(data.customer.last_name);
+                                                        $('#id_customer-gender').val(data.customer.gender);
+                                                        $('#id_customer-nationality').val(data.customer.nationality);
+                                                        $('#id_customer-language').val(data.customer.language);
+                                                        $('#id_customer-trn').val(data.customer.trn);
+
+                                                        
+
+                                                    }
+                                                });
+                                                $('#merge-no').on('change', function(){
+                                                    if ($(this).is(':checked')) {
+                                                        $('input[type="text"]').prop('readonly', false);
+                                                        $('select').prop('disabled', false);
+                                                        $('#id_customer-first_name').val('');
+                                                        $('#id_customer-last_name').val('');
+                                                        $('#id_customer-gender').val('');
+                                                        $('#id_customer-nationality').val('');
+                                                        $('#id_customer-language').val('');
+                                                        $('#id_customer-trn').val('');
+                                                    }
+                                                });
+                                            } else {
+                                                $('#merge').hide();
+                                            }
+                                        }
+                                    });
+                                });
+                        
+                                $('input[name="merge_option"]').on('change', function(){
+                                    $('#merge-option-selected').val(this.value);
+                                });
+                            });
+                        </script>
+                        
+                        
+                        <div id="additional-phone-numbers"></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewPhoneNumber()">Add New Phone Number</button>
+                        <script>
+                            var phoneNumberCounter = 2;
+                            function addNewPhoneNumber() {
+                                var container = document.createElement('div');
+                                container.className = 'col-md-4';
+        
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_customer-phone-number-' + phoneNumberCounter);
+                                label.textContent = 'Phone Number ' + phoneNumberCounter + ' :';
+                        
+                                var input = document.createElement('input');
+                                input.type = 'text';
+                                input.id = 'id_customer-phone-number-' + phoneNumberCounter;
+                                input.value = '+971';
+                                input.name = 'customer-phone_numbers';
+                                input.className = 'form-control';
+                                input.placeholder = 'Phone Number ' + phoneNumberCounter + '...';
+                                input.setAttribute('aria-label', 'Phone Number ' + phoneNumberCounter);
+                        
+                                container.appendChild(label);
+                                container.appendChild(input);
+                        
+                                var button = document.createElement('button');
+                                button.type = 'button';
+                                button.className = 'btn btn-danger btn-sm';
+                                button.textContent = 'Remove';
+                                button.onclick = function () {
+                                    container.remove();
+                                };
+                        
+                                container.appendChild(button);
+                        
+                                document.getElementById('additional-phone-numbers').appendChild(container);
+                        
+                        
+                                phoneNumberCounter++;
+                            }
+                        </script>
+
+
                         <div class="col-md-4">
                             <label for="id_customer-first_name" > First name : </label>
                             <input type="text" id="id_customer-first_name" name="customer-first_name" class="form-control" placeholder="First name..." aria-label="First name" required>
@@ -93,99 +231,9 @@
                     <h3>Contact Information</h3>
                     <!-- add Phone Number forms -->
                     <ul>
-                        <div class="col-md-4">
-                            <div id="merge" style="display: none;">
-                                <p>Phone number already exists for <span id="existing-customer-name"></span>. Do you want to merge?</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="merge_option" id="merge-yes" value="yes">
-                                    <label class="form-check-label" for="merge-yes">Merge</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="merge_option" id="merge-no" value="no">
-                                    <label class="form-check-label" for="merge-no">No Merge</label>
-                                </div>
-                            </div>
-                        
-                            <input type="hidden" id="merge-option-selected" name="merge_option_selected" value="">
-                            <label for="id_customer-phone_numbers"> Phone Number: </label>
-                            <input type="text" id="id_customer-phone_numbers" value="+971" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
-                        </div>
-                        
-                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                        <script>
-                            $(document).ready(function(){
-                                $('#id_customer-phone_numbers').on('change', function(){
-                                    var phoneNumber = $(this).val();
-                                    $.ajax({
-                                        url: '{% url "check_phone_number" %}',  // The URL for your AJAX view
-                                        data: { 'phone_number': phoneNumber },
-                                        success: function(data){
-                                            if (data.exists) {
-                                                $('#existing-customer-name').text(`${data.customer.first_name} ${data.customer.last_name}`);
-                                                $('#merge').show();
-                                            } else {
-                                                $('#merge').hide();
-                                            }
-                                        }
-                                    });
-                                });
-
-                                $('input[name="merge_option"]').on('change', function(){
-                                    $('#merge-option-selected').val(this.value);
-                                });
-                            });
-                        </script>
 
                         
-
                         
-
-
-
-
-
-                        <div id="additional-phone-numbers"></div>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewPhoneNumber()">Add New Phone Number</button>
-                        <script>
-                            var phoneNumberCounter = 2;
-                            function addNewPhoneNumber() {
-                                var container = document.createElement('div');
-                                container.className = 'col-md-4';
-
-                                var label = document.createElement('label');
-                                label.setAttribute('for', 'id_customer-phone-number-' + phoneNumberCounter);
-                                label.textContent = 'Phone Number ' + phoneNumberCounter + ' :';
-                        
-                                var input = document.createElement('input');
-                                input.type = 'text';
-                                input.id = 'id_customer-phone-number-' + phoneNumberCounter;
-                                input.value = '+971';
-                                input.name = 'customer-phone_numbers';
-                                input.className = 'form-control';
-                                input.placeholder = 'Phone Number ' + phoneNumberCounter + '...';
-                                input.setAttribute('aria-label', 'Phone Number ' + phoneNumberCounter);
-                        
-                                container.appendChild(label);
-                                container.appendChild(input);
-                        
-                                var button = document.createElement('button');
-                                button.type = 'button';
-                                button.className = 'btn btn-danger btn-sm';
-                                button.textContent = 'Remove';
-                                button.onclick = function () {
-                                    container.remove();
-                                };
-                        
-                                container.appendChild(button);
-                        
-                                document.getElementById('additional-phone-numbers').appendChild(container);
-                        
-                        
-                                phoneNumberCounter++;
-                            }
-                        </script>
-                        
-                        <br><br>
 
                         <!-- add Landlines forms -->
                         <div class="col-md-4">

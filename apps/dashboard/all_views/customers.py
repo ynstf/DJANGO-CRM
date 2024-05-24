@@ -422,7 +422,8 @@ def add_customer_view(request):
             messages.success(request, "The two customers have been successfully merged.")
             return redirect("customer_info", id=customer.id)
         else :
-            messages.info(request, "The merge operation has been canceled.")
+            if merge=="no":
+                messages.info(request, "The merge operation has been canceled.")
             return redirect('customer_list')
         
     
