@@ -1112,7 +1112,7 @@ def statistics_view(request):
 
 
 
-
+    """
     # Calculate the date range for the last 30 days
     service_colors = {}  # Dictionary to store colors for each service
     import random
@@ -1142,7 +1142,42 @@ def statistics_view(request):
             service_colors[service] = colors[color_counter]
             color_counter+=1
             #print(service_names,colors[color_counter])
+            
     
+    # Convert the service_colors dictionary to a JSON object
+    service_colors_json = json.dumps(service_colors)
+    print(service_colors_json)
+    """
+    # Calculate the date range for the last 30 days
+    service_colors = {}  # Dictionary to store colors for each service
+    random.seed(24)  # Seed the random number generator for reproducibility
+
+    # Query the database to get the counts of inquiries for each date and service within the last 30 days
+    service_data = defaultdict(lambda: defaultdict(int))
+    services = Service.objects.all()
+
+
+    for service in services:
+        inquiries = inquiries.filter(date_inq__range=(start_date, end_date), services=service)
+        for inquiry in inquiries:
+            inquiry_date = inquiry.date_inq.strftime('%Y-%m-%d')
+            service_data[inquiry_date][service.name] += 1
+
+    # Prepare the aggregated data for the chart
+    dates = sorted(service_data.keys())
+    service_names = [service.name for service in services]
+    service_counts = {service: [] for service in service_names}
+    colors = ["31, 119, 180", "255, 127, 14", "44, 160, 44", "214, 39, 40", "148, 103, 189", "140, 86, 75", "227, 119, 194", "127, 127, 127", "188, 189, 34", "23, 190, 207", "26, 85, 255", "255, 0, 191", "128, 255, 0", "255, 191, 0", "0, 255, 204"]
+
+    # Assign colors to services
+    for index, service in enumerate(service_names):
+        service_colors[service] = colors[index % len(colors)]
+
+    # Fill service_counts for each date
+    for date in dates:
+        for service in service_names:
+            service_counts[service].append(service_data[date][service])
+
     # Convert the service_colors dictionary to a JSON object
     service_colors_json = json.dumps(service_colors)
     print(service_colors_json)
@@ -1428,7 +1463,7 @@ def generate_statistics_pdf(request):
 
 
     # Create a PDF template using Django template
-    template_path = 'dashboard\statistics_pdf.html'  # Create a template for your PDF
+    template_path = 'dashboard/statistics_pdf.html'  # Create a template for your PDF
     template = get_template(template_path)
 
     try:
@@ -1690,7 +1725,7 @@ def crm_pdf_view(request):
 
 
     # Create a PDF template using Django template
-    template_path = 'dashboard\crm_pdf.html'  # Create a template for your PDF
+    template_path = 'dashboard/crm_pdf.html'  # Create a template for your PDF
     template = get_template(template_path)
 
     try:
