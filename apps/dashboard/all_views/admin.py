@@ -26,6 +26,11 @@ import json
 from datetime import datetime, timedelta
 from django.contrib import messages
 from django.utils.timezone import make_aware
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+import io
+
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
@@ -866,11 +871,16 @@ def statistics_view(request):
     #inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date))
 
     inquiries = Inquiry.objects.all()
+    bookings = Booking.objects.all()
+    complains = Complain.objects.all()
+    inquirystatus = InquiryStatus.objects.all()
+
     search_str = {}
 
     if status :
         st = Status.objects.get(id=status)
         inquiries = Inquiry.objects.filter(inquirystatus__status=st)
+        bookings = bookings.filter(inquiry__inquirystatus__status=st)
         status=int(status)
         search_str["status"]=status
 
@@ -878,16 +888,206 @@ def statistics_view(request):
         start_date = datetime.strptime(start, '%Y-%m-%d').date()
         finish_date = datetime.strptime(finish, '%Y-%m-%d').date()
         inquiries = inquiries.filter(date_inq__range=[start_date, finish_date])
+        bookings = bookings.filter(booking_date__range=[start_date, finish_date])
+        complains = complains.filter(opened__range=[start_date, finish_date])
+        inquirystatus = inquirystatus.filter(update__range=[start_date, finish_date])
+        
     
     if service :
         inquiries = inquiries.filter(services=service)
+        bookings = bookings.filter(booking_service=service)
+        complains = Complain.objects.filter(inquiry__services=service)
         service = int(service)
         search_str["service"]=service
     
     if sp :
         inquiries = inquiries.filter(sp=sp)
+        bookings = bookings.filter(inquiry__sp=sp)
+        complains = Complain.objects.filter(inquiry__sp=sp)
+        inquirystatus = inquirystatus.filter(inquiry__sp=sp)
         sp = int(sp)
         search_str["sp"]=sp
+    
+
+
+    # Calculate the start and end dates for the last 30 days
+    now = make_aware(datetime.now())
+    # Calculate the start date for the last 30 days
+    st_date = now - timedelta(days=30)
+    # Filter inquiries created within the last 30 days
+    inquiries_last_30_days = inquiries.filter(date_inq__range=[st_date, now])
+    # Get the count of inquiries for the last 30 days
+    inquiries_len_30 = inquiries_last_30_days.count()
+    end_date = make_aware(datetime.now()) - timedelta(days=30)
+    st_date = end_date - timedelta(days=30)
+    inquiries_last_month = inquiries.filter(date_inq__range=[st_date, end_date])
+    inquiries_len_last_30 = inquiries_last_month.count()
+    # Calculate the percentage change
+    if inquiries_len_last_30 != 0:
+        percentage_change = ((inquiries_len_30 - inquiries_len_last_30) / inquiries_len_last_30) * 100
+
+    else:
+        percentage_change = float('inf')  # Handle the case where last month's inquiries are zero to avoid division by zero
+
+
+
+    # Get today's date
+    now = datetime.now()
+    # Calculate the start and end datetimes for today
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+    # Filter inquiries created today
+    inquiries_today = inquiries.filter(date_inq__range=[start_of_day, end_of_day])
+    # Get the count of inquiries for today
+    inquiries_len_today = inquiries_today.count()
+
+
+    # Filter inquiries with status of "send Q or B"
+    new_status = Status.objects.get(name="new")
+    inquiries_today_q_or_b = inquirystatus.filter(update__range=[start_of_day, end_of_day]).exclude(status=new_status)
+    # Get the count of inquiries for today with status "send Q or B"
+    inquiries_len_today_q_or_b = inquiries_today_q_or_b.count()
+    #bookings_today
+    bookings_today = bookings.filter(booking_date__range=[start_of_day, end_of_day]).count()
+
+
+    # Calculate the start and end dates for the previous day
+    # Get the current date and time
+    today = datetime.now()
+    # Calculate the start and end datetimes for yesterday
+    end_of_yesterday = today.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+    start_of_yesterday = end_of_yesterday - timedelta(days=1)
+    # Filter inquiries created yesterday
+    inquiries_yesterday = inquiries.filter(date_inq__range=[start_of_yesterday, end_of_yesterday])
+    actions_yesterday = inquirystatus.filter(update__range=[start_of_yesterday, end_of_yesterday]).exclude(status=new_status).count()
+    bookings_yesterday = bookings.filter(booking_date__range=[start_of_yesterday, end_of_yesterday]).count()
+    # Get the count of inquiries for yesterday
+    inquiries_len_yesterday = inquiries_yesterday.count()
+
+
+    # Calculate the percentage change
+    if inquiries_len_yesterday != 0:
+        percentage_change_today = ((inquiries_len_today - inquiries_len_yesterday) / inquiries_len_yesterday) * 100
+    else:
+        percentage_change_today = 0  # Avoid division by zero error
+
+
+
+    all_services = Service.objects.all()
+    dic = []
+    for service in all_services:
+        bookPerService = bookings.filter(booking_service=service).count()
+        if bookPerService>0:
+            line = {'name':service.name,'books':bookPerService}
+            dic.append(line)
+    labels_pie = [item['name'] for item in dic]
+    numbers_pie = [item['books'] for item in dic]
+    # Convert lists to JSON strings
+    labels_pie_json = json.dumps(labels_pie)
+    numbers_pie_json = json.dumps(numbers_pie)
+
+
+    dic_prices = []
+    bookings_price = 0
+    for service in all_services:
+        bookPerService = bookings.filter(booking_service=service)
+        bookPerServiceCount = bookings.filter(booking_service=service).count()
+        price = 0
+        for book in bookPerService:
+            inquiry = book.inquiry
+            quotations = Quotation.objects.filter(inquiry=inquiry)
+            for quotation in quotations:
+                price += float(quotation.total)
+        bookings_price += price
+        if bookPerServiceCount>0:
+            line = {'name':service.name,'books':price}
+            dic_prices.append(line)
+    labels_pie_prices = [item['name'] for item in dic_prices]
+    numbers_pie_prices = [item['books'] for item in dic_prices]
+    # Convert lists to JSON strings
+    labels_pie_prices_json = json.dumps(labels_pie_prices)
+    numbers_pie_prices_json = json.dumps(numbers_pie_prices)
+
+
+
+    import random
+    # Function to generate a random hex color code
+    def generate_random_color():
+        return '#{:06x}'.format(random.randint(0, 0xFFFFFF))
+
+
+    sources = Source.objects.all()
+    sources_data = []
+    for source in sources:
+        inquiries_with_source = inquiries.filter(source=source).count()
+        try:
+            percentage = round((inquiries_with_source / inquiries.all().count()) * 100, 1)
+        except:
+            percentage = 0.0
+        color = generate_random_color()  # Generate a random color for each source
+        if inquiries_with_source>0:
+            sources_data.append({"name": source.name, "count": inquiries_with_source, "percentage": str(percentage), "color": color})
+
+
+
+
+
+    inquiries_len_last = inquiries.count()
+    bookings_len_last = bookings.count()
+
+    try:
+        effic = round((bookings_len_last/inquiries_len_last)*100,2) 
+    except:
+        effic = 0.0
+
+    complains = complains.count()
+
+
+
+
+
+
+
+
+    ##############################################################
+
+    status = request.GET.get('status')
+    start = request.GET.get('start')
+    finish = request.GET.get('finish')
+    service = request.GET.get('service')
+    sp = request.GET.get('sp')
+
+    # Calculate the date range for the last 30 days
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=29)
+    # Query the database to get the counts of inquiries for each date within the last 30 days
+    inquiry_counts = defaultdict(int)
+    #inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date))
+
+
+
+    inquiries = Inquiry.objects.all()
+
+
+    if status :
+        st = Status.objects.get(id=status)
+        inquiries = Inquiry.objects.filter(inquirystatus__status=st)
+
+
+    if start or finish :
+        start_date = datetime.strptime(start, '%Y-%m-%d').date()
+        finish_date = datetime.strptime(finish, '%Y-%m-%d').date()
+        inquiries = inquiries.filter(date_inq__range=[start_date, finish_date])
+
+        
+    
+    if service :
+        inquiries = inquiries.filter(services=service)
+
+    
+    if sp :
+        inquiries = inquiries.filter(sp=sp)
+
 
 
     for inquiry in inquiries:
@@ -898,8 +1098,6 @@ def statistics_view(request):
     counts = list(inquiry_counts.values())
     # Sort dates chronologically
     dates.sort()
-
-
 
 
     # Calculate the date range of each service for the last 30 days
@@ -917,13 +1115,14 @@ def statistics_view(request):
 
     # Calculate the date range for the last 30 days
     service_colors = {}  # Dictionary to store colors for each service
+    import random
     random.seed(24)  # Seed the random number generator for reproducibility
 
     # Query the database to get the counts of inquiries for each date and service within the last 30 days
     service_data = defaultdict(lambda: defaultdict(int))
     services = Service.objects.all()
     for service in services:
-        inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date), services=service)
+        inquiries = inquiries.filter(date_inq__range=(start_date, end_date), services=service)
         for inquiry in inquiries:
             inquiry_date = inquiry.date_inq.strftime('%Y-%m-%d')
             service_data[inquiry_date][service.name] += 1
@@ -948,6 +1147,29 @@ def statistics_view(request):
     service_colors_json = json.dumps(service_colors)
     print(service_colors_json)
 
+    ################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -961,14 +1183,585 @@ def statistics_view(request):
         'services_list': services_list,
         'services_counts': services_counts,
         'service_colors_json': service_colors_json,
-
-        
         'services':Service.objects.all(),
         'states':Status.objects.all(),
         'service_providers':SuperProvider.objects.all(),
         'search_str':search_str,
+
+        'inquiries_len_last':inquiries_len_last,
+        'bookings_len_last':bookings_len_last,
+        'efficiency':effic,
+        'complaints':complains,
+        'inquiries_len':inquiries_len_30,
+        'inquiries_len_last_30':inquiries_len_last_30,
+        'percentage_change':percentage_change,
+
+        'inquiries_len_today':inquiries_len_today,
+        'percentage_change_today':percentage_change_today,
+        'inquiries_len_today_q_or_b':inquiries_len_today_q_or_b,
+        'bookings_today':bookings_today,
+
+        'inquiries_len_yesterday':inquiries_len_yesterday,
+        'actions_yesterday':actions_yesterday,
+        'bookings_yesterday':bookings_yesterday,
+
+        'dic':dic,
+        'labels_pie':labels_pie_json,
+        'numbers_pie':numbers_pie_json,
+
+        'labels_pie_prices':labels_pie_prices_json,
+        'numbers_pie_prices':numbers_pie_prices_json,
+        'dic_prices':dic_prices,
+        'bookings_price':bookings_price,
+
+        
+        'sources_data':sources_data,
+
+
+
+
+
     }
     context = TemplateLayout.init(request, context)
 
     return render(request, 'admin/statistics/inquiry_statistics.html', context)
+
+
+
+def generate_statistics_pdf(request):
+    # Get parameters from request
+    status = request.GET.get('status', '')
+    start = request.GET.get('start', '')
+    finish = request.GET.get('finish', '')
+    service = request.GET.get('service', '')
+    sp = request.GET.get('sp', '')
+
+
+
+
+    # Calculate the date range for the last 30 days
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=29)
+    # Query the database to get the counts of inquiries for each date within the last 30 days
+    inquiry_counts = defaultdict(int)
+    #inquiries = Inquiry.objects.filter(date_inq__range=(start_date, end_date))
+
+    inquiries = Inquiry.objects.all()
+    bookings = Booking.objects.all()
+    complains = Complain.objects.all()
+    inquirystatus = InquiryStatus.objects.all()
+
+    search_str = {}
+
+    if status :
+        st = Status.objects.get(id=status)
+        inquiries = Inquiry.objects.filter(inquirystatus__status=st)
+        bookings = bookings.filter(inquiry__inquirystatus__status=st)
+        status=int(status)
+        search_str["status"]=status
+
+    if start or finish :
+        start_date = datetime.strptime(start, '%Y-%m-%d').date()
+        finish_date = datetime.strptime(finish, '%Y-%m-%d').date()
+        inquiries = inquiries.filter(date_inq__range=[start_date, finish_date])
+        bookings = bookings.filter(booking_date__range=[start_date, finish_date])
+        complains = complains.filter(opened__range=[start_date, finish_date])
+        inquirystatus = inquirystatus.filter(update__range=[start_date, finish_date])
+        
+    
+    if service :
+        inquiries = inquiries.filter(services=service)
+        bookings = bookings.filter(booking_service=service)
+        complains = Complain.objects.filter(inquiry__services=service)
+        service = int(service)
+        search_str["service"]=service
+    
+    if sp :
+        inquiries = inquiries.filter(sp=sp)
+        bookings = bookings.filter(inquiry__sp=sp)
+        complains = Complain.objects.filter(inquiry__sp=sp)
+        inquirystatus = inquirystatus.filter(inquiry__sp=sp)
+        sp = int(sp)
+        search_str["sp"]=sp
+    
+
+
+    # Calculate the start and end dates for the last 30 days
+    now = make_aware(datetime.now())
+    # Calculate the start date for the last 30 days
+    st_date = now - timedelta(days=30)
+    # Filter inquiries created within the last 30 days
+    inquiries_last_30_days = inquiries.filter(date_inq__range=[st_date, now])
+    # Get the count of inquiries for the last 30 days
+    inquiries_len_30 = inquiries_last_30_days.count()
+    end_date = make_aware(datetime.now()) - timedelta(days=30)
+    st_date = end_date - timedelta(days=30)
+    inquiries_last_month = inquiries.filter(date_inq__range=[st_date, end_date])
+    inquiries_len_last_30 = inquiries_last_month.count()
+    # Calculate the percentage change
+    if inquiries_len_last_30 != 0:
+        percentage_change = ((inquiries_len_30 - inquiries_len_last_30) / inquiries_len_last_30) * 100
+
+    else:
+        percentage_change = float('inf')  # Handle the case where last month's inquiries are zero to avoid division by zero
+
+
+
+    # Get today's date
+    now = datetime.now()
+    # Calculate the start and end datetimes for today
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+    # Filter inquiries created today
+    inquiries_today = inquiries.filter(date_inq__range=[start_of_day, end_of_day])
+    # Get the count of inquiries for today
+    inquiries_len_today = inquiries_today.count()
+
+
+    # Filter inquiries with status of "send Q or B"
+    new_status = Status.objects.get(name="new")
+    inquiries_today_q_or_b = inquirystatus.filter(update__range=[start_of_day, end_of_day]).exclude(status=new_status)
+    # Get the count of inquiries for today with status "send Q or B"
+    inquiries_len_today_q_or_b = inquiries_today_q_or_b.count()
+    #bookings_today
+    bookings_today = bookings.filter(booking_date__range=[start_of_day, end_of_day]).count()
+
+
+    # Calculate the start and end dates for the previous day
+    # Get the current date and time
+    today = datetime.now()
+    # Calculate the start and end datetimes for yesterday
+    end_of_yesterday = today.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+    start_of_yesterday = end_of_yesterday - timedelta(days=1)
+    # Filter inquiries created yesterday
+    inquiries_yesterday = inquiries.filter(date_inq__range=[start_of_yesterday, end_of_yesterday])
+    actions_yesterday = inquirystatus.filter(update__range=[start_of_yesterday, end_of_yesterday]).exclude(status=new_status).count()
+    bookings_yesterday = bookings.filter(booking_date__range=[start_of_yesterday, end_of_yesterday]).count()
+    # Get the count of inquiries for yesterday
+    inquiries_len_yesterday = inquiries_yesterday.count()
+
+
+    # Calculate the percentage change
+    if inquiries_len_yesterday != 0:
+        percentage_change_today = ((inquiries_len_today - inquiries_len_yesterday) / inquiries_len_yesterday) * 100
+    else:
+        percentage_change_today = 0  # Avoid division by zero error
+
+
+
+    all_services = Service.objects.all()
+    dic = []
+    for service in all_services:
+        bookPerService = bookings.filter(booking_service=service).count()
+        if bookPerService>0:
+            line = {'name':service.name,'books':bookPerService}
+            dic.append(line)
+    labels_pie = [item['name'] for item in dic]
+    numbers_pie = [item['books'] for item in dic]
+    # Convert lists to JSON strings
+    labels_pie_json = json.dumps(labels_pie)
+    numbers_pie_json = json.dumps(numbers_pie)
+
+
+    dic_prices = []
+    bookings_price = 0
+    for service in all_services:
+        bookPerService = bookings.filter(booking_service=service)
+        bookPerServiceCount = bookings.filter(booking_service=service).count()
+        price = 0
+        for book in bookPerService:
+            inquiry = book.inquiry
+            quotations = Quotation.objects.filter(inquiry=inquiry)
+            for quotation in quotations:
+                price += float(quotation.total)
+        bookings_price += price
+        if bookPerServiceCount>0:
+            line = {'name':service.name,'books':price}
+            dic_prices.append(line)
+    labels_pie_prices = [item['name'] for item in dic_prices]
+    numbers_pie_prices = [item['books'] for item in dic_prices]
+    # Convert lists to JSON strings
+    labels_pie_prices_json = json.dumps(labels_pie_prices)
+    numbers_pie_prices_json = json.dumps(numbers_pie_prices)
+
+
+
+    import random
+    # Function to generate a random hex color code
+    def generate_random_color():
+        return '#{:06x}'.format(random.randint(0, 0xFFFFFF))
+
+
+    sources = Source.objects.all()
+    sources_data = []
+    for source in sources:
+        inquiries_with_source = inquiries.filter(source=source).count()
+        try:
+            percentage = round((inquiries_with_source / inquiries.all().count()) * 100, 1)
+        except:
+            percentage = 0.0
+        color = generate_random_color()  # Generate a random color for each source
+        if inquiries_with_source>0:
+            sources_data.append({"name": source.name, "count": inquiries_with_source, "percentage": str(percentage), "color": color})
+
+
+
+
+
+    inquiries_len_last = inquiries.count()
+    bookings_len_last = bookings.count()
+
+    try:
+        effic = round((bookings_len_last/inquiries_len_last)*100,2) 
+    except:
+        effic = 0.0
+
+    complains = complains.count()
+
+
+
+
+
+
+
+
+
+
+    # Create a PDF template using Django template
+    template_path = 'dashboard\statistics_pdf.html'  # Create a template for your PDF
+    template = get_template(template_path)
+
+    try:
+        sp = QuotationForm.objects.get(title = 'Quotation1')
+    except:
+        sp = ''
+    
+    context = {
+                'position': request.user.employee.position,
+                'sp':sp,
+                'date':datetime.today(),
+                'user':request.user,
+
+                'services':Service.objects.all(),
+                'permissions':Permission.objects.all(),
+
+                'all_inq':Inquiry.objects.all().count(),
+
+
+                'inquiries_len_last':inquiries_len_last,
+                'bookings_len_last':bookings_len_last,
+                'bookings_len':bookings_len_last,
+                'efficiency':effic,
+                'complaints':complains,
+                'inquiries_len':inquiries_len_30,
+                'inquiries_len_last_30':inquiries_len_last_30,
+                'percentage_change':percentage_change,
+
+
+
+                'dic':dic,
+                'labels_pie':labels_pie_json,
+                'numbers_pie':numbers_pie_json,
+
+
+
+
+                'labels_pie_prices':labels_pie_prices_json,
+                'numbers_pie_prices':numbers_pie_prices_json,
+                'dic_prices':dic_prices,
+                'bookings_price':bookings_price,
+
+
+
+                'inquiries_len_today':inquiries_len_today,
+                'inquiries_len_yesterday':inquiries_len_yesterday,
+                'percentage_change_today': percentage_change_today,
+                'inquiries_len_today_q_or_b': inquiries_len_today_q_or_b,
+                'bookings_today': bookings_today,
+                'actions_yesterday':actions_yesterday,
+                'bookings_yesterday':bookings_yesterday,
+
+                'sources_data':sources_data,
+                
+                'this_sp':SuperProvider.objects.get(id=request.GET.get('sp', '')),
+                'this_first':request.GET.get('start', ''),
+                'this_end':request.GET.get('finish', ''),
+
+                'this_service': Service.objects.get(id=request.GET.get('service', '')) if request.GET.get('service', '').isdigit() and Service.objects.filter(id=request.GET.get('service', '')).exists() else None,                
+                'this_status':Status.objects.get(id=request.GET.get('status', '')) if request.GET.get('status', '').isdigit() and Status.objects.filter(id=request.GET.get('status', '')).exists() else None,
+
+                }
+
+
+    html_content = template.render(context)
+    # Create a PDF file using ReportLab
+    pdf_file = io.BytesIO()
+    pisa.CreatePDF(html_content, dest=pdf_file)
+    # Set response content type
+    response = HttpResponse(pdf_file.getvalue(), content_type='application/pdf')
+    # Set the filename for download
+    response['Content-Disposition'] = 'inline; filename=f"crm_statistic_{}.pdf"'
+
+    return response
+
+
+def crm_pdf_view(request):
+
+    title = "crm"
+
+    
+    # Calculate the start and end dates for the last 30 days
+    now = make_aware(datetime.now())
+    # Calculate the start date for the last 30 days
+    start_date = now - timedelta(days=30)
+    # Filter inquiries created within the last 30 days
+    inquiries_last_30_days = Inquiry.objects.filter(date_inq__range=[start_date, now])
+    # Filter inquiries created within the last 30 days
+    inquiries_last_30_days = Inquiry.objects.filter(date_inq__range=[start_date, now])
+    # Get the count of inquiries for the last 30 days
+    inquiries_len = inquiries_last_30_days.count()
+    end_date = make_aware(datetime.now()) - timedelta(days=30)
+    start_date = end_date - timedelta(days=30)
+    inquiries_last_month = Inquiry.objects.filter(date_inq__range=[start_date, end_date])
+    inquiries_len_last = inquiries_last_month.count()
+
+    # Calculate the percentage change
+    if inquiries_len_last != 0:
+        percentage_change = round(((inquiries_len - inquiries_len_last) / inquiries_len_last) * 100,2)
+    else:
+        percentage_change = 0  # Avoid division by zero error
+
+
+
+    # Get today's date
+    now = datetime.now()
+    # Calculate the start and end datetimes for today
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+    # Filter inquiries created today
+    inquiries_today = Inquiry.objects.filter(date_inq__range=[start_of_day, end_of_day])
+    # Get the count of inquiries for today
+    inquiries_len_today = inquiries_today.count()
+
+
+    # Filter inquiries with status of "send Q or B"
+    new_status = Status.objects.get(name="new")
+    inquiries_today_q_or_b = InquiryStatus.objects.filter(update__range=[start_of_day, end_of_day]).exclude(status=new_status)
+    # Get the count of inquiries for today with status "send Q or B"
+    inquiries_len_today_q_or_b = inquiries_today_q_or_b.count()
+    #bookings_today
+    bookings_today = Booking.objects.filter(booking_date__range=[start_of_day, end_of_day]).count()
+
+
+    # Calculate the start and end dates for the previous day
+    # Get the current date and time
+    today = datetime.now()
+
+    # Calculate the start and end datetimes for yesterday
+    end_of_yesterday = today.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+    start_of_yesterday = end_of_yesterday - timedelta(days=1)
+
+    # Filter inquiries created yesterday
+    inquiries_yesterday = Inquiry.objects.filter(date_inq__range=[start_of_yesterday, end_of_yesterday])
+    actions_yesterday = InquiryStatus.objects.filter(update__range=[start_of_yesterday, end_of_yesterday]).exclude(status=new_status).count()
+    bookings_yesterday = Booking.objects.filter(booking_date__range=[start_of_yesterday, end_of_yesterday]).count()
+
+
+    # Get the count of inquiries for yesterday
+    inquiries_len_yesterday = inquiries_yesterday.count()
+
+    # Calculate the percentage change
+    if inquiries_len_yesterday != 0:
+        percentage_change_today = ((inquiries_len_today - inquiries_len_yesterday) / inquiries_len_yesterday) * 100
+    else:
+        percentage_change_today = 0  # Avoid division by zero error
+
+
+
+
+    bookings_len = Booking.objects.all().count()
+    sp_len = SuperProvider.objects.all().count()
+    service_len = Service.objects.all().count()
+
+
+    all_services = Service.objects.all()
+    dic = []
+    for service in all_services:
+        bookPerService = Booking.objects.filter(booking_service=service).count()
+        if bookPerService>0:
+            line = {'name':service.name,'books':bookPerService}
+            dic.append(line)
+    labels_pie = [item['name'] for item in dic]
+    numbers_pie = [item['books'] for item in dic]
+    # Convert lists to JSON strings
+    labels_pie_json = json.dumps(labels_pie)
+    numbers_pie_json = json.dumps(numbers_pie)
+
+
+    inqwithquot = []
+    qs = Quotation.objects.all()
+    for q in qs:
+        if q.inquiry not in inqwithquot:
+            inqwithquot.append(q.inquiry)
+
+    quots = []
+    for service in all_services:
+        quotPerService = Quotation.objects.filter(quotation_service=service).count()
+        if quotPerService>0:
+            line = {'name':service.name,'books':quotPerService}
+            quots.append(line)
+    labels_quots_pie = [item['name'] for item in quots]
+    numbers_quots_pie = [item['books'] for item in quots]
+    # Convert lists to JSON strings
+    labels_quots_pie_json = json.dumps(labels_quots_pie)
+    numbers_quots_pie_json = json.dumps(numbers_quots_pie)
+
+
+    dic_prices = []
+    bookings_price = 0
+    for service in all_services:
+        bookPerService = Booking.objects.filter(booking_service=service)
+        bookPerServiceCount = Booking.objects.filter(booking_service=service).count()
+        price = 0
+        for book in bookPerService:
+            inquiry = book.inquiry
+            quotations = Quotation.objects.filter(inquiry=inquiry)
+            for quotation in quotations:
+                price += float(quotation.total)
+        bookings_price += price
+        if bookPerServiceCount>0:
+            line = {'name':service.name,'books':price}
+            dic_prices.append(line)
+    labels_pie_prices = [item['name'] for item in dic_prices]
+    numbers_pie_prices = [item['books'] for item in dic_prices]
+    # Convert lists to JSON strings
+    labels_pie_prices_json = json.dumps(labels_pie_prices)
+    numbers_pie_prices_json = json.dumps(numbers_pie_prices)
+
+
+
+    quot_prices = []
+    quotation_price = 0
+    for service in all_services:
+        quotationPerService = Quotation.objects.filter(quotation_service=service)
+        quotationPerServiceCount = Quotation.objects.filter(quotation_service=service).count()
+        price = 0
+        for quot in quotationPerService:
+            inquiry = quot.inquiry
+            quotations = Quotation.objects.filter(inquiry=inquiry)
+            for quotation in quotations:
+                price += float(quotation.total)
+        quotation_price += price
+        if quotationPerServiceCount>0:
+            line = {'name':service.name,'books':price}
+            quot_prices.append(line)
+    labels_pie_quot_prices = [item['name'] for item in quot_prices]
+    numbers_pie_quot_prices = [item['books'] for item in quot_prices]
+    # Convert lists to JSON strings
+    labels_pie_quot_prices_json = json.dumps(labels_pie_quot_prices)
+    numbers_pie_quot_prices_json = json.dumps(numbers_pie_quot_prices)
+
+
+
+    import random
+
+    # Function to generate a random hex color code
+    def generate_random_color():
+        return '#{:06x}'.format(random.randint(0, 0xFFFFFF))
+
+
+    sources = Source.objects.all()
+    sources_data = []
+    for source in sources:
+        inquiries_with_source = Inquiry.objects.filter(source=source).count()
+        try:
+            percentage = round((inquiries_with_source / Inquiry.objects.all().count()) * 100, 1)
+        except:
+            percentage = 0.0
+        color = generate_random_color()  # Generate a random color for each source
+        if inquiries_with_source>0:
+            sources_data.append({"name": source.name, "count": inquiries_with_source, "percentage": str(percentage), "color": color})
+
+
+    try:
+        effic = round((bookings_len/Inquiry.objects.all().count())*100,2) 
+    except:
+        effic = 0.0
+
+
+    # Create a PDF template using Django template
+    template_path = 'dashboard\crm_pdf.html'  # Create a template for your PDF
+    template = get_template(template_path)
+
+    try:
+        sp = QuotationForm.objects.get(title = 'Quotation1')
+    except:
+        sp = ''
+
+    
+    context = {'title':title,
+                'position': request.user.employee.position,
+                'sp':sp,
+                'date':datetime.today(),
+                'user':request.user,
+
+                'services':Service.objects.all(),
+                'permissions':Permission.objects.all(),
+
+                'all_inq':Inquiry.objects.all().count(),
+                'efficiency':effic,
+                'complaints':Complain.objects.all().count(),
+
+                'inquiries_len':inquiries_len,
+                'inquiries_len_last':inquiries_len_last,
+                'percentage_change':percentage_change,
+
+                'bookings_len':bookings_len,
+                'sp_len':sp_len,
+                'service_len':service_len,
+
+                'dic':dic,
+                'labels_pie':labels_pie_json,
+                'numbers_pie':numbers_pie_json,
+
+                'quots':quots,
+                'labels_pie_quot':labels_quots_pie_json,
+                'numbers_pie_quot':numbers_quots_pie_json,
+                'inqwithquot':len(inqwithquot),
+
+
+                'labels_pie_prices':labels_pie_prices_json,
+                'numbers_pie_prices':numbers_pie_prices_json,
+                'dic_prices':dic_prices,
+                'bookings_price':bookings_price,
+
+                'labels_pie_quot_prices':labels_pie_quot_prices_json,
+                'numbers_pie_quot_prices':numbers_pie_quot_prices_json,
+                'quot_prices':quot_prices,
+                'quotation_price':quotation_price,
+
+                'inquiries_len_today':inquiries_len_today,
+                'inquiries_len_yesterday':inquiries_len_yesterday,
+                'percentage_change_today': percentage_change_today,
+                'inquiries_len_today_q_or_b': inquiries_len_today_q_or_b,
+                'bookings_today': bookings_today,
+                'actions_yesterday':actions_yesterday,
+                'bookings_yesterday':bookings_yesterday,
+
+                'sources_data':sources_data,
+
+                }
+    html_content = template.render(context)
+
+    # Create a PDF file using ReportLab
+    pdf_file = io.BytesIO()
+    pisa.CreatePDF(html_content, dest=pdf_file)
+
+    # Set response content type
+    response = HttpResponse(pdf_file.getvalue(), content_type='application/pdf')
+
+    # Set the filename for download
+    response['Content-Disposition'] = 'inline; filename="crm_statistic.pdf"'
+
+    return response
 

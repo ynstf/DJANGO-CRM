@@ -45,7 +45,7 @@ from .views import (make_inq_connecting, make_inq_sendQ,
                     make_inq_complain, make_inq_done)
 
 
-from .all_views.admin import crm_page
+from .all_views.admin import crm_page, crm_pdf_view, generate_statistics_pdf
 from .all_views.admin import super_provider, super_provider_edit, service_info,service_edit
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
 from .all_views.inquiries import map,edit_inquiry
@@ -64,6 +64,7 @@ urlpatterns = [
     path("dashboard/",dashboard,name="dashboard"),
     path("map/",map,name="map"),
     path("crm_page/",crm_page,name="crm_page"),
+    path("crm_pdf/",crm_pdf_view,name="crm_pdf_view"),
 
     # admin
     path('add_employee/', add_employee, name='add_employee'),
@@ -78,6 +79,7 @@ urlpatterns = [
     path('service_info/<int:id>', service_info, name='service_info'),
     path('service_info/<int:id>/edit', service_edit, name='service_edit'),
     path('statistics/', statistics, name='statistics'),
+    path('statistics/pdf/', generate_statistics_pdf, name='statistics_pdf'),
     path('super_provider/<int:id>', super_provider, name='super_provider'),
     path('super_provider/<int:id>/edit', super_provider_edit, name='super_provider_edit'),
 

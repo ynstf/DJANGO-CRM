@@ -1,4 +1,5 @@
 {% extends 'layout/master.html' %}
+{% load static %}
 
 {% block title %}Statistics of Inquiries{% endblock %}
 
@@ -44,178 +45,824 @@
 
         <br>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <div class="container">
+        <form action="" method="get">
 
-            <form action="" method="get">
+            <div class="row">
 
-                <div class="row">
-    
-                    <div class="col-md-2">
-                        <label for="">status : </label>
-                        <select name="status"  class="form-control">
-                            <option value="" selected>State</option>
-                            {% for state in states %}
-    
-                                {% if state.id == search_str.status %}
-                                    <option value="{{state.id}}" selected>{{state}}</option>
-                                {% else %}
-                                    <option value="{{state.id}}">{{state}}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                    </div>
-    
-                    <div class="col-md-2">
-                        <label for="">start date : </label>
-                        <input type="date" value="{{request.GET.start}}" name="start"  class="form-control" required>
-                    </div>
-                    
-                
-                    <div class="col-md-2">
-                        <label for="">finish date : </label>
-                        <input type="date" value="{{request.GET.finish}}" name="finish"  class="form-control" required>
-                    </div>
-    
-                    <div class="col-md-2">
-                        <label for="">service : </label>
-                        <select name="service"  class="form-control">
-                            <option value="" selected>Service</option>
-                            {% for service in services %}
-                                {% if service.id == search_str.service %}
-                                    <option value="{{service.id}}" selected>{{service}}</option>
-                                {% else %}
-                                    <option value="{{service.id}}">{{service}}</option>
-                                {% endif %}                            
-                            {% endfor %}
-                        </select>
-                    </div>
-    
-                    <div class="col-md-2">
-                        <label for="">SP : </label>
-                        <select name="sp"  class="form-control">
-                            <option value="" selected>Service Provider</option>
-                            {% for serviceProvider in service_providers %}
-                                {% if serviceProvider.id == search_str.sp %}
-                                    <option value="{{serviceProvider.id}}" selected>{{serviceProvider}}</option>
-                                {% else %}
-                                    <option value="{{serviceProvider.id}}">{{serviceProvider}}</option>
-                                {% endif %}                            
-                            {% endfor %}
-                        </select>
-                    </div>
-    
+                <div class="col-md-2">
+                    <label for="">status : </label>
+                    <select name="status"  class="form-control">
+                        <option value="" selected>State</option>
+                        {% for state in states %}
+
+                            {% if state.id == search_str.status %}
+                                <option value="{{state.id}}" selected>{{state}}</option>
+                            {% else %}
+                                <option value="{{state.id}}">{{state}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="">start date : </label>
+                    <input type="date" value="{{request.GET.start}}" name="start"  class="form-control" required>
                 </div>
                 
-                <center>
-                    <div class="col-md-2">
-                        <br>
-                        <button type="submit"  class="form-control">search</button>
-                        <br>
-                    </div>
-                </center>
-    
-            </form>
-
-            <br>
-            <center><h2>Inquiries counter</h2></center>
-            <br>
-            <canvas id="inquiryChart" width="400" height="200"></canvas>
-            <script>
-                var ctx = document.getElementById('inquiryChart').getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: {{ dates|safe }},
-                        datasets: [{
-                            label: 'Number of Inquiries in last 30 day',
-                            data: {{ counts|safe }},
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
-            <br><br><br>
-            <hr>
             
-            <center><h2>Number of Inquiries for each service in date</h2></center>
-            <br>
-            <canvas id="serviceBars" width="400" height="200"></canvas>
-            <script>
-                var ctx = document.getElementById('serviceBars').getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: {{ services_list|safe }},
-                        datasets: [{
-                            label: 'Number of Inquiries for each service',
-                            data: {{ services_counts|safe }},
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+                <div class="col-md-2">
+                    <label for="">finish date : </label>
+                    <input type="date" value="{{request.GET.finish}}" name="finish"  class="form-control" required>
+                </div>
 
-            <br><br><br>
-            <hr>
-            <center><h2>Services Counter in Last 30 Days</h2></center>
-            <br>
-            <canvas id="serviceChart" width="800" height="400"></canvas>
-            <script>
-                var serviceColors = JSON.parse('{{ service_colors_json|escapejs }}');
-                
-                var ctx = document.getElementById('serviceChart').getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: {{ dates|safe }},
-                        datasets: [
-                        {% for service, counts in service_counts.items %}
-                            {
-                                label: 'Number of Inquiries for {{ service }} service in last 30 days',
-                                data: {{ counts|safe }},
-                                backgroundColor: 'rgba(' + serviceColors[ '{{service}}' ] + ', 0.2)',
-                                borderColor: 'rgba(' + serviceColors[ '{{service}}' ] + ', 1)',
-                                borderWidth: 1
-                            },
+                <div class="col-md-2">
+                    <label for="">service : </label>
+                    <select name="service"  class="form-control">
+                        <option value="" selected>Service</option>
+                        {% for service in services %}
+                            {% if service.id == search_str.service %}
+                                <option value="{{service.id}}" selected>{{service}}</option>
+                            {% else %}
+                                <option value="{{service.id}}">{{service}}</option>
+                            {% endif %}                            
                         {% endfor %}
+                    </select>
+                </div>
 
-                        ]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            </script>
+                <div class="col-md-2">
+                    <label for="">SP : </label>
+                    <select name="sp"  class="form-control">
+                        <option value="" selected>Service Provider</option>
+                        {% for serviceProvider in service_providers %}
+                            {% if serviceProvider.id == search_str.sp %}
+                                <option value="{{serviceProvider.id}}" selected>{{serviceProvider}}</option>
+                            {% else %}
+                                <option value="{{serviceProvider.id}}">{{serviceProvider}}</option>
+                            {% endif %}                            
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <br>
+                    <button type="submit"  class="form-control">search</button>
+                    <br>
+                </div>
+
+            </div>
+            
+            
+
+            
+
+        </form>
+        </div>
+
+        <div id="raport" class="container-xxl flex-grow-1 container-p-y">
+            <p>{{inquiries}}</p>
+        
+            <div class="row gy-4">
+
+                <!-- booking of all time -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">All Bookings</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{bookings_len_last}}</h4>
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">All time</div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="padding: 50px;" class="avatar">
+                                        <div  class="rounded">
+                                            <br>
+                                            <img  src="{% static 'res-icon.webp' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- inquiries of all time -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">All Inquiries</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{inquiries_len_last}}</h4>
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">All time</div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="padding: 50px;" class="avatar">
+                                        <div  class="rounded">
+                                            <br>
+                                            <img  src="{% static 'inquiries.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- efficency of all time -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">Efficiency</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{efficiency}}%</h4>
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">All time</div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="padding: 50px;" class="avatar">
+                                        <div  class="rounded">
+                                            <br>
+                                            <img  src="{% static 'percebtage.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- complain of all time -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">Complaints</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{complaints}}</h4>
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">All time</div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="padding: 50px;" class="avatar">
+                                        <div  class="rounded">
+                                            <br>
+                                            <img  src="{% static 'complain.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- inquiries of this month -->
+                <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">Number of Inquiries</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{inquiries_len}}</h4>
+                                    {% if percentage_change >= 0 %}
+                                        <small class="text-success">+{{percentage_change}}%</small>
+                                    {% elif percentage_change < 0 %}
+                                        <small class="text-danger">{{percentage_change}}%</small>
+                                    {% endif %}
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">This month</div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <img src="{% static 'illustration.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="95">
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- inquiries of last month -->
+                <div id="last_month_inquiries" class="col-xl-3 col-sm-6 mt-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-6">
+                            <div class="card-body">
+                                <div class="card-info">
+                                <h6 class="mb-4 pb-1 text-nowrap">Number of Inquiries</h6>
+                                <div class="d-flex align-items-end mb-3">
+                                    <h4 class="mb-0 me-2"> {{inquiries_len_last_30}}</h4>
+
+                                </div>
+                                <div class="badge bg-label-primary rounded-pill">Last month</div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="col-6">
+                            <div class="h-100 position-relative">
+                                <img src="{% static 'last-month.png' %}" alt="Ratings" class="position-absolute card-img-position scaleX-n1-rtl bottom-0 w-auto end-0 me-3 me-xl-0 me-xxl-3 pe-1" width="110" height="110">
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- info of today -->
+                <div id="today_info" class="col-xl-12 align-self-end">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Informations Today</h5>
+                            <div class="dropdown">
+                            <button class="btn p-0" type="button" id="transactionID" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID" style="">
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Refresh</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Share</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Update</a>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-xl-2">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-primary rounded shadow">
+                                    <i class="mdi mdi-trending-up mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Inquiries Today</div>
+                                    <h5 class="mb-0">{{inquiries_len_today}}</h5>
+                                    <div class="d-flex align-items-end mb-3">
+
+                                        {% if percentage_change_today >= 0 %}
+                                            <small class="text-success">+{{percentage_change_today}}%</small>
+                                        {% elif percentage_change_today < 0 %}
+                                            <small class="text-danger">{{percentage_change_today}}%</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="badge bg-label-primary rounded-pill">Today</div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-success rounded shadow">
+                                    <i class="mdi mdi-account-outline mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Number of operation Today</div>
+                                    <h5 class="mb-0">{{inquiries_len_today_q_or_b}}</h5>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-warning rounded shadow">
+                                    <i class="mdi mdi-cellphone-link mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Booking today</div>
+                                    <h5 class="mb-0">{{bookings_today}}</h5>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- info of yesterday -->
+                <div id="yesterday_info" class="col-xl-12 align-self-end">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Informations Yesterday</h5>
+                            <div class="dropdown">
+                            <button class="btn p-0" type="button" id="transactionID" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID" style="">
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Refresh</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Share</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Update</a>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-xl-2">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-primary rounded shadow">
+                                    <i class="mdi mdi-trending-up mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Inquiries Yesterday</div>
+                                    <h5 class="mb-0">{{inquiries_len_yesterday}}</h5>
+                                    <div class="badge bg-label-primary rounded-pill">Yesterday</div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-success rounded shadow">
+                                    <i class="mdi mdi-account-outline mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Number of operation Yesterday</div>
+                                    <h5 class="mb-0">{{actions_yesterday}}</h5>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-warning rounded shadow">
+                                    <i class="mdi mdi-cellphone-link mdi-24px"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="small mb-1">Booking Yesterday</div>
+                                    <h5 class="mb-0">{{bookings_yesterday}}</h5>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xl-6">
+                    <div class="card h-100">
+                    <div class="card-header pb-1">
+                        <div class="d-flex justify-content-between">
+                        <h5 class="mb-0">Bookings Overview</h5>
+                        <div class="dropdown">
+                            <button class="btn p-0" type="button" id="salesOverviewDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="salesOverviewDropdown" style="">
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last 28 Days</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Month</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Year</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-body pt-lg-4 mt-lg-1">
+                        <div class="row align-items-center">
+                        <div class="col-md-6" style="position: relative;">
+                            
+                            
+                            <!-- Container element for the donut chart -->
+                            <div id="donutChart"></div>
+                            <div id="booking_chart_js">
+                                <script>
+                                    // JavaScript code for ApexCharts donut chart
+                                    const donutChartEl = document.querySelector('#donutChart'),
+                                    donutChartConfig = {
+                                        chart: {
+                                            height: 400,
+                                            type: 'donut'
+                                        },
+                                        labels: JSON.parse('{{ labels_pie|escapejs }}'),
+                                        series: JSON.parse('{{ numbers_pie|escapejs }}'),
+                                        colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
+                                        stroke: {
+                                            show: false,
+                                            curve: 'straight'
+                                        },
+                                        dataLabels: {
+                                            enabled: true,
+                                            formatter: function (val, opt) {
+                                            return parseInt(val, 10) + '%';
+                                            }
+                                        },
+                                        legend: {
+                                            show: true,
+                                            position: 'bottom',
+                                            labels: {
+                                            colors: '#333'
+                                            }
+                                        }
+                                        };
+
+                                    if (typeof donutChartEl !== undefined && donutChartEl !== null) {
+                                        const donutChart = new ApexCharts(donutChartEl, donutChartConfig);
+                                        donutChart.render();
+                                    }
+                                </script>
+                            </div>
+                        
+                        
+                        <div class="resize-triggers"><div class="expand-trigger"><div style="width: 236px; height: 199px;"></div></div><div class="contract-trigger"></div></div></div>
+                        <div id="all_booking" class="col-md-6 mt-3 mt-md-0">
+                            <div class="d-flex align-items-center mb-3">
+                            <div class="avatar">
+                                <div class="rounded">
+                                    <img src="{% static 'res-icon.webp' %}" alt="">
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex flex-column">
+                                <p class="mb-1">Number of Bookings</p>
+                                <h5 class="mb-1">{{bookings_len}}</h5>
+                            </div>
+                            </div>
+                            <hr>
+
+                            <div class="row g-4">
+                                {% for line in dic %}
+                                    {% if line.books > 0 %}
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="badge badge-dot bg-primary me-2"></div>
+                                            <p class="text-heading mb-0">{{line.name}}</p>
+                                            </div>
+                                            <p class="fw-medium mb-0">{{line.books}}</p>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-6">
+                    <div class="card h-100">
+                    <div class="card-header pb-1">
+                        <div class="d-flex justify-content-between">
+                        <h5 class="mb-0">Income of all bookings</h5>
+                        <div class="dropdown">
+                            <button class="btn p-0" type="button" id="salesOverviewDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="salesOverviewDropdown" style="">
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last 28 Days</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Month</a>
+                            <a class="dropdown-item waves-effect" href="javascript:void(0);">Last Year</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-body pt-lg-4 mt-lg-1">
+                        <div class="row align-items-center">
+                        <div class="col-md-6" style="position: relative;">
+                            
+                            <!-- Container element for the donut chart -->
+                            <div id="donutChartprices"></div>
+                            <div id="prices">
+                                <script>
+                                    // JavaScript code for ApexCharts donut chart
+                                    const donutChartEl1 = document.querySelector('#donutChartprices'),
+                                    donutChartConfig1 = {
+                                        chart: {
+                                            height: 400,
+                                            type: 'donut'
+                                        },
+                                        labels: JSON.parse('{{ labels_pie_prices|escapejs }}'),
+                                        series: JSON.parse('{{ numbers_pie_prices|escapejs }}'),
+                                        colors: ['#6ab04c', '#f7bc40', '#ff7043', '#f15b26'],
+                                        stroke: {
+                                            show: false,
+                                            curve: 'straight'
+                                        },
+                                        dataLabels: {
+                                            enabled: true,
+                                            formatter: function (val, opt) {
+                                            return parseInt(val, 10) + '%';
+                                            }
+                                        },
+                                        legend: {
+                                            show: true,
+                                            position: 'bottom',
+                                            labels: {
+                                            colors: '#333'
+                                            }
+                                        }
+                                        };
+
+                                    if (typeof donutChartEl1 !== undefined && donutChartEl1 !== null) {
+                                        const donutChart1 = new ApexCharts(donutChartEl1, donutChartConfig1);
+                                        donutChart1.render();
+                                    }
+                                </script>
+                            </div>
+                        
+                        
+                        <div class="resize-triggers"><div class="expand-trigger"><div style="width: 236px; height: 199px;"></div></div><div class="contract-trigger"></div></div></div>
+                        <div id="all_booking_income" class="col-md-6 mt-3 mt-md-0">
+                            <div class="d-flex align-items-center mb-3">
+                            <div class="avatar">
+                                <div class="avatar-initial bg-label-primary rounded">
+                                    <i class="mdi mdi-currency-usd mdi-24px"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex flex-column">
+                                <p class="mb-1">Billing income</p>
+                                <h5 class="mb-1">{{bookings_price}} $</h5>
+                            </div>
+                            </div>
+                            <hr>
+
+                            <div class="row g-4">
+                                {% for line in dic_prices %}
+                                    {% if line.books > 0 %}
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="badge badge-dot bg-primary me-2"></div>
+                                            <p class="text-heading mb-0">{{line.name}}</p>
+                                            </div>
+                                            <p class="fw-medium mb-0">{{line.books}} $</p>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="col-xxl-6 mb-4 order-5 order-xxl-0">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title mb-0 me-2">Vehicles overview</h5>
+                            <div class="dropdown">
+                            <button class="btn p-0" type="button" id="topic" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topic" style="">
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">Highest Views</a>
+                                <a class="dropdown-item waves-effect" href="javascript:void(0);">See All</a>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-none d-lg-flex vehicles-progress-labels mb-3">
+                                {% for source in sources_data %}
+                                
+                                    <div class="vehicles-progress-label on-the-way-text" style="width: {{source.percentage}}%; writing-mode: vertical-lr;color: {{source.color}};">{{source.name}}</div>
+
+                                {% endfor %}
+                            </div>
+                            <div class="vehicles-overview-progress progress rounded mb-3" style="height: 46px;">
+                                {% for source in sources_data %}
+                                    <div class="progress-bar fs-big fw-medium text-start px-1 px-lg-3"
+                                        style="width: {{source.percentage}}%; background-color: {{source.color}};"
+                                        role="progressbar"
+                                        aria-valuenow="{{source.percentage}}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100">
+                                        <small>{{source.percentage}}%</small>
+                                        
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                            <div class="table-responsive">
+                            <table class="table card-table">
+                                <tbody class="table-border-bottom-0">
+                                
+                                {% for source in sources_data %}
+                                    <tr>
+                                        <td class="w-50 ps-0">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <div class="me-2">
+                                                <i class="text-heading mdi mdi-source-branch"></i>
+
+                                            </div>
+                                            <h6 class="mb-0 fw-normal">{{source.name}}</h6>
+                                        </div>
+                                        </td>
+                                        <td class="text-end pe-0 text-nowrap">
+                                        <h6 class="mb-0">{{source.count}}</h6>
+                                        </td>
+                                        <td class="text-end pe-0">
+                                        <span>{{source.percentage}}%</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+
+
+            </div>
 
         </div>
+
+
+        <!-- statistics.html -->
+        <form id="statistics-form">
+            <!-- Other form fields -->
+            <input type="hidden" name="status" value="{{ request.GET.status }}">
+            <input type="hidden" name="start" value="{{ request.GET.start }}">
+            <input type="hidden" name="finish" value="{{ request.GET.finish }}">
+            <input type="hidden" name="service" value="{{ request.GET.service }}">
+            <input type="hidden" name="sp" value="{{ request.GET.sp }}">
+            <center><button type="button" class="btn btn-success" onclick="generatePDF()">Generate PDF</button></center>
+            
+        </form>
+
+        <script>
+            function generatePDF() {
+                const form = document.getElementById('statistics-form');
+                const params = new URLSearchParams(new FormData(form)).toString();
+                window.location.href = `{% url 'statistics_pdf' %}?${params}`;
+            }
+        </script>
+
+
+        <div class="container">
+            
+
+
+
+
+
+
+            
+
+            <div class="row gy-4">
+
+
+                <br>
+                <center><h2>Inquiries counter</h2></center>
+                <br>
+                <canvas id="inquiryChart" width="400" height="200"></canvas>
+                <script>
+                    var ctx = document.getElementById('inquiryChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ dates|safe }},
+                            datasets: [{
+                                label: 'Number of Inquiries in last 30 day',
+                                data: {{ counts|safe }},
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                </script>
+                <br><br><br>
+                <hr>
+
+
+            
+                <center><h2>Number of Inquiries for each service in date</h2></center>
+                <br>
+                <canvas id="serviceBars" width="400" height="200"></canvas>
+                <script>
+                    var ctx = document.getElementById('serviceBars').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ services_list|safe }},
+                            datasets: [{
+                                label: 'Number of Inquiries for each service',
+                                data: {{ services_counts|safe }},
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                </script>
+
+                <br><br><br>
+                <hr>
+                <center><h2>Services performance</h2></center>
+                <br>
+                <canvas id="serviceChart" width="800" height="400"></canvas>
+                <script>
+                    var serviceColors = JSON.parse('{{ service_colors_json|escapejs }}');
+                    
+                    var ctx = document.getElementById('serviceChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ dates|safe }},
+                            datasets: [
+                            {% for service, counts in service_counts.items %}
+                                {
+                                    label: 'Number of Inquiries for {{ service }} service in last 30 days',
+                                    data: {{ counts|safe }},
+                                    backgroundColor: 'rgba(' + serviceColors[ '{{service}}' ] + ', 0.2)',
+                                    borderColor: 'rgba(' + serviceColors[ '{{service}}' ] + ', 1)',
+                                    borderWidth: 1
+                                },
+                            {% endfor %}
+
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                </script>
+
+            </div>
+
+        </div>
+
 
 
 <!-- ######################################################################### -->

@@ -1,0 +1,264 @@
+<style>
+    table {
+        width: 100%;
+    }
+
+    td {
+        vertical-align: top;
+    }
+
+    #services-info {
+        text-align: right;
+    }
+
+    #logo {
+        text-align: center;
+    }
+
+    #company-info {
+        text-align: left;
+    }
+</style>
+
+<table>
+    <tr>
+        <td id="services-info">
+            <br>
+            <br>
+            <center>
+                <h4>administration information by</h4>
+                <h4>{{ user.employee }}</h4>
+            </center>
+        </td>
+        <td id="logo">
+            <img src="{{sp.image}}" width="100">
+            <h2 style="color: #78d64c;">Specific Statistics</h2>
+        </td>
+        <td id="company-info">
+            <br>
+            <br>
+            <center>
+                <h4>www.technical-24.com</h4>
+                <h4>Date : {{date}}</h4>
+            </center>
+        </td>
+    </tr>
+</table>
+
+<style>
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .th, .td {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 8px;
+    }
+
+    .th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<style>
+    /* Apply styles to ensure consistent spacing */
+    li {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px; /* Adjust padding as needed */
+    }
+
+    /* Optionally, style the <p> elements for additional control */
+    li p {
+        margin: 0;
+    }
+</style>
+<br>
+<hr>
+<br><br>
+<h2>Statistics For:</h2>
+<ul>
+    <li><p>Service Provider : {{ this_sp }} </p></li>
+    <li><p>Start Date : {{ this_first }} </p></li>
+    <li><p>Expiry date  : {{ this_end }} </p></li>
+    <li><p>Service : {{ this_service }} </p></li>
+    <li><p>Status : {{ this_status }} </p></li>
+</ul>
+
+<br>
+<hr>
+
+
+<br><br>
+<h1>Counters of all system </h1>
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">All booking</th>
+            <th class="th">All Inquiries</th>
+            <th class="th">Efficiency</th>
+            <th class="th">All Complaints</th>
+        </tr>
+    </thead>
+    <tbody>
+            <tr class="tr">
+                    <td class="td">{{bookings_len}}</td>
+                    <td class="td">{{inquiries_len_last}}</td>
+                    <td class="td">{{efficiency}}%</td>
+                    <td class="td">{{complaints}}</td>
+            </tr>
+    </tbody>
+</table>
+
+
+
+<br><br>
+<h1>Inquiries between this month and last month</h1>
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">Inquiries this month</th>
+            <th class="th">Inquiries last month</th>
+            <th class="th">inquiries development</th>
+        </tr>
+    </thead>
+    <tbody>
+            <tr class="tr">
+                    <td class="td">{{inquiries_len}}</td>
+                    <td class="td">{{inquiries_len_last_30}}</td>
+                    <td class="td">                                    
+                        {% if percentage_change >= 0 %}
+                            <small class="text-success">+{{percentage_change}}%</small>
+                        {% elif percentage_change < 0 %}
+                            <small class="text-danger">{{percentage_change}}%</small>
+                        {% endif %}
+                    </td>
+            </tr>
+    </tbody>
+</table>
+
+
+
+
+<br><br>
+<h1>Inquiries Today</h1>
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">Inquiries today</th>
+            <th class="th">inquiries development</th>
+            <th class="th">Number of operation Today</th>
+            <th class="th">Booking today</th>
+        </tr>
+    </thead>
+    <tbody>
+            <tr class="tr">
+                    <td class="td">{{inquiries_len_today}}</td>
+                    <td class="td">
+                        {% if percentage_change_today >= 0 %}
+                            <small class="text-success">+{{percentage_change_today}}%</small>
+                        {% elif percentage_change_today < 0 %}
+                            <small class="text-danger">{{percentage_change_today}}%</small>
+                        {% endif %}
+                    </td>
+                    <td class="td">{{inquiries_len_today_q_or_b}}</td>
+                    <td class="td">{{bookings_today}}</td>
+            </tr>
+    </tbody>
+</table>
+
+<br><br><br><br><br><br>
+<br><br>
+<h1>Inquiries Yesterday</h1>
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">Inquiries Yesterday</th>
+            <th class="th">Number of operation Yesterday</th>
+            <th class="th">Booking Yesterday</th>
+        </tr>
+    </thead>
+    <tbody>
+            <tr class="tr">
+                    <td class="td">{{inquiries_len_yesterday}}</td>
+                    <td class="td">{{actions_yesterday}}</td>
+                    <td class="td">{{bookings_yesterday}}</td>
+            </tr>
+    </tbody>
+</table>
+
+
+<br><br>
+<h1>Number of books per each service</h1>
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">Service</th>
+            <th class="th">Books</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for line in dic %}
+            {% if line.books > 0 %}
+                <tr class="tr">
+                    <td class="td">{{line.name}}</td>
+                    <td class="td">{{line.books}}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+            
+    </tbody>
+</table>
+
+
+
+<br><br>
+<h1>Income of books per each service</h1>
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">Service</th>
+            <th class="th">Books</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for line in dic_prices %}
+            {% if line.books > 0 %}
+                <tr class="tr">
+                    <td class="td">{{line.name}}</td>
+                    <td class="td">{{line.books}} $</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        <tr class="tr">
+            <td class="td">Totale</td>
+            <td class="td">{{bookings_price}} $</td>
+        </tr>
+        
+            
+    </tbody>
+</table>
+
+
+<br><br>
+<h1>Inquiries Sources</h1>
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">sources</th>
+            <th class="th">percentage</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for source in sources_data %}
+            <tr class="tr">
+                <td class="td" style="color: {{source.color}};">{{source.name}}</td>
+                <td class="td" style="color: {{source.color}};">{{source.percentage}}%</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
