@@ -1460,6 +1460,11 @@ def generate_statistics_pdf(request):
 
 
 
+    this_sp= SuperProvider.objects.get(id=request.GET.get('sp', '')).name if request.GET.get('sp', '').isdigit() and SuperProvider.objects.filter(id=request.GET.get('sp', '')).exists() else None,
+    this_first=request.GET.get('start', ''),
+    this_end=request.GET.get('finish', ''),
+    this_service= Service.objects.get(id=request.GET.get('service', '')).name if request.GET.get('service', '').isdigit() and Service.objects.filter(id=request.GET.get('service', '')).exists() else None,                
+    this_status=Status.objects.get(id=request.GET.get('status', '')).name if request.GET.get('status', '').isdigit() and Status.objects.filter(id=request.GET.get('status', '')).exists() else None,
 
 
     # Create a PDF template using Django template
@@ -1518,10 +1523,9 @@ def generate_statistics_pdf(request):
 
                 'sources_data':sources_data,
                 
-                'this_sp':SuperProvider.objects.get(id=request.GET.get('sp', '')),
+                'this_sp': SuperProvider.objects.get(id=request.GET.get('sp', '')) if request.GET.get('sp', '').isdigit() and SuperProvider.objects.filter(id=request.GET.get('sp', '')).exists() else None,
                 'this_first':request.GET.get('start', ''),
                 'this_end':request.GET.get('finish', ''),
-
                 'this_service': Service.objects.get(id=request.GET.get('service', '')) if request.GET.get('service', '').isdigit() and Service.objects.filter(id=request.GET.get('service', '')).exists() else None,                
                 'this_status':Status.objects.get(id=request.GET.get('status', '')) if request.GET.get('status', '').isdigit() and Status.objects.filter(id=request.GET.get('status', '')).exists() else None,
 
@@ -1535,7 +1539,8 @@ def generate_statistics_pdf(request):
     # Set response content type
     response = HttpResponse(pdf_file.getvalue(), content_type='application/pdf')
     # Set the filename for download
-    response['Content-Disposition'] = 'inline; filename=f"crm_statistic_{}.pdf"'
+    response['Content-Disposition'] = f'inline; filename="crm_statistic_sp:{this_sp}_From:{this_first}To:{this_end}_Service:{this_service}_Status:{this_status}.pdf"'
+
 
     return response
 
