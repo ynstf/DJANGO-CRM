@@ -50,6 +50,7 @@ from .all_views.admin import super_provider, super_provider_edit, service_info,s
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
 from .all_views.inquiries import map,edit_inquiry
 from .all_views.infos import check_phone_number
+from .all_views.calendar import calendar_view, reminder_day_view
 urlpatterns = [
 
     #chat
@@ -59,8 +60,11 @@ urlpatterns = [
     path("conversation_group/<int:groupid>",conversation_group_view,name="conversation_group_view"),
     path("conversation/<int:Myid>/<int:Otherid>",conversation_view,name="conversation"),
 
+    #calendar
+    path('calendar/', calendar_view, name='calendar_view'),
+    path('calendar/<str:date>', reminder_day_view, name='reminder_day_view'),
 
-
+    #dashboard
     path("dashboard/",dashboard,name="dashboard"),
     path("map/",map,name="map"),
     path("crm_page/",crm_page,name="crm_page"),

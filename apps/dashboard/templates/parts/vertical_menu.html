@@ -280,6 +280,14 @@
             </a>
           </li>
 
+          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+            <a href="{% url 'calendar_view' %}" class="menu-link">
+              <i class="menu-icon tf-icons mdi mdi-calendar"></i>
+
+              <div class="text-truncate" data-i18n="Basic Inputs">Calendar</div>
+            </a>
+          </li>
+
           {% if position.name == 'admin' %}
           <!-- map -->
           <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
