@@ -175,10 +175,7 @@ def crm_page(request):
         quotationPerServiceCount = Quotation.objects.filter(quotation_service=service).count()
         price = 0
         for quot in quotationPerService:
-            inquiry = quot.inquiry
-            quotations = Quotation.objects.filter(inquiry=inquiry)
-            for quotation in quotations:
-                price += float(quotation.total)
+            price += float(quot.total)
         quotation_price += price
         if quotationPerServiceCount>0:
             line = {'name':service.name,'books':price}
@@ -1041,6 +1038,7 @@ def statistics_view(request):
         effic = 0.0
 
     complains = complains.count()
+    
 
 
 
