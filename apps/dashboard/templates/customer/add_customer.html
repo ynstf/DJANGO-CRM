@@ -407,6 +407,22 @@
 
 
                 <script>
+                    function toggleReminder(coords) {
+                        var reminderField = document.getElementById('reminderField_'+coords);
+                        var checkbox = document.getElementById('remainder_check_'+coords);
+                        var input = document.getElementById('id_service-reminder_'+coords);
+                        
+                        if (checkbox.checked) {
+                            reminderField.style.display = 'block';
+                            input.setAttribute('required', 'required');
+                        } else {
+                            reminderField.style.display = 'none';
+                            input.removeAttribute('required');
+                        }
+                    }
+                </script>
+
+                <script>
                     
                     var br = document.createElement('br');
                     var addressCounter = 1;
@@ -762,6 +778,19 @@
                                         <label for="id_inquiry-description"> Description : </label>
                                         <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number"></textarea>
                                     </div>
+
+                                    <br>
+                                
+                                    <div class="col-md-4">
+                                        <label for="remainder_check_${addressIndex}_${inqCounters[addressIndex]}">Have Remainder? :</label>
+                                        <input type="checkbox" id="remainder_check_${addressIndex}_${inqCounters[addressIndex]}" name="remainder_check" onclick="toggleReminder('${addressIndex}_${inqCounters[addressIndex]}')">
+                                    </div>
+                                    
+                                    <div class="col-md-4" id="reminderField_${addressIndex}_${inqCounters[addressIndex]}"" style="display: none;">
+                                        <label for="id_service-reminder">Reminder :</label>
+                                        <input type="date" id="id_service-reminder_${addressIndex}_${inqCounters[addressIndex]}" name="inquiry-reminder" class="form-control" >
+                                    </div>
+
                                     <br>
 
 

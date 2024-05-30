@@ -105,6 +105,7 @@ def make_booking_view(request,id):
                     employee = employee,
                     inquiry=inquiry,
                     service=quotation_service,
+                    gool='book',
                     schedule=schedule_time
                 )
                 reminder.save()

@@ -28,6 +28,89 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
+        <style>
+            .searchContainer {
+                width: 100%; /* Set the width to 100% to occupy the entire width of its parent */
+                display: flex; /* Use flexbox to center the content */
+                justify-content: center; /* Horizontally center the content */
+                align-items: center; /* Vertically center the content */
+            }
+
+            .searchContainer form {
+                width: 80%; /* Set the width of the form */
+                /* Add any other styling for the form if needed */
+            }
+
+            /* Adjust the width and other styles of the form controls as needed */
+            .searchContainer select,
+            .searchContainer button {
+                width: 100%;
+            }
+
+
+
+        </style>
+
+        <div class="searchContainer">
+        <form action="" method="get">
+
+            <div class="row">
+
+                <div class="col-md-2">
+                    <label for="">status : </label>
+                    <select name="status"  class="form-control">
+                        <option value="" selected>State</option>
+                        {% for state in states %}
+
+                            {% if state.id == search_str.status %}
+                                <option value="{{state.id}}" selected>{{state}}</option>
+                            {% else %}
+                                <option value="{{state.id}}">{{state}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="col-md-2">
+                    <label for="">service : </label>
+                    <select name="service"  class="form-control">
+                        <option value="" selected>Service</option>
+                        {% for service in services %}
+                            {% if service.id == search_str.service %}
+                                <option value="{{service.id}}" selected>{{service}}</option>
+                            {% else %}
+                                <option value="{{service.id}}">{{service}}</option>
+                            {% endif %}                            
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="">SP : </label>
+                    <select name="sp"  class="form-control">
+                        <option value="" selected>Service Provider</option>
+                        {% for serviceProvider in service_providers %}
+                            {% if serviceProvider.id == search_str.sp %}
+                                <option value="{{serviceProvider.id}}" selected>{{serviceProvider}}</option>
+                            {% else %}
+                                <option value="{{serviceProvider.id}}">{{serviceProvider}}</option>
+                            {% endif %}                            
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <br>
+                    <button type="submit"  class="form-control">search</button>
+                    <br>
+                </div>
+
+            </div>
+
+        </form>
+        </div>
+
         <div class="container">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
             <style>
@@ -62,8 +145,12 @@
                     text-decoration: none;
                 }
 
-                .reminder-day {
+                .reminder-day-book {
                     background-color: yellow; /* Par exemple, mettez le fond en jaune */
+                    cursor: pointer;
+                }
+                .reminder-day-inquiry {
+                    background-color: rgb(130, 203, 112); /* Par exemple, mettez le fond en jaune */
                     cursor: pointer;
                 }
                 .reminder-square {
@@ -252,21 +339,27 @@
                     var dates = [];
                     var reminderCounts = [];
                     var allIds = [];
+                    var types = [];
 
 
                     datesWithReminders.forEach(function(dateObj) {
                         var dateStr = dateObj.date;
                         var reminderCount = dateObj.count;
                         var ids = dateObj.ids;
+                        var allTypes = dateObj.types;
+
+                        
 
                         dates.push(dateStr);
                         reminderCounts.push(reminderCount);
                         allIds.push(ids);
+                        types.push(allTypes);
                         });
 
                         console.log(dates);
                         console.log(reminderCounts);
                         console.log(allIds);
+                        console.log(types);
 
                     $(".day").each(function() {
                         var day = parseInt($(this).text());
@@ -280,9 +373,18 @@
                         if (dates.includes(dateStr)) {
                             // Find the day cell corresponding to the date
                             var dayCell = $(".day").filter(function() {
-                                return $(this).text() === dateStr.split('-')[2];
+                                return parseInt(dateStr.split('-')[2], 10) === parseInt($(this).text(), 10);
                             });
-                            dayCell.addClass("reminder-day");
+                            console.log("day:")
+                            console.log(dateStr.split('-')[2])
+                            console.log($(this).text())
+                            console.log(parseInt(dateStr.split('-')[2], 10) === parseInt($(this).text(), 10));
+
+
+
+                            dayCell.addClass("reminder-day-"+types[dates.indexOf(dateStr)]);
+        
+                            /*dayCell.addClass("reminder-day");*/
 
                             var indexOfDateX = dates.indexOf(dateStr);
 

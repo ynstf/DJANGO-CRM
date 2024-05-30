@@ -8,7 +8,7 @@ from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotatio
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
 from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
-from ..models import Customer, Nationality, InquiryNotify, Status, InquiryStatus, IsEmployeeNotified
+from ..models import Customer, Nationality, InquiryNotify, Status, InquiryStatus, IsEmployeeNotified, InquiryReminder
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ..models import Email,PhoneNumber,WhatsApp,Landline
@@ -223,8 +223,13 @@ def add_customer_view(request):
         inq_employees = request.POST.getlist('inquiry-employees')
         team_leader = request.POST.getlist('inquiry-team_leader')
         sp = request.POST.getlist('inquiry-superprovider')
-        print("suuuuuuuuuuuuuuuui: ")
-        print(sp)
+
+        remainder_checked = request.POST.getlist('remainder_check')
+        schedule_time = request.POST.getlist('inquiry-reminder')
+
+        print("suuuuuuuuuuuuuuuui remainder : ")
+        print(remainder_checked)
+        print(schedule_time)
 
         inq_desc = request.POST.getlist('inquiry-description')
 
@@ -349,6 +354,8 @@ def add_customer_view(request):
                         services_set = Service.objects.get(name=inq_service[q])
                         owner = Employee.objects.get(id=inq_employees[q])
                         team = Employee.objects.get(id=team_leader[q])
+                        
+
                         print(inq_source[q])
                         current_inq_source_id = inq_source[q]
                         current_inq_source = Source.objects.get(id=current_inq_source_id)
@@ -401,6 +408,22 @@ def add_customer_view(request):
                                     notified = False
                                 )
                                 isnotify.save()
+                        
+                        print("haaaaaaaaaaaaa ana")
+                        print(remainder_checked[q])
+                        
+                        if remainder_checked[q] == "on":
+                            print("waaaaaaaaaaaaaaaaaaaa rani dkhjaaaalt")
+                            employee_id = request.user.employee.id
+                            employee = Employee.objects.get(id=employee_id)
+                            reminder = InquiryReminder(
+                                employee = employee,
+                                inquiry=inquiry,
+                                service=services_set,
+                                gool='inquiry',
+                                schedule=schedule_time[q]
+                            )
+                            reminder.save()
 
                         q+=1
 

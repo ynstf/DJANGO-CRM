@@ -127,7 +127,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(InquiryReminder)
 class InquiryReminderAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'inquiry', 'service', 'schedule')
+    list_display = ('employee', 'inquiry', 'service','gool', 'schedule')
 
 @admin.register(Advence)
 class AdvenceAdmin(admin.ModelAdmin):
