@@ -486,6 +486,7 @@ def sp_list_view(request):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def employee_list_view(request):
+    title = 'employee list'
     employees = Employee.objects.all()
 
     # Handle search form submission
@@ -505,7 +506,8 @@ def employee_list_view(request):
     # Render the initial page with the full employee list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
 
-    context = {'position': request.user.employee.position,
+    context = { 'title':title,
+                'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'employees': employees,
                 'emp_name':emp_name if emp_name!=None else '',

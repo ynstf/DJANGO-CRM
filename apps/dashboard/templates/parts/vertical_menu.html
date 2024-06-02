@@ -60,7 +60,7 @@
 
         <!-- Tabels -->
 
-    <li class="menu-item {% if '/layouts/' in request.path  %}active open{% endif %}">
+    <li class="menu-item {% if 'title' == 'employee list' or '/employee_list/' in request.path or '/customer_list/' in request.path or '/inquiries_list' in request.path or '/services_list/' in request.path or '/sp_list/' in request.path %}active open{% endif %}">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons mdi mdi-table"></i>
         <div class="text-truncate" data-i18n="Tables">Tables</div>
@@ -116,7 +116,7 @@
       <ul class="menu-sub">
         
         {% if position.name == 'admin' %}
-            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+            <li class="menu-item {% if 'employee_list' == request.resolver_match.url_name %}active{% endif %}">
                 <a href="{% url 'employee_list' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Employee</div>
                 </a>
@@ -125,7 +125,7 @@
         
         <!--    ########## customer list ########          -->
         {% if position.name == 'admin' or position.name == 'call center' or position.name == 'team leader' %}
-            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+            <li class="menu-item {% if 'customer_list' == request.resolver_match.url_name %}active{% endif %}">
                 <a href="{% url 'customer_list' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Without menu">Customers</div>
                 </a>
@@ -133,7 +133,7 @@
         {% elif user.employee.permissions.all %}
           {% for permission in user.employee.permissions.all %}
               {% if permission.name == "customer list" %}
-                <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                <li class="menu-item {% if 'customer_list' == request.resolver_match.url_name %}active{% endif %}">
                   <a href="{% url 'customer_list' %}" class="menu-link">
                       <div class="text-truncate" data-i18n="Without menu">Customers</div>
                   </a>
@@ -144,7 +144,7 @@
     
         
         {% if position.name == 'call center' or position.name == 'admin' or position.name == 'super provider' or position.name == 'team leader' %}
-            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+            <li class="menu-item {% if 'inquiries_list' == request.resolver_match.url_name %}active{% endif %}">
                 <a href="{% url 'inquiries_list' %}" class="menu-link">
                   <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
                 </a>
@@ -152,7 +152,7 @@
         {% elif user.employee.permissions.all %}
           {% for permission in user.employee.permissions.all %}
               {% if permission.name == "inquiry list" %}
-                <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+                <li class="menu-item {% if 'inquiries_list' == request.resolver_match.url_name %}active{% endif %}">
                   <a href="{% url 'inquiries_list' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
                   </a>
@@ -162,12 +162,12 @@
         {% endif %}
 
         {% if position.name == 'admin' %}
-            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+            <li class="menu-item {% if 'services_list' == request.resolver_match.url_name %}active{% endif %}">
                 <a href="{% url 'services_list' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Services</div>
                 </a>
             </li>
-            <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+            <li class="menu-item {% if 'sp_list' == request.resolver_match.url_name %}active{% endif %}">
                 <a href="{% url 'sp_list' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Service Providers</div>
                 </a>
@@ -180,7 +180,7 @@
 
 
     <!-- Form -->
-    <li class="menu-item {% if '/forms/' in request.path %}active open{% endif %}">
+    <li class="menu-item {% if '/add_employee/' in request.path or '/add_service/' in request.path or '/add_sp/' in request.path or '/add_customers/' in request.path %}active open{% endif %}">
       <a href="javascript:void(0)" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons mdi mdi-form-select"></i>
         <div class="text-truncate" data-i18n="Form Elements">Form Elements</div>
@@ -188,7 +188,7 @@
       <ul class="menu-sub">
 
         {% if position.name == 'admin' %}
-          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+          <li class="menu-item {% if 'add_employee' == request.resolver_match.url_name %}active{% endif %}">
             <a href="{% url 'add_employee' %}" class="menu-link">
               <div class="text-truncate" data-i18n="Basic Inputs">Add Employee</div>
             </a>
@@ -196,12 +196,12 @@
         {% endif %}
 
         {% if position.name == 'admin' %}
-          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+          <li class="menu-item {% if 'add_service' == request.resolver_match.url_name %}active{% endif %}">
             <a href="{% url 'add_service' %}" class="menu-link">
               <div class="text-truncate" data-i18n="Basic Inputs">Add Service</div>
             </a>
           </li>
-          <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+          <li class="menu-item {% if 'add_sp' == request.resolver_match.url_name %}active{% endif %}">
             <a href="{% url 'add_sp' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Add Service Providers</div>
             </a>
@@ -209,7 +209,7 @@
         {% endif %}
         
         {% if position.name == 'call center' or position.name == 'admin' %}
-          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+          <li class="menu-item {% if 'add_customer' == request.resolver_match.url_name %}active{% endif %}">
             <a href="{% url 'add_customer' %}" class="menu-link">
               <div class="text-truncate" data-i18n="Basic Inputs">Customer Entery</div>
             </a>
@@ -217,7 +217,7 @@
         {% elif user.employee.permissions.all %}
           {% for permission in user.employee.permissions.all %}
               {% if permission.name == "add customer" %}
-                <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+                <li class="menu-item {% if 'add_customer' == request.resolver_match.url_name %}active{% endif %}">
                   <a href="{% url 'add_customer' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Basic Inputs">Customer Entery</div>
                   </a>
@@ -232,7 +232,7 @@
 
         <!-- documents form -->
         {% if position.name == 'admin' %}
-          <li class="menu-item {% if '/forms/' in request.path %}active open{% endif %}">
+          <li class="menu-item {% if '/edit_quotation_doc/' in request.path or '/edit_invoice_doc/' in request.path %}active open{% endif %}">
             <a href="javascript:void(0)" class="menu-link menu-toggle">
               <i class="menu-icon tf-icons mdi mdi-file"></i>
 
@@ -241,12 +241,12 @@
             </a>
             <ul class="menu-sub">
       
-                <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+                <li class="menu-item {% if '/edit_quotation_doc/' in request.path %}active{% endif %}">
                   <a href="{% url 'edit_quotation_doc' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Basic Inputs">Edit Quotations</div>
                   </a>
                 </li>
-                <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+                <li class="menu-item {% if '/edit_invoice_doc/' in request.path %}active{% endif %}">
                   <a href="{% url 'edit_invoice_doc' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Basic Inputs">Edit Invoices</div>
                   </a>
@@ -264,7 +264,7 @@
         </li>
         
           <!-- chat -->
-          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+          <li class="menu-item {% if '/chat_page/' in request.path %}active{% endif %}">
             <a href="{% url 'chat_page' %}" class="menu-link">
               <i class="menu-icon tf-icons mdi mdi-message-outline"></i>
               <div class="text-truncate" data-i18n="Basic Inputs">Chat</div>
@@ -272,7 +272,7 @@
           </li>
 
           <!-- chat groups -->
-          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+          <li class="menu-item {% if '/groups_page/' in request.path %}active{% endif %}">
             <a href="{% url 'groups_page' %}" class="menu-link">
               <i class="menu-icon tf-icons mdi mdi-account-group"></i>
 
@@ -280,7 +280,7 @@
             </a>
           </li>
 
-          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+          <li class="menu-item {% if '/calendar/' in request.path %}active{% endif %}">
             <a href="{% url 'calendar_view' %}" class="menu-link">
               <i class="menu-icon tf-icons mdi mdi-calendar"></i>
 
@@ -290,7 +290,7 @@
 
           {% if position.name == 'admin' %}
           <!-- map -->
-          <li class="menu-item {% if '/basic_inputs/' in request.path %}active{% endif %}">
+          <li class="menu-item {% if '/map/' in request.path %}active{% endif %}">
             <a href="{% url 'map' %}" class="menu-link">
               <i class="menu-icon tf-icons mdi mdi-map-outline"></i>
               <div class="text-truncate" data-i18n="Basic Inputs">Map</div>

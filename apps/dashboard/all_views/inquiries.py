@@ -71,7 +71,10 @@ def map(request):
     
     coord = []
     for i in inquiries:
-        data = i.address.location.split(',')
+        try:
+            data = i.address.location.split(',')
+        except:
+            data = []
         if len(data)==2:
             coord.append(data)
 
