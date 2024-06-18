@@ -1,6 +1,6 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Edit Booking{% endblock %}
+{% block title %}Edit quotation{% endblock %}
 
 {% block layout %}
 <!-- Layout wrapper: Start -->
@@ -27,10 +27,9 @@
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
 
-
         <div class="container">
             <center>
-                <h1>Make Booking</h1>
+                <h1>Edit quotation</h1>
                 <br>
                 <h4>description</h4>
                 <p> {{ inquiry.description }}</p>
@@ -41,45 +40,48 @@
                 {% csrf_token %}
                 <!-- {{ quotation_form }} -->
 
-                <h3>Booking Details</h3>
-                <br>
-                    <div class="col-md-4">
-                        <h6 for="id_quotation-service">Service : {{ service.id }} - {{ service.name }} </h6>
-                    </div>
-                    <div class="col-md-4">
-                        <h6 for="id_quotation-service">Super Provider : {{ sp.name }} </h6>
-                    </div>
-
+                <h3>quotation Details</h3>
                 <div>
                     <div class="col-md-4">
-                        <label for="id_quotation-date" > Booking Date : </label>
-                        <input type="date" id="id_quotation-date" value="{{ book.booking_date|date:'Y-m-d' }}" name="quotation-date" class="form-control" >
+                        <label for="id_quotation-date" > Quotation Date : </label>
+                        <input type="date" id="id_quotation-date" value="{{ date|date:'Y-m-d' }}" name="quotation-date" class="form-control" >
                     </div>
-                    
 
-                    
-
-                    
-                    <br>
-                    
                     <div class="col-md-4">
-                        <label for="id_booking-details" > Booking Details : </label>
-                        <textarea id="id_booking-details"  name="booking-details" class="form-control" >{{ book.details }}</textarea>
+                        <label for="id_quotation-service">service :</label>
+                        <select id="id_quotation-service" name="quotation-service" class="form-control">
+                                <option value="{{ service.id }}" selected >{{ service.id }} - {{ service.name }}</option>
+                                {% for srv in services %}
+                                    <option value="{{ srv.id }}">{{ srv }}</option>
+                                {% endfor %}
+                        </select>
                     </div>
+                    
+                    <br><br>
 
-                    <br>
-                    {% if have_reminder == 'True' %}
+
+
+                    <!-- add details forms -->
+                    <!-- edit details forms -->
+                    {% for q in quotations %}
+                    <p>{{q.data}}</p>
+                    <p>{{q.quotation_service.columns}}</p>
                         <div class="col-md-4">
-                            <label for="id_schedule-time" > scheduling next reminder in {{reminder_time}} month : </label>
-                            <input type="date" id="id_schedule-time" value="{{ reminder.schedule|date:'Y-m-d' }}" name="schedule-time" class="form-control" >
+                            <label for="id_quotation-detail-{{ forloop.counter }}">Detail :</label>
+                            <textarea type="text" rows="3" id="id_quotation-detail-{{ forloop.counter }}" name="quotation-details" class="form-control" placeholder="Detail..." aria-label="detail">{{ q.detail }}</textarea>
+
+                            <label for="id_quotation-price-{{ forloop.counter }}">Price :</label>
+                            <input type="number" id="id_quotation-price-{{ forloop.counter }}" value="{{ q.price }}" name="quotation-price" class="form-control" placeholder="Price..." aria-label="Price" oninput="updateTotal({{ forloop.counter }})">
+
+                            <label for="id_quotation-quantity-{{ forloop.counter }}">Quantity :</label>
+                            <input type="number" id="id_quotation-quantity-{{ forloop.counter }}" value="{{ q.quantity }}" name="quotation-quantity" class="form-control" placeholder="Quantity..." aria-label="Quantity" oninput="updateTotal({{ forloop.counter }})">
+
+                            <label for="Total">Total:</label>
+                            <span id="total-{{ forloop.counter }}" name="total">{{ q.total }}</span>
+
+                            <hr>
                         </div>
-                    {% endif %}
-
-                    <div class="col-md-4">
-                        <label for="id_booking-number" > Booking Number : </label>
-                        <input id="id_booking-number" value="{{ book.booking_number }}" name="booking-number" class="form-control" >
-                    </div>
-
+                    {% endfor %}
 
                     <script>
                         function updateTotal(quotationId) {
@@ -95,11 +97,24 @@
 
                     </script>
 
+
+
+
                     <br><br>
                 </div>
 
-                <button class="btn btn-success" type="submit">Edit Booking</button>
+
+                <button class="btn btn-success" type="submit">Edit quotation</button>
             </form>
+
+
+
+
+
+
+
+
+
 
 
         </div>

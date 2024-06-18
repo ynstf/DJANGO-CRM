@@ -3,7 +3,7 @@ from apps.dashboard.models import Invoice
 from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber, WhatsApp, Landline, Email
 from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
 from .models import Status,InquiryStatus, IsEmployeeNotified
-from .models import Service, InquiryReminder,SuperProvider
+from .models import Service, InquiryReminder,SuperProvider, Request
 from .models import InvoiceForm, QuotationForm, Advence, Complain, Message, MessageNotify, IsEmployeeReadMessage, GroupMessenger, MessageGroup
 
 
@@ -132,3 +132,7 @@ class InquiryReminderAdmin(admin.ModelAdmin):
 @admin.register(Advence)
 class AdvenceAdmin(admin.ModelAdmin):
     list_display = ('inquiry',)
+
+@admin.register(Request)
+class RequestAdmin(admin.ModelAdmin):
+    list_display = ('inquiry','demande')

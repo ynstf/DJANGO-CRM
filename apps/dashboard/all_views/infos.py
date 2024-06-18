@@ -1,7 +1,8 @@
 
 import django.contrib.auth
 from django.http import JsonResponse
-from ..models import Language, Nationality, Source, Service, Status, SuperProvider, PhoneNumber
+from apps.dashboard.models import Quotation
+from ..models import Inquiry, Language, Nationality, Source, Service, Status, SuperProvider, PhoneNumber
 from apps.authentication.models import Employee
 
 def get_languages_view(request):
@@ -72,24 +73,55 @@ def get_employees_by_sp_view(request):
         return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
 
 
-"""
-def check_phone_number(request):
-    phone_number = request.GET.get('phone_number', None)
-    if phone_number:
-        try:
-            phone_record = PhoneNumber.objects.get(number=phone_number)
-            customer = phone_record.customer
-            customer_data = {
-                'first_name': customer.first_name,
-                'last_name': customer.last_name,
-                'id': customer.id
-            }
-            return JsonResponse({'exists': True, 'customer': customer_data})
-        except PhoneNumber.DoesNotExist:
-            return JsonResponse({'exists': False})
-    return JsonResponse({'exists': False})
 
-"""
+def delete_owner_from_inquiry(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Retrieve the super provider ID from the request parameters
+        owner_id = request.GET.get('owner_id')
+        inquiry_id = request.GET.get('inquiry_id')
+
+        # Retrieve services based on the super provider ID
+        if owner_id and inquiry_id :
+            try:
+                owner = Employee.objects.get(id=owner_id)
+                inquiry = Inquiry.objects.get(id=inquiry_id)
+
+                inquiry.handler.remove(owner)
+                inquiry.save()
+
+        
+                return JsonResponse({'action': "deleted"})
+            #{"name":service_names,'id':}
+            except SuperProvider.DoesNotExist:
+                return JsonResponse({'error': 'Super provider not found.'}, status=404)
+        else:
+            return JsonResponse({'error': 'Super provider ID is required.'}, status=400)
+    else:
+        # Handle non-AJAX requests
+        return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
+
+def delete_quotation(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Retrieve the super provider ID from the request parameters
+        q_id = request.GET.get('q_id')
+
+        # Retrieve services based on the super provider ID
+        if q_id :
+            try:
+                quotation = Quotation.objects.get(id=q_id)
+                quotation.delete()
+                
+                return JsonResponse({'action': "deleted"})
+            #{"name":service_names,'id':}
+            except SuperProvider.DoesNotExist:
+                return JsonResponse({'error': 'Super provider not found.'}, status=404)
+        else:
+            return JsonResponse({'error': 'Super provider ID is required.'}, status=400)
+    else:
+        # Handle non-AJAX requests
+        return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
+
+
 def check_phone_number(request):
     phone_number = request.GET.get('phone_number', None)
     if phone_number:

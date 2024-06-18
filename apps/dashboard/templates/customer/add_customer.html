@@ -73,6 +73,7 @@
                             $(document).ready(function(){
                                 $('#id_customer-phone_numbers').on('change', function(){
                                     var phoneNumber = $(this).val();
+                                    console.log(phoneNumber)
                                     $.ajax({
                                         url: '{% url "check_phone_number" %}',  // The URL for your AJAX view
                                         data: { 'phone_number': phoneNumber },

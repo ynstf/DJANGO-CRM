@@ -263,7 +263,6 @@ class InquiryReminder(models.Model):
     def __str__(self):
         return f'employee :{self.employee} with {self.inquiry} inquiry and scheduled in {self.schedule}'
 
-
 class Booking(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
@@ -273,9 +272,20 @@ class Booking(models.Model):
     details = models.TextField(blank=True, null=True)
     booking_number = models.CharField(max_length=50, blank=True, null=True)
     ref_number = models.CharField(max_length=50, blank=True, null=True)
+    
 
     def __str__(self):
         return f'booking for {self.inquiry}'
+
+class Request(models.Model):
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, blank=True, null=True)
+    demande = models.CharField(max_length=20, choices=[('by call center', 'by call center'), ('work', 'work'), ('visit', 'visit'), ('inspiction', 'inspiction'), ('design', 'design'), ('follow up', 'follow up')], blank=True, null=True)
+    quotation =  models.ManyToManyField(Quotation, blank=True, null=True)
+    schedule = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f'request for {self.inquiry}'
 
 class Invoice(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)

@@ -54,14 +54,14 @@
 
                     <div class="col-md-4">
                         <label for="id_quotation-sp">super provider :</label>
-                        <select id="id_quotation-sp" name="quotation-sp" class="form-control" aria-readonly="true">
+                        <select id="id_quotation-sp" name="quotation-sp" class="form-control" disabled>
                                 <option value="{{ sp.id }}" selected>{{ sp }}</option>
                         </select>
                     </div>
 
                     <div class="col-md-4">
                         <label for="id_quotation-service">service :</label>
-                        <select id="id_quotation-service" name="quotation-service" class="form-control">
+                        <select id="id_quotation-service" name="quotation-service" class="form-control" disabled>
                                 {% for service in services %}
                                     <option value="{{ service.id }}">{{ service }}</option>
                                 {% endfor %}

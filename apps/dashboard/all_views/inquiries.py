@@ -12,7 +12,7 @@ from apps.dashboard.models_com import SuperProvider
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee, Permission, Position
 from apps.dashboard.models import (EmployeeAction, Inquiry, InquiryNotify, InquiryReminder,
-    InquiryStatus, IsEmployeeNotified, Language, Nationality, Quotation, Source, Status,
+    InquiryStatus, IsEmployeeNotified, Language, Nationality, Quotation, Source, Status, Request,
     SuperProvider)
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -25,6 +25,8 @@ import cloudinary
 import cloudinary.uploader
 import json
 from datetime import datetime
+from django.contrib import messages as msgs
+
 
 ################# permissions ############
 """
@@ -322,6 +324,73 @@ def make_inq_done(request,inq_id):
     return redirect('inquiries_list')
 
 
+def make_action(request,inq_id):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+
+    inquiry = Inquiry.objects.get(id=inq_id)
+
+
+    if request.method == 'POST':
+        action = request.POST.get('inquiry_action')
+        print(action)
+
+        req = Request(
+            inquiry = inquiry,
+            demande = action
+        )
+        req.save()
+
+        new = Status.objects.get(name = "new")
+        inq_state = InquiryStatus.objects.get(inquiry=inquiry)
+        inq_state.status = new
+        inq_state.save()
+
+        #all_employees = Employee.objects.filter(sp=current_sp)
+        
+        #for employee in all_employees:
+        for owner in inquiry.handler.all():
+            notification = InquiryNotify(
+                employee = owner,
+                inquiry = inquiry,
+                sp = inquiry.sp,
+                action = "new"
+            )
+            notification.save()
+
+        for owner in inquiry.handler.all():
+            isnotify = IsEmployeeNotified(
+                employee = owner,
+                notified = False
+            )
+            isnotify.save()
+
+        
+        msgs.success(request, f"you add new request for {action} to record owners.")
+
+        return redirect("inquiry_info",id=inq_id)
+
+    # Render the initial page with the full customer list
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'notifications':notifications,
+                'notifications_counter':notifications_counter,
+                "states":Status.objects.all(),
+
+                
+                }
+    
+
+    context = TemplateLayout.init(request, context)
+    return render(request, 'inquiry/make_action.html',context)
+
+
+
+
+
+
+
 def get_messages(request):
 
     messages = MessageNotify.objects.filter(employee=request.user.employee)
@@ -545,6 +614,8 @@ def inquiries_list_view(request):
             #inquiries = inquiries.filter(services=srvc_id)
             sp_id = employee.sp.id
             inquiries = inquiries.filter(sp=sp_id)
+
+            inquiries = inquiries.filter(handler=request.user.employee)
         except:
             pass
 
@@ -739,12 +810,15 @@ def inquiry_info_view(request, id):
 
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
-    messages = MessageNotify.objects.filter(employee=request.user.employee)
-    messages_counter = messages.count()
+    msgs = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = msgs.count()
 
     inquiry = Inquiry.objects.get(id=id)
     inquiry_state = InquiryStatus.objects.get(inquiry=inquiry)
     customer = inquiry.customer
+    requests = Request.objects.filter(inquiry=inquiry)
+
+
 
 
     # upload images 
@@ -797,11 +871,54 @@ def inquiry_info_view(request, id):
         pass
 
     inquiry_data = []
-    quotations = Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id))
-    for quotation in quotations:
-        line = quotation.data.split(',*,')
-        print(line)
-        inquiry_data.append(line)
+    try:
+        quotations = requests.last()
+        quotations = quotations.quotation.all()
+        for quotation in quotations:
+            line = quotation.data.split(',*,')
+            inquiry_data.append(line)
+    except:
+        pass
+
+
+    try:
+        # Assuming you want to include a predefined message
+        phone_number = customer.whatsapp_set.all().first().whatsapp
+    except :
+        phone_number = ""
+    
+
+
+    # quotations
+    history_data = []
+    for r in requests.order_by('-id'):
+        quotations = r.quotation.all()
+        lines = []
+        for quotation in quotations:
+            line = quotation.data.split(',*,')
+            lines.append(line)
+
+        # whatsapp urls for this request
+        ## make message for this request quotations
+        message = "Your Quotations ready, check the link"
+        pdf_url = reverse('generate_pdf', args=[r.id])
+        absolute_pdf_url = request.build_absolute_uri(pdf_url)
+        whatsapp_link_quotation = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
+
+        history_data.append({"whatsapp_link":whatsapp_link_quotation, "request":r, 'inquiry_data':lines })
+
+
+    # bookings
+    history_book = []
+    history_books = requests.order_by('-id')
+    for r in history_books:
+        ## make message for this request invoice
+        message = "Your Invoice ready, check the link"
+        pdf_url = reverse('generate_invoice', args=[r.id])
+        absolute_pdf_url = request.build_absolute_uri(pdf_url)
+        whatsapp_link_invoice = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
+        history_book.append({"book":r, "whatsapp_link_invoice":whatsapp_link_invoice})
+
     
     try:
         booking_detail = Booking.objects.get(inquiry=inquiry).details 
@@ -818,18 +935,12 @@ def inquiry_info_view(request, id):
         schedule_date = None
 
 
-    try:
-        # Assuming you want to include a predefined message
-        phone_number = customer.whatsapp_set.all().first().whatsapp
-    except :
-        phone_number = ""
-    
+    # make message for inquiry
     message = "Your Quotations ready, check the link"
-    # Replace 'https://example.com/path/to/your/document.pdf' with the actual URL to your hosted PDF document
     pdf_url = reverse('generate_pdf', args=[id])
     absolute_pdf_url = request.build_absolute_uri(pdf_url)
-    # Construct the WhatsApp link with the PDF document link
     whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
+
 
     message = "Your Invoice ready, check the link"
     pdf_url = reverse('generate_invoice', args=[id])
@@ -839,10 +950,6 @@ def inquiry_info_view(request, id):
     
     connect_with_customer_whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number.replace("+","")}'
 
-
-    print(schedule_date)
-    print(booking_number)
-    print('haaaaaaaaaaaaaaaaaaaaaaa',Inquiry.objects.get(id=id).handler.all())
 
     try:
         complain = Complain.objects.get(inquiry=inquiry)
@@ -860,6 +967,8 @@ def inquiry_info_view(request, id):
             status.append(state)
 
 
+
+
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
             'layout_path': layout_path,
@@ -875,7 +984,7 @@ def inquiry_info_view(request, id):
             'booking_date':booking_date,
             'schedule_date':schedule_date,
             'complain':complain,
-            'messages':messages,
+            'msgs':msgs,
             'messages_counter':messages_counter,
 
 
@@ -889,14 +998,20 @@ def inquiry_info_view(request, id):
 
             'status':status,
             'handlers':inquiry.handler.all(),
+            'requests':requests,
+            'history_data':history_data,
+            'history_book':history_book
+
 
             }
+    
+
     context = TemplateLayout.init(request, context)
     return render(request, "inquiry/inquiries_info.html", context)
 
 
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="make quotation") in u.employee.permissions.all()) )
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'call_center']).exists() or (Permission.objects.get(name="make quotation") in u.employee.permissions.all()) )
 def make_quotation_view(request, id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
@@ -907,12 +1022,20 @@ def make_quotation_view(request, id):
 
     if request.method == 'POST':
 
-        quotation_service = request.POST.get('quotation-service')
-        sp = request.POST.get('quotation-sp')
+        """quotation_service = request.POST.get('quotation-service')
+        sp = request.POST.get('quotation-sp')"""
+
+        
+
+
         quotation_date = request.POST.get('quotation-date')
 
 
         inquiry = Inquiry.objects.get(id=id)
+        
+        quotation_service = inquiry.services.id
+        sp = inquiry.sp.id
+
         customer_id = inquiry.customer.id
         customer = Customer.objects.get(id=customer_id)
         employee_id = request.user.employee.id
@@ -943,6 +1066,8 @@ def make_quotation_view(request, id):
         except:
             pass
 
+        req = Request.objects.filter(inquiry=inquiry).last()
+
         for i in range(len(lent)):
             data = []
             for field in columns_list:
@@ -966,7 +1091,18 @@ def make_quotation_view(request, id):
             )
             quotation.save()
 
-            print()
+            try :
+                req.quotation.add(quotation)
+                req.save()
+            except:
+                req = Request(
+                    inquiry = inquiry,
+                    demande = "by call center"
+                )
+                req.save()
+                req.quotation.add(quotation)
+                req.save()
+
         
         return redirect('make_inq_sendQ', inq_id=id)
 
@@ -979,7 +1115,8 @@ def make_quotation_view(request, id):
     # Convert the comma-separated string back to a list
     columns_list = service_instance.columns.split(',')
 
-    sp = request.user.employee.sp
+    #sp = request.user.employee.sp
+    sp = inquiry.sp
     services = sp.service.all()
 
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
@@ -998,27 +1135,203 @@ def make_quotation_view(request, id):
     context = TemplateLayout.init(request, context)
     return render(request, "inquiry/make_quotation.html", context)
 
-
 @login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'call_center']).exists() or (Permission.objects.get(name="make quotation") in u.employee.permissions.all()) )
+def edit_quotation_view(request, id):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    req = Request.objects.get(id = id)
+    inquiry = req.inquiry
+    quotations = req.quotation.all()
+
+
+    if request.method == 'POST':
+
+        #quotation_service = request.POST.get('quotation-service')
+        #sp = request.POST.get('quotation-sp')
+        quotation_date = request.POST.get('quotation-date')
+
+        quotation_service = inquiry.services.id
+        sp = inquiry.sp.id
+
+        customer_id = inquiry.customer.id
+        customer = Customer.objects.get(id=customer_id)
+        employee_id = request.user.employee.id
+        employee = Employee.objects.get(id=employee_id)
+
+        # Retrieve the Service instance
+        service_instance = inquiry.services
+        # Convert the comma-separated string back to a list
+        columns_list = service_instance.columns.split(',')
+
+
+        srv_id = service_instance.id
+        quotation_service = Service.objects.get(id=srv_id)
+
+        lent = request.POST.getlist('quotation-price')
+        superprovider = SuperProvider.objects.get(id=sp)
+
+        original_string = superprovider.reference
+        # Find the index of the first digit
+        try:
+            index_of_first_digit = next((index for index, char in enumerate(original_string) if char.isdigit()), None)
+            # Split the string into two parts based on the index of the first digit
+            prefix = original_string[:index_of_first_digit]
+            suffix = original_string[index_of_first_digit:]
+            new_invoice_ref = f'{prefix}{int(suffix)+1}'
+            superprovider.reference = new_invoice_ref
+            superprovider.save()
+        except:
+            pass
+
+        #delete old values
+        quots = req.quotation.all()
+        quots.delete()
+
+        for i in range(len(lent)):
+            data = []
+            for field in columns_list:
+                details = request.POST.getlist(f'quotation-{field}')[i]
+                data.append(details)
+            total = float(data[-1])*float(data[-2])
+            columns_str = ",*,".join(data)
+            print(columns_str)
+
+            print(data)
+            
+            superprovider = SuperProvider.objects.get(id=sp)
+            quotation = Quotation(
+                employee=employee,
+                customer=customer,
+                inquiry=inquiry,
+                quotation_service=quotation_service,
+                quotation_sp=superprovider,
+                invoice_counter=superprovider.reference,
+                quotation_date=quotation_date,
+                data = columns_str,
+                total=total
+            )
+            quotation.save()
+
+            req.quotation.add(quotation)
+            req.save()
+        
+        return redirect('inquiry_info', id=inquiry.id)
+
+
+
+
+    # Retrieve the Service instance
+    service_instance = inquiry.services
+    # Convert the comma-separated string back to a list
+
+    columns_list = service_instance.columns.split(',')
+
+    
+    last_data = []
+    for quotation in quotations:
+        last_data.append([d for d in quotation.data.split(",*,")])
+
+    
+    last = []
+    n=0
+    for data,q in zip(last_data,quotations):
+        line = []
+        for d,c in zip(data,columns_list):
+            dic = {}
+            dic["name"] = c
+            dic["value"] = d
+            line.append(dic)
+        n+=1
+        last.append({'id':q.id,'n':n,'data':line})
+
+
+
+
+    #sp = request.user.employee.sp
+    sp = inquiry.sp
+    services = sp.service.all()
+    date=quotations[0].quotation_date
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
+            'date':date,
+            'customer': inquiry.customer,
+            'inquiry': inquiry,
+            'services':services,
+            'sp':sp,
+            'columns_list':columns_list,
+            'messages':messages,
+            'messages_counter':messages_counter,
+            'last_data':last_data,
+            'last':last,
+            }
+    context = TemplateLayout.init(request, context)
+    return render(request, "inquiry/edit_quotation.html", context)
+
+
+
+"""@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'call_center']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
 def edit_quotation_view(request,id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
     messages = MessageNotify.objects.filter(employee=request.user.employee)
     messages_counter = messages.count()
-    inquiry = Inquiry.objects.get(id = id)
 
-    quotations = Quotation.objects.filter(inquiry=inquiry)
+    req = Request.objects.get(id = id)
+    inquiry = req.inquiry
+    quotations = req.quotation.all()
+
+    print(quotations)
+    date=quotations[0].quotation_date
+    service=quotations[0].quotation_service
+
+    quotations=[]
+    for q in req.quotation.all():
+        print(q.data)
+        quotations.append([d for d in q.data.split(",*,")])
+
+    cols = inquiry.services.columns
+    cols_list = cols.split(',')
+
+    defult_data = []
+    details = []
+    prices = []
+    quantities = []
+    for i in range(len(quotations)):
+        details.append(quotations[i][0])
+        prices.append(quotations[i][len(quotations[i])-2])
+        quantities.append(quotations[i][len(quotations[i])-1])
+    
+    for i in range(len(quotations)):
+        data = []
+        for d in quotations[i][1:-2]:
+            data.append(d)
+
+        result = [{"column_name": col, "data": d} for col, d in zip(cols_list[1:-2], data)]
+
+        defult_data.append(
+            {"detail":details[i], "result":result, "columns":cols_list[1:-2], "price":prices[i], "quantity":quantities[i] , "total":float(prices[i])*float(quantities[i])}
+        )
+    
 
     if request.method == 'POST':
         quotation_service = request.POST.get('quotation-service')
         quotation_date = request.POST.get('quotation-date')
-        details = request.POST.getlist('quotation-detail')
+
+        #ids = request.POST.getlist('quotation-id')
+        details = request.POST.getlist('quotation-details')
         prices = request.POST.getlist('quotation-price')
         quantities = request.POST.getlist('quotation-quantity')
+        
 
-
-        inquiry = Inquiry.objects.get(id=id)
         customer_id = inquiry.customer.id
         customer = Customer.objects.get(id=customer_id)
         employee_id = request.user.employee.id
@@ -1030,28 +1343,39 @@ def edit_quotation_view(request,id):
         quotation_service = Service.objects.get(id=srv_id)
 
         #delete old values
-        quots = Quotation.objects.filter(inquiry=inquiry)
+        quots = req.quotation.all()
         quots.delete()
+
+        
+
         #save the new values
         for i in range(len(prices)):
+            columns_str = ""
+            for col in cols_list:
+                columns_str = columns_str + request.POST.getlist(f'quotation-{col}')[i] + ',*,'
+
+            columns_str = columns_str[0:-3]
+
             quotation = Quotation(
                 employee=employee,
                 customer=customer,
                 inquiry=inquiry,
                 quotation_service=quotation_service,
+                quotation_sp=inquiry.sp,
+                invoice_counter=inquiry.sp.reference,
                 quotation_date=quotation_date,
-                detail=details[i],
-                price=prices[i],
-                quantity=quantities[i],
+                data = columns_str,
                 total=float(prices[i])*float(quantities[i])
             )
             quotation.save()
 
-        return redirect('inquiry/inquiry_info', id=id)
+            req.quotation.add(quotation)
+            req.save()
 
-    
-    date=quotations[0].quotation_date
-    service=quotations[0].quotation_service
+        return redirect('inquiry_info', id=inquiry.id)
+
+
+
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
 
@@ -1059,19 +1383,20 @@ def edit_quotation_view(request,id):
                 'layout_path': layout_path,
                 'notifications':notifications,
                 'notifications_counter':notifications_counter,
-                'inquiry': Inquiry.objects.get(id=id),
+                'inquiry': inquiry,
                 'date':date,
                 'service' : service,
-                'quotations':quotations,
+                #'quotations':req.quotation.all(),
                 'services':Service.objects.all(),
                 'messages':messages,
                 'messages_counter':messages_counter,
+                'quotations':defult_data,
 
                 }
     
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiry/edit_quotation.html',context)
-
+"""
 @login_required(login_url='/')
 def edit_inquiry(request,id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
@@ -1079,6 +1404,7 @@ def edit_inquiry(request,id):
     messages = MessageNotify.objects.filter(employee=request.user.employee)
     messages_counter = messages.count()
     inquiry = Inquiry.objects.get(id = id)
+    inquiry_state = InquiryStatus.objects.get(inquiry=inquiry)
 
     if request.method == 'POST':
         inq_source = request.POST.get('customer-source')
@@ -1088,12 +1414,15 @@ def edit_inquiry(request,id):
         sp = request.POST.get('inquiry-superprovider')
         inq_desc = request.POST.get('inquiry-description')
 
+        owners = request.POST.getlist('inq-owner')
+
         srv = Service.objects.get(number=inq_service)
         src = Source.objects.get(id=inq_source)
         tl = Employee.objects.get(id=team_leader)
         sup = SuperProvider.objects.get(id=sp)
         owner = Employee.objects.get(id=inq_employees)
         desc = inq_desc
+
         print("service:" ,srv)
         print("source :",src)
         print("team :",tl)
@@ -1108,18 +1437,49 @@ def edit_inquiry(request,id):
         inquiry.description = desc
         inquiry.team_leader = tl
 
+
+
         inquiry.save()
+
+        for owner in owners:
+            employee = Employee.objects.get(id=owner)
+            inquiry.handler.add(employee)
+            inquiry.save()
+
+            notification = InquiryNotify(
+                employee = employee,
+                inquiry = inquiry,
+                sp = sup,
+                action = "new"
+            )
+            notification.save()
+
+            isnotify = IsEmployeeNotified(
+                employee = employee,
+                notified = False
+            )
+            isnotify.save()
+
 
         return redirect("inquiry_info",id=id)
 
 
-
+    status = []
+    call_center_actions = ['pending','new','cancel','done','complain','underproccess']
+    service_provider_actions = ['connecting','send Q or B','underproccess','new']
+    for state in Status.objects.all():
+        if request.user.employee.position.name == "call center" and state.name in call_center_actions :
+            status.append(state)
+        elif request.user.employee.position.name == "super provider" and state.name in service_provider_actions :
+            status.append(state)
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
                 'layout_path': layout_path,
                 'notifications':notifications,
                 'notifications_counter':notifications_counter,
                 'inquiry': Inquiry.objects.get(id=id),
+                'handlers': Inquiry.objects.get(id=id).handler.all(),
+                'sps': Employee.objects.filter(sp=inquiry.sp),
 
 
                 'services':Service.objects.all(),
@@ -1128,7 +1488,8 @@ def edit_inquiry(request,id):
                 'all_sp':SuperProvider.objects.all(),
                 'Sources':Source.objects.all(),
                 'team_leaders':Employee.objects.filter(position=Position.objects.get(name='team leader')),
-
+                'status':status,
+                'inquiry_state':inquiry_state,
 
                 }
     
@@ -1136,10 +1497,13 @@ def edit_inquiry(request,id):
     return render(request, 'inquiry/edit_inquiry.html',context)
 
 
-def generate_pdf_view(request, id):
+def generate_pdf_view(request, request_id):
     # Retrieve the inquiry and associated quotations
-    inquiry = Inquiry.objects.get(id=id)
-    quotations = Quotation.objects.filter(inquiry=inquiry)
+
+    req = Request.objects.get(id = request_id)
+    inquiry = req.inquiry
+    quotations = req.quotation.all()
+
     customer = Customer.objects.get(id=inquiry.customer.id)
     phone = PhoneNumber.objects.filter(customer=customer)[0]
     email = Email.objects.filter(customer=customer)[0]

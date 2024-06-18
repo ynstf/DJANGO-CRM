@@ -3,6 +3,8 @@ ENVCRM
 commands.txt
 media/
 data/
+pass.py
+wifi.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

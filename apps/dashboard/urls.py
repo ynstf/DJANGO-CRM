@@ -48,8 +48,8 @@ from .views import (make_inq_connecting, make_inq_sendQ,
 from .all_views.admin import crm_page, crm_pdf_view, generate_statistics_pdf
 from .all_views.admin import super_provider, super_provider_edit, service_info,service_edit
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
-from .all_views.inquiries import map,edit_inquiry
-from .all_views.infos import check_phone_number
+from .all_views.inquiries import map,edit_inquiry,make_action
+from .all_views.infos import check_phone_number, delete_owner_from_inquiry, delete_quotation
 from .all_views.calendar import calendar_view, reminder_day_view
 urlpatterns = [
 
@@ -90,8 +90,8 @@ urlpatterns = [
     # documents
     path('edit_invoice_doc/', edit_invoice_doc, name='edit_invoice_doc'),
     path('edit_quotation_doc/', edit_quotation_doc, name='edit_quotation_doc'),
-    path('generate_pdf/<int:id>', generate_pdf, name='generate_pdf'),
-    path('generate_invoice/<int:id>/', generate_invoice, name='generate_invoice'),
+    path('generate_pdf/<int:request_id>', generate_pdf, name='generate_pdf'),
+    path('generate_invoice/<int:request_id>/', generate_invoice, name='generate_invoice'),
 
     # customer
     path('add_customers/', add_customer, name='add_customer'),
@@ -142,6 +142,8 @@ urlpatterns = [
     path('messages/<int:id>', messages, name='messages'),
     path('make_booking/<int:id>', make_booking, name='make_booking'),
     path('edit_booking/<int:id>', edit_booking, name='edit_booking'),
+    path('delete_owner_from_inquiry', delete_owner_from_inquiry, name='delete_owner_from_inquiry'),
+    path('delete_quotation', delete_quotation, name='delete_quotation'),
     
     # inquiry state
     path('make_inq_underproccess/<int:inq_id>', make_inq_underproccess, name='make_inq_underproccess'),
@@ -152,6 +154,8 @@ urlpatterns = [
     path('make_inq_cancel/<int:inq_id>', make_inq_cancel, name='make_inq_cancel'),
     path('make_inq_complain/<int:inq_id>', make_inq_complain, name='make_inq_complain'),
     path('make_inq_done/<int:inq_id>', make_inq_done, name='make_inq_done'),
+
+    path('make_action/<int:inq_id>', make_action, name='make_action'),
 
 ]
 

@@ -1,12 +1,10 @@
-{% extends 'layout/master.html' %}
-
-{% block title %}Edit Inquiry{% endblock %}
-
+{% extends 'layout/master.html' %} {% block title %}Edit Inquiry{% endblock %}
 {% block layout %}
 <!-- Layout wrapper: Start -->
-<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
-<div class="layout-container">
-
+<div
+  class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}"
+>
+  <div class="layout-container">
     {% if is_menu %}
     <!-- Menu: Start -->
     {% include "parts/vertical_menu.html" %}
@@ -15,214 +13,376 @@
 
     <!-- Layout page: Start -->
     <div class="layout-page">
+      {% if is_navbar %}
+      <!-- Navbar: Start -->
+      {% include "parts/navbar.html" %}
+      <!-- Navbar: End -->
+      {% endif %}
 
-
-    {% if is_navbar %}
-    <!-- Navbar: Start -->
-    {% include "parts/navbar.html" %}
-    <!-- Navbar: End -->
-    {% endif %}
-
-<!-- ######################################################################### -->
-    <!-- Content wrapper: Start -->
-    <div class="content-wrapper">
-
+      <!-- ######################################################################### -->
+      <!-- Content wrapper: Start -->
+      <div class="content-wrapper">
         <div class="container">
-            <center>
-                <h1>Edit Inquiry</h1>
-            </center>
+          <center>
+            <h1>Edit Inquiry</h1>
+          </center>
+          <br />
+            {% if user.employee == inquiry.owner or user.employee.position.name == "call center" %}
+                <hr>
+                <h3 style="color: #105794;">{{user.employee.position.name}} update State</h3>
+                <ul>
+                    <form>
+                        {% for state in status %}
+                            {% if inquiry_state.status.name == state.name %}
+                            <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('{{state.name}}')" checked>
+                            <label for="{{state.name}}">{{state.name}}</label><br>
+                            {% else %}
+                                {% if state.name == "send Q or B" %}
+
+                                    <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('sendQ')">
+                                    <label for="{{state.name}}">{{state.name}}</label><br>
+                                {% else %}
+                                    <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('{{state.name}}')">
+                                    <label for="{{state.name}}">{{state.name}}</label><br>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                    <script>
+                        function makeInq(state) {
+                            $.ajax({
+                                type: "GET",
+                                url: `/make_inq_${state}/{{inquiry.id}}`, // Replace inq_id with the actual inquiry ID
+                                success: function(data) {
+                                    // Handle success response if needed
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error:', error);
+                                }
+                            });
+                        }
+                    </script>
+
+                </ul>
+                <br><hr>
+            {% endif %}
+
             <br>
 
-            <form method="post" id="inquiryForm" >
-                {% csrf_token %}
-                <!-- {{ quotation_form }} -->
+          <form method="post" id="inquiryForm">
+            {% csrf_token %}
+            <!-- {{ quotation_form }} -->
 
-                <h3>Inquiry Details</h3>
+            <h3>Inquiry Details</h3>
 
-                
-                <div class="col-md-4">
-                    <label for="id_customer-source">Source :</label>
-                    <select name="customer-source" class="form-control" required>
-                        <option value="{{inquiry.source.id}}" selected >{{inquiry.source}}</option>
-                        {% for Source in Sources %}
-                            <option value="{{ Source.id }}">{{ Source }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+            <div class="col-md-4">
+              <label for="id_customer-source">Source :</label>
+              <select name="customer-source" class="form-control" required>
+                <option value="{{inquiry.source.id}}" selected>
+                  {{inquiry.source}}
+                </option>
+                {% for Source in Sources %}
+                <option value="{{ Source.id }}">{{ Source }}</option>
+                {% endfor %}
+              </select>
+            </div>
 
-                <div class="col-md-4">
-                    <label for="superProvider">Select Super Provider:</label>
-                    <select id="superProvider" class="form-control" name="inquiry-superprovider" required>
-                        <!-- Populate dropdown menu with super providers -->
-                        <option value="{{inquiry.sp.id}}" selected >{{inquiry.sp.name}}</option>
+            <div class="col-md-4">
+              <label for="superProvider">Select Super Provider:</label>
+              <select
+                id="superProvider"
+                class="form-control"
+                name="inquiry-superprovider"
+                required
+              >
+                <!-- Populate dropdown menu with super providers -->
+                <option value="{{inquiry.sp.id}}" selected>
+                  {{inquiry.sp.name}}
+                </option>
 
-                        {% for superProvider in all_sp %}
-                            <option value="{{ superProvider.id }}">{{ superProvider.name }}</option>
-                        {% endfor %}
-                    </select>
+                {% for superProvider in all_sp %}
+                <option value="{{ superProvider.id }}">
+                  {{ superProvider.name }}
+                </option>
+                {% endfor %}
+              </select>
 
-                    <label for="serviceList">Services:</label>
-                    <div id="serviceList">
-                        <option value="{{inquiry.services.id}}" selected >{{inquiry.services.name}}</option>
+              <label for="serviceList">Services:</label>
+              <div id="serviceList">
+                <option value="{{inquiry.services.id}}" selected>
+                  {{inquiry.services.name}}
+                </option>
 
-                        <!-- Services will be displayed here -->
-                    </div>
+                <!-- Services will be displayed here -->
+              </div>
 
-                    <label for="employeeList">Employees owner:</label>
-                    <div id="employeeList">
-                        <option value="{{inquiry.owner.id}}" selected >{{inquiry.owner}}</option>
+              <label for="employeeList">Employees owner:</label>
+              <div id="employeeList">
+                <option value="{{inquiry.owner.id}}" selected>
+                  {{inquiry.owner}}
+                </option>
 
-                        <!-- Employees will be displayed here -->
-                    </div>
+                <!-- Employees will be displayed here -->
+              </div>
 
-                    <label for="team_leader">Team Leader:</label>
-                    <select id="team_leader" class="form-control" name="inquiry-team_leader" required>
-                        <option value="{{inquiry.team_leader.id}}" selected >{{inquiry.team_leader}}</option>
+              <label for="team_leader">Team Leader:</label>
+              <select
+                id="team_leader"
+                class="form-control"
+                name="inquiry-team_leader"
+                required
+              >
+                <option value="{{inquiry.team_leader.id}}" selected>
+                  {{inquiry.team_leader}}
+                </option>
 
-                        <!-- Populate dropdown menu with super providers -->
-                        {% for team_leader in team_leaders %}
-                            <option value="{{ team_leader.id }}">{{ team_leader.first_name }} {{ team_leader.last_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <!-- Populate dropdown menu with super providers -->
+                {% for team_leader in team_leaders %}
+                <option value="{{ team_leader.id }}">
+                  {{ team_leader.first_name }} {{ team_leader.last_name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
 
-                <div class="col-md-4">
-                    <label for="id_inquiry-description"> Description : </label>
-                    <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number">{{inquiry.description}}</textarea>
-                </div>
-                <br>
-
-                <button class="btn btn-success" type="submit">Edit Inquiry</button>
-            </form>
+            <div class="col-md-4">
+              <label for="id_inquiry-description"> Description : </label>
+              <textarea
+                name="inquiry-description"
+                class="form-control"
+                placeholder="Inquiry description..."
+                aria-label="Inquiry Number"
+              >
+{{inquiry.description}}</textarea
+              >
+            </div>
+            <br />
 
             <script>
-            $(document).ready(function() {
-                // Function to handle change event for superProvider
-                function handleSuperProviderChange() {
-                    var superProviderId = $('#superProvider').val();
-                    console.log(superProviderId);
-
-                    // Fetch services
+                function deleteOwner(id){
+                    cont = document.getElementById(id)
+                    cont.remove()
                     $.ajax({
                         type: 'GET',
-                        url: '/get_services_by_sp/',
+                        url: '/delete_owner_from_inquiry',
                         data: {
-                            'super_provider_id': superProviderId
+                            'owner_id': id,
+                            'inquiry_id': {{inquiry.id}}
                         },
                         dataType: 'json',
                         success: function(response) {
-                            $('#serviceList').empty();
-                            if (response.services && response.services.length > 0) {
-                                var selectElement = $('<select>', {
-                                    id: 'inquiry-services',
-                                    name: 'inquiry-services',
-                                    required: true,
-                                    class: 'form-control'
-                                });
-                                $.each(response.services, function(index, service) {
-                                    console.log(service);
-                                    var option = $('<option>', {
-                                        value: service.id,
-                                        text: service.id + " - " + service.name
-                                    });
-                                    selectElement.append(option);
-                                });
-                                $('#serviceList').append(selectElement);
-                            } else {
-                                $('#serviceList').text('No services available');
-                            }
+                            console.log("yeaaaaaaaaaaaaaah")
                         },
                         error: function(xhr, status, error) {
                             console.error('Error:', error);
                         }
                     });
 
-                    // Fetch employees
-                    $.ajax({
-                        type: 'GET',
-                        url: '/get_employees_by_sp/',
-                        data: {
-                            'super_provider_id': superProviderId
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            $('#employeeList').empty();
-                            if (response.employees && response.employees.length > 0) {
-                                var selectElement = $('<select>', {
-                                    id: 'inquiry-employees',
-                                    name: 'inquiry-employees',
-                                    required: true,
-                                    class: 'form-control'
-                                });
-                                $.each(response.employees, function(index, employee) {
-                                    console.log(employee);
-                                    var option = $('<option>', {
-                                        value: employee.id,
-                                        text: employee.id + " - " + employee.name
-                                    });
-                                    selectElement.append(option);
-                                });
-                                $('#employeeList').append(selectElement);
-                            } else {
-                                $('#employeeList').text('No employees available');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error:', error);
-                        }
-                    });
                 }
+            </script>
+            <!-- add Landlines forms -->
+            {% for handler in handlers %}
+                    <div id="{{handler.id}}" class="col-md-4">
+                        <label for="owner">Owner :</label>
+                        <select id="owner" class="form-control" disabled >
+                            <option value="{{handler.id}}">{{handler}}</option>
+                        </select>
+                        {% if user.employee == inquiry.owner and user.employee != handler %}
+                            <button type="button" class='btn btn-danger btn-sm' onclick="deleteOwner('{{handler.id}}')">delete</button>
+                        {% endif %}
+                    </div>
+            {% endfor %}
 
-                // Attach change event handler
-                $('#superProvider').change(handleSuperProviderChange);
+            <!-- <div class="col-md-4">
+                <label for="owner">Owner :</label>
+                <select name="inq-owner" id="owner" class="form-control">
+                    <option value="">Choose new owner</option>
+                    {% for sp in sps %}
+                        <option value="{{sp.id}}">{{sp}}</option>
+                    {% endfor %}
+                </select>
+            </div> -->
 
-                // Trigger the change event on page load if needed
-                $('#superProvider').change();
-            });
+            <div id="additional-owner">
+            </div>
+            <br>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addNewOwner()">Add New owner</button>
+            <script>
+                var landlineCounter = 2;
+            
+                function addNewOwner() {
+                    var container = document.createElement('div');
+                    container.className = 'col-md-4';
+            
+                    var label = document.createElement('label');
+                    label.setAttribute('for', 'owner-' + landlineCounter);
+                    label.textContent = 'owner ' + landlineCounter + ' :';
+            
+            
+                    var select = document.createElement('select');
+                    select.id = 'owner-' + landlineCounter;
+                    select.name = 'inq-owner';
+                    select.className = 'form-control';
 
+                    var option = document.createElement('option');
+                    option.value = '';
+                    option.innerText = 'Choose new owner';
+                    select.appendChild(option);
+
+                    {% for sp in sps %}
+                        {% if sp not in inquiry.handler.all %}
+                            var option = document.createElement('option');
+                            option.value = '{{sp.id}}';
+                            option.innerText = '{{sp}}';
+
+                            select.appendChild(option);
+                        {% endif %}
+                    {% endfor %}
+                    
+
+            
+                    container.appendChild(label);
+                    container.appendChild(select);
+            
+                    var button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'btn btn-danger btn-sm';
+                    button.textContent = 'Remove';
+                    button.onclick = function () {
+                        container.remove();
+                    };
+            
+                    container.appendChild(button);
+
+            
+                    document.getElementById('additional-owner').appendChild(container);
+            
+                    // Optionally, you can clear the value of the new input
+                    input.value = '';
+            
+                    landlineCounter++;
+                }
             </script>
 
+            <br><br>
 
 
 
+            <button class="btn btn-success" type="submit">Edit Inquiry</button>
+          </form>
 
+          <script>
+            $(document).ready(function () {
+              // Function to handle change event for superProvider
+              function handleSuperProviderChange() {
+                var superProviderId = $("#superProvider").val();
+                console.log(superProviderId);
 
+                // Fetch services
+                $.ajax({
+                  type: "GET",
+                  url: "/get_services_by_sp/",
+                  data: {
+                    super_provider_id: superProviderId,
+                  },
+                  dataType: "json",
+                  success: function (response) {
+                    $("#serviceList").empty();
+                    if (response.services && response.services.length > 0) {
+                      var selectElement = $("<select>", {
+                        id: "inquiry-services",
+                        name: "inquiry-services",
+                        required: true,
+                        class: "form-control",
+                      });
+                      $.each(response.services, function (index, service) {
+                        console.log(service);
+                        var option = $("<option>", {
+                          value: service.id,
+                          text: service.id + " - " + service.name,
+                        });
+                        selectElement.append(option);
+                      });
+                      $("#serviceList").append(selectElement);
+                    } else {
+                      $("#serviceList").text("No services available");
+                    }
+                  },
+                  error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                  },
+                });
 
+                // Fetch employees
+                $.ajax({
+                  type: "GET",
+                  url: "/get_employees_by_sp/",
+                  data: {
+                    super_provider_id: superProviderId,
+                  },
+                  dataType: "json",
+                  success: function (response) {
+                    $("#employeeList").empty();
+                    if (response.employees && response.employees.length > 0) {
+                      var selectElement = $("<select>", {
+                        id: "inquiry-employees",
+                        name: "inquiry-employees",
+                        required: true,
+                        class: "form-control",
+                      });
+                      $.each(response.employees, function (index, employee) {
+                        console.log(employee);
+                        var option = $("<option>", {
+                          value: employee.id,
+                          text: employee.id + " - " + employee.name,
+                        });
+                        selectElement.append(option);
+                      });
+                      $("#employeeList").append(selectElement);
+                    } else {
+                      $("#employeeList").text("No employees available");
+                    }
+                  },
+                  error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                  },
+                });
+              }
 
+              // Attach change event handler
+              $("#superProvider").change(handleSuperProviderChange);
 
-
-
+              // Trigger the change event on page load if needed
+              $("#superProvider").change();
+            });
+          </script>
         </div>
-        
 
-<!-- ######################################################################### -->
+        <!-- ######################################################################### -->
 
         <!-- Content: Start -->
         {% if is_flex %}
-        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
-        {% else %}
-        <div class="{{container_class}} flex-grow-1 container-p-y">
-            {% endif %}
-            {% block content %}
+        <div
+          class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0"
+        >
+          {% else %}
+          <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %} {% block content %} {% endblock content %}
+          </div>
+          <!-- / Content: End -->
 
-            {% endblock content %}
-
-        </div>
-        <!-- / Content: End -->
-
-        <!--{% if is_footer %}
+          <!--{% if is_footer %}
             Footer: Start 
         {% include "parts/footer.html" %}
             Footer: End 
         {% endif %}-->
 
-        <div class="content-backdrop fade"></div>
+          <div class="content-backdrop fade"></div>
         </div>
         <!--/ Content wrapper: End -->
-    </div>
+      </div>
 
-
-    <!-- / Layout page: End -->
+      <!-- / Layout page: End -->
     </div>
 
     {% if is_menu %}
@@ -231,7 +391,7 @@
     {% endif %}
     <!-- Drag Target Area To SlideIn Menu On Small Screens -->
     <div class="drag-target"></div>
+  </div>
+  <!-- Layout wrapper: End -->
+  {% endblock layout %}
 </div>
-<!-- Layout wrapper: End -->
-{% endblock layout %}
-

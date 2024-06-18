@@ -35,6 +35,13 @@
             {% endfor %}
         {% endif %}
         -->
+        {% if messages %}
+            {% for message in messages %}
+                <center>
+                    <div class="alert {% if message.tags %} alert-{{message.tags}} {% endif %}">{{ message }}</div>
+                </center>
+            {% endfor %}
+        {% endif %}
 
     {% if user.employee.position.name == "call center" or user.employee.position.name == "admin" or inquiry.sp.name == user.employee.sp.name or "inquiry info" in permissions_list %}
 
@@ -62,47 +69,7 @@
                     <h6>Nationality: {{ customer.nationality }}</h6>
                 </ul>
 
-                <br><br>
-
-                {% if user.employee == inquiry.owner or user.employee.position.name == "call center" %}
-                    <hr>
-                    <h3 style="color: #105794;">{{user.employee.position.name}} update State</h3>
-                    <ul>
-                            <form>
-                                {% for state in status %}
-                                    {% if inquiry_state.status.name == state.name %}
-                                    <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" checked>
-                                    <label for="{{state.name}}">{{state.name}}</label><br>
-                                    {% else %}
-                                        {% if state.name == "send Q or B" %}
-
-                                            <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('sendQ')">
-                                            <label for="{{state.name}}">{{state.name}}</label><br>
-                                        {% else %}
-                                            <input type="radio" id="{{state.name}}"  name="inquiry_state" value="{{state.name}}" onclick="makeInq('{{state.name}}')">
-                                            <label for="{{state.name}}">{{state.name}}</label><br>
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            </form>
-                            <script>
-                                function makeInq(state) {
-                                    $.ajax({
-                                        type: "GET",
-                                        url: `/make_inq_${state}/{{inquiry.id}}`, // Replace inq_id with the actual inquiry ID
-                                        success: function(data) {
-                                            // Handle success response if needed
-                                        },
-                                        error: function(xhr, status, error) {
-                                            console.error('Error:', error);
-                                        }
-                                    });
-                                }
-                            </script>
-
-                    </ul>
-                    <br><hr>
-                {% endif %}
+                <br>
             
                 <h3 style="color: #105794;">Contact Information</h3>
 
@@ -163,9 +130,11 @@
             
                 <h3 style="color:#479d1f;">Inquiry
                     {% if user.employee.position.name == "call center" or user.employee.position.name == "super provider" %}
-                        {% if not booking_number and quotations %}
+                        <!-- {% if not booking_number and quotations %}
                             <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
-                        {% endif %}
+                        {% endif %} -->
+                        <a href="{% url 'make_action' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> New Demand </a>
+
                     {% endif %}
 
                     <a href="{% url 'edit_inquiry' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Edit  </a>
@@ -318,52 +287,40 @@
             
             <div id="update2">
                 <br>
-                {% if user.employee.position.name == "super provider" %}
-                    <div style="text-align: center;">
-                        <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations</a>
-                    </div>  
-                {% elif user.employee.permissions.all %}
-                    {% for permission in user.employee.permissions.all %}
-                        {% if permission.name == "make quotation" %}
-                            <div style="text-align: center;">
-                                <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations</a>
-                            </div>                      
-                        {% endif %}
-                    {% endfor %}
+                {% if not quotations %}
+                    {% if user.employee.position.name == "super provider" or user.employee.position.name == "call center" %}
+                        <div style="text-align: center;">
+                            <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations</a>
+                        </div>  
+                    {% elif user.employee.permissions.all %}
+                        {% for permission in user.employee.permissions.all %}
+                            {% if permission.name == "make quotation" %}
+                                <div style="text-align: center;">
+                                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations</a>
+                                </div>                      
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
                 <br>
                 <!-- Add other inquiry details as needed -->
 
             
             <hr>
-            {% if quotations %}
-                <h3 style="color:#264f13;">Quotations 
-                    {% if quotations and user.employee.position.name == "super provider" %}
-                        <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
-                    {% endif %}
-                    {% if quotations and user.employee.position.name == "admin" %}
-                        <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
-                        <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Generate PDF</a>
-                    {% endif %}
-                    {% for permission in user.employee.permissions.all %}
-                        {% if quotations and permission.name == "extract quotations" or user.employee.position.name == "call center" %}
-                            <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
-                        {% endif %}
-                        {% if quotations and permission.name == "edit quotation" %}
-                            <a class="btn btn-primary" href="{% url 'edit_quotation' inquiry.id %}">Edit Quotations</a>
-                        {% endif %}
-                    {% endfor %}
-            
-                    <a href="{{ whatsapp_link }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>
-                </h3> 
-                    
+
+
+            <div>
+                {% if requests.last.quotation.all and not requests.last.booking %}
+                    <h3 style="color:#264f13;">Quotations <small> (demand {% if requests.last.demande != 'by call center' %} for {% endif %} {{requests.last.demande}} )</small> 
+                        <a class="btn btn-primary" href="{% url 'generate_pdf' requests.last.id %}" target="_blank">Quotation PDF</a> 
+                        <a class="btn btn-dark" href="{% url 'edit_quotation' requests.last.id %}">Edit Quotations</a>
+                        {% if not requests.last.booking %} <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-success" > Make Booking </a>{% endif %}</h3>
                     <table class="table">
                         <thead>
                             <tr>
                                 {% for column in columns_list %}
                                     <th>{{ column }}</th>
                                 {% endfor %}
-
                                 <!-- Add other columns as needed -->
                             </tr>
                         </thead>
@@ -378,49 +335,123 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% if quotations or user.employee.position.name == "admin" or user.employee.position.name == "call center" %}
-                        {% if inquiry_state.status.name ==  "send Q or B" %}
-                            <a href="{% url 'make_inq_pending' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> quotation has been sent to the client </a>
-                        {% endif %}
-                    {% endif %}
-            {% endif %}
-
-                <br>
-                <!-- Add other inquiry details as needed -->
-            {% if booking_number %}
-                <hr>
-                <h3 style="color:#264f13;">Booking
-                    
-                    
-                {% if user.employee.position.name == "call center" or  user.employee.position.name == "admin" %}
-                    <a class="btn btn-primary" href="{% url 'edit_booking' id=inquiry.id %}">Edit Booking</a>
-                    <a class="btn btn-primary" href="{% url 'generate_invoice' id=inquiry.id %}" target="_blank">INVOICE PDF</a>
                 {% endif %}
 
-                <a href="{{ whatsapp_link_invoice }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>
+                <br>
                 
-                </h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Details</th>
-                            <th>Booking Number</th>
-                            <th>Booking Date</th>
-                            <th>Booking Reminder</th>
-                            <!-- Add other columns as needed -->
-                        </tr>
-                    </thead>
-                    <tbody>
+                {% if user.employee.position.name == "call center" and not requests.last.quotation.all %}
+                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations by call center</a>
+                {% endif %}
+                {% if requests.last.demande == 'work' and user.employee.position.name == "super provider" and not requests.last.quotation.all %}
+                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations for work</a>
+                {% endif %}
+                {% if requests.last.demande == 'visit' and user.employee.position.name == "super provider" and not requests.last.quotation.all %}
+                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations for visit</a>
+                {% endif %}
+                {% if requests.last.demande == 'inspiction' and user.employee.position.name == "super provider" and not requests.last.quotation.all %}
+                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations for inspiction</a>
+                {% endif %}
+                {% if requests.last.demande == 'design' and user.employee.position.name == "super provider" and not requests.last.quotation.all %}
+                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations for design</a>
+                {% endif %}
+                {% if requests.last.demande == 'follow up' and user.employee.position.name == "super provider" and not requests.last.quotation.all %}
+                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations for follow up</a>
+                {% endif %}
+                
+                <br>
+                <br>
+                
+                {% if history_data %}
+                    <h3 style="color:#264f13;">History Of Quotations</h3>
+                {% endif %}
+                <ul>
+                    {% for data in history_data %}
+                        {% if data.request.quotation.all %}
+                            <li>
+                                <h5>(Quotation {% if data.request.demande != 'by call center' %} for {% endif %} {{data.request.demande}}) 
+                                    <a class="btn btn-primary" href="{% url 'generate_pdf' data.request.id %}" target="_blank">Quotation PDF</a> 
+                                    <a class="btn btn-dark" href="{% url 'edit_quotation' data.request.id %}">Edit Quotations</a>
+                                    <a href="{{ data.whatsapp_link }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>                        
+                                </h5>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            {% for column in columns_list %}
+                                                <th>{{ column }}</th>
+                                            {% endfor %}
+                                            <!-- Add other columns as needed -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for line in data.inquiry_data %}
+                                            <tr>
+                                                {% for case in line %}
+                                                    <td>{{ case }}</td>
+                                                {% endfor %}
+                                                <!-- Add other columns as needed -->
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </li>
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <br>
+            <br>
+            <br>
+            <br>
+
+            {% if history_book %}
+                <h3 style="color:#264f13;">History Of Bookings</h3><br>
+            {% endif %}
+            <ul>
+            {% for request in history_book  %}
+                {% if request.book.booking %}
+                <li>
+                    <h5>(Booking {% if request.book.demande != 'by call center' %} for {% endif %} {{request.book.demande}}) 
+                        <a class="btn btn-primary" href="{% url 'generate_invoice' request.book.id %}" target="_blank">INVOICE PDF</a> 
+                        <a class="btn btn-dark" href="{% url 'edit_booking' request.book.id %}">Edit Booking</a>
+                        <a href="{{ request.whatsapp_link_invoice }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>   
+                    </h5>
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>{{ booking_detail }}</td>
-                                <td>{{ booking_number }}</td>
-                                <td>{{ booking_date }}</td>
-                                <td>{{ schedule_date }}</td>
+                                <th>Details</th>
+                                <th>Booking Number</th>
+                                <th>Booking Date</th>
+                                <th>Booking Reminder</th>
                                 <!-- Add other columns as needed -->
                             </tr>
-                    </tbody>
-                </table>
-            {% endif %}
+                        </thead>
+                        <tbody>
+                                <tr>
+                                    <td>{{ request.book.booking.details }}</td>
+                                    <td>{{ request.book.booking.booking_number }}</td>
+                                    <td>{{ request.book.booking.booking_date }}</td>
+                                    <td>{{ request.book.schedule }}</td>
+                                    <!-- Add other columns as needed -->
+                                </tr>
+                        </tbody>
+                    </table>
+                </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+
+
+            
+
+            <br>
+            <br>
+            <br>
+            <br>
+
+            <br>
+
 
             <br>
             <hr>

@@ -1,6 +1,6 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Edit quotation{% endblock %}
+{% block title %}Add quotation{% endblock %}
 
 {% block layout %}
 <!-- Layout wrapper: Start -->
@@ -29,7 +29,7 @@
 
         <div class="container">
             <center>
-                <h1>Edit quotation</h1>
+                <h1>make quotation</h1>
                 <br>
                 <h4>description</h4>
                 <p> {{ inquiry.description }}</p>
@@ -42,59 +42,173 @@
 
                 <h3>quotation Details</h3>
                 <div>
+                    
+                    <!--
+                    <div class="col-md-4">
+                        <h6 for="id_quotation-service">Service : {{ user.employee.sp_service.name }} </h6>
+                    </div>-->
                     <div class="col-md-4">
                         <label for="id_quotation-date" > Quotation Date : </label>
-                        <input type="date" id="id_quotation-date" value="{{ date|date:'Y-m-d' }}" name="quotation-date" class="form-control" >
+                        <input type="date" value="{{ date|date:'Y-m-d' }}" id="id_quotation-date" name="quotation-date" class="form-control" required >
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="id_quotation-sp">super provider :</label>
+                        <select id="id_quotation-sp" name="quotation-sp" class="form-control" disabled>
+                                <option value="{{ sp.id }}" selected>{{ sp }}</option>
+                        </select>
                     </div>
 
                     <div class="col-md-4">
                         <label for="id_quotation-service">service :</label>
-                        <select id="id_quotation-service" name="quotation-service" class="form-control">
-                                <option value="{{ service.id }}" selected >{{ service.id }} - {{ service.name }}</option>
-                                {% for srv in services %}
-                                    <option value="{{ srv.id }}">{{ srv }}</option>
+                        <select id="id_quotation-service" name="quotation-service" class="form-control" disabled>
+                                {% for service in services %}
+                                    <option value="{{ service.id }}">{{ service }}</option>
                                 {% endfor %}
                         </select>
                     </div>
+
+                
+
                     
                     <br><br>
 
 
 
                     <!-- add details forms -->
-                    <!-- edit details forms -->
-                    {% for q in quotations %}
-                    <p>{{q.data}}</p>
-                        <div class="col-md-4">
-                            <label for="id_quotation-detail-{{ forloop.counter }}">Detail :</label>
-                            <textarea type="text" rows="3" id="id_quotation-detail-{{ forloop.counter }}" name="quotation-detail" class="form-control" placeholder="Detail..." aria-label="detail">{{ q.detail }}</textarea>
+                    <!-- Add details forms -->
+                    <div class="col-md-4">
 
-                            <label for="id_quotation-price-{{ forloop.counter }}">Price :</label>
-                            <input type="number" id="id_quotation-price-{{ forloop.counter }}" value="{{ q.price }}" name="quotation-price" class="form-control" placeholder="Price..." aria-label="Price" oninput="updateTotal({{ forloop.counter }})">
+                        {% for quotation in last %}
+                        <div id="{{quotation.n}}">
 
-                            <label for="id_quotation-quantity-{{ forloop.counter }}">Quantity :</label>
-                            <input type="number" id="id_quotation-quantity-{{ forloop.counter }}" value="{{ q.quantity }}" name="quotation-quantity" class="form-control" placeholder="Quantity..." aria-label="Quantity" oninput="updateTotal({{ forloop.counter }})">
-
+                            {% for column in quotation.data %}
+                                {% if column.name == "price" or column.name == "quantity" %}
+                                <label for="id_quotation-{{column.name}}-{{quotation.n}}">{{ column.name }} :</label>
+                                <input type="number" id="id_quotation-{{column.name}}-{{quotation.n}}" name="quotation-{{column.name}}" class="form-control" value="{{column.value}}" placeholder="{{column.name}}..." aria-label="column" oninput="updateTotal({{quotation.n}})" required>
+                                {% else %}
+                                <label for="id_quotation-{{column.name}}-1">{{ column.name }} :</label>
+                                <input type="text" id="id_quotation-{{column.name}}-{{quotation.n}}" name="quotation-{{column.name}}" class="form-control" value="{{column.value}}" placeholder="{{column.name}}..." aria-label="column" oninput="updateTotal({{quotation.n}})">
+                                {% endif %}
+                            {% endfor %}
                             <label for="Total">Total:</label>
-                            <span id="total-{{ forloop.counter }}" name="total">{{ q.total }}</span>
+                            <span id="total-{{quotation.n}}" onload="updateTotal({{quotation.n}})" name="total"></span>
 
-                            <hr>
+                            <br>
+                            <button type="button" class='btn btn-danger btn-sm' onclick="deleteQ({{quotation.id}} , {{quotation.n}})">delete</button>
+
+                            <br><hr><br>
                         </div>
-                    {% endfor %}
+
+                        {% endfor %}
+
+                        <script>
+                            function deleteQ(id,n){
+                                cont = document.getElementById(n)
+                                cont.remove()
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '/delete_quotation',
+                                    data: {
+                                        'q_id': id,
+                                    },
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        console.log("yeaaaaaaaaaaaaaah")
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Error:', error);
+                                    }
+                                });
+            
+                            }
+                        </script>
+
+
+                        
+
+                        <hr>
+                    </div>
+
+                    <div id="additional-quotations"></div>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addQuotation()">Add New Quotation</button>
 
                     <script>
-                        function updateTotal(quotationId) {
-                            var price = document.getElementById('id_quotation-price-' + quotationId).value;
-                            var quantity = document.getElementById('id_quotation-quantity-' + quotationId).value;
+                        var quotationCounter = 2;
 
-                            // Calculate total
-                            var total = price * quantity;
 
-                            // Display the total
-                            document.getElementById('total-' + quotationId).innerHTML = total.toFixed(2); // You can format the total as needed
-                        }
+                    function updateTotal(quotationId) {
+                        var price = parseFloat(document.getElementById('id_quotation-price-' + quotationId).value) || 0;
+                        var quantity = parseFloat(document.getElementById('id_quotation-quantity-' + quotationId).value) || 0;
+
+                        // Calculate total
+                        var total = price * quantity;
+
+                        // Display the total
+                        document.getElementById('total-' + quotationId).innerHTML = total.toFixed(2);
+                    }
+
+                    function addQuotation() {
+                        var hr = document.createElement('hr');
+                        var container = document.createElement('div');
+                        container.className = 'col-md-4';
+
+                        {% for column in columns_list %}
+                            var label = document.createElement('label');
+                            label.setAttribute('for', 'id_quotation-{{ column }}-' + quotationCounter);
+                            label.textContent = '{{ column }} ' + quotationCounter + ' :';
+                            var input = document.createElement('{% if column == "price" or column == "quantity" %}input{% else %}textarea{% endif %}');
+                            input.type = '{% if column == "price" or column == "quantity" %}number{% else %}text{% endif %}';
+                            input.id = 'id_quotation-{{ column }}-' + quotationCounter;
+                            input.name = 'quotation-{{ column }}';
+                            input.className = 'form-control';
+                            input.placeholder = '{{ column }} ' + quotationCounter + '...';
+                            input.setAttribute('aria-label', '{{ column }} ' + quotationCounter);
+                            {% if column != "price" and column != "quantity" %}
+                                input.rows = 3;
+                            {% endif %}
+                            // Add an event listener to each input for real-time total calculation
+                            input.addEventListener('input', function() {
+                                updateTotal(quotationCounter);
+                            });
+                            input.setAttribute('oninput', 'updateTotal(' + quotationCounter + ')');
+                            container.appendChild(label);
+                            container.appendChild(input);
+                        {% endfor %}
+
+                        var labelTotal = document.createElement('label');
+                        labelTotal.setAttribute('for', 'total-' + quotationCounter);
+                        labelTotal.textContent = 'Total:';
+                        var spanTotal = document.createElement('span');
+                        spanTotal.id = 'total-' + quotationCounter;
+                        spanTotal.name = 'total';
+                        container.appendChild(labelTotal);
+                        container.appendChild(spanTotal);
+
+                        var divv = document.createElement('div');
+                        container.appendChild(divv);
+
+                        var button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = 'btn btn-danger btn-sm';
+                        button.textContent = 'Remove';
+                        button.onclick = function () {
+                            container.remove();
+                        };
+
+                        container.appendChild(button);
+
+                        container.appendChild(hr);
+
+                        document.getElementById('additional-quotations').appendChild(container);
+
+                        quotationCounter++;
+                    }
 
                     </script>
+
+                    <br><br>
+
 
 
 
@@ -102,8 +216,12 @@
                     <br><br>
                 </div>
 
+                <br>
 
-                <button class="btn btn-success" type="submit">Edit quotation</button>
+
+
+                <br><br>
+                <button class="btn btn-success" type="submit">Add Quotation</button>
             </form>
 
 

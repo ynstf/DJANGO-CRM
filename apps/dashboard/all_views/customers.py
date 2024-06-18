@@ -6,7 +6,7 @@ from apps.authentication.models import Employee, Permission, Position
 from django.shortcuts import render, redirect, get_object_or_404
 from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotation, Service, Source, SuperProvider
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
-from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate
+from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate, Request
 from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
 from ..models import Customer, Nationality, InquiryNotify, Status, InquiryStatus, IsEmployeeNotified, InquiryReminder
 from django.contrib.auth.decorators import login_required
@@ -205,9 +205,7 @@ def add_customer_view(request):
         email_form = request.POST.getlist('customer-emails')
         merge_option = request.POST.get('merge_option')
         merge = merge_option == 'yes'
-        print(f'Merge: {merge}')
-        print(f'pppppppppppppppppppppppppppppppppppppppppppppp')
-        print(f'Merge: {merge_option}')
+
 
         #address fields
         adress_name = request.POST.getlist('address-address_name')
@@ -227,9 +225,6 @@ def add_customer_view(request):
         remainder_checked = request.POST.getlist('remainder_check')
         schedule_time = request.POST.getlist('inquiry-reminder')
 
-        print("suuuuuuuuuuuuuuuui remainder : ")
-        print(remainder_checked)
-        print(schedule_time)
 
         inq_desc = request.POST.getlist('inquiry-description')
 
@@ -376,11 +371,17 @@ def add_customer_view(request):
                                 
                             )
                             inquiry.save()
-                            employees = Employee.objects.filter(sp=current_sp)
+
+                            
+
+                            """employees = Employee.objects.filter(sp=current_sp)
                             for employee in employees:
                                 inquiry.handler.add(employee)
                                 inquiry.save()
                             inquiry.handler.add(request.user.employee)
+                            inquiry.save()"""
+
+                            inquiry.handler.add(owner)
                             inquiry.save()
 
 
@@ -392,25 +393,31 @@ def add_customer_view(request):
                             )
                             inq_state.save()
 
-                            all_employees = Employee.objects.filter(sp=current_sp)
+                            #all_employees = Employee.objects.filter(sp=current_sp)
                             
-                            for employee in all_employees:
-                                notification = InquiryNotify(
-                                    employee = employee,
-                                    inquiry = inquiry,
-                                    sp = current_sp,
-                                    action = "new"
-                                )
-                                notification.save()
+                            #for employee in all_employees:
+                            notification = InquiryNotify(
+                                employee = owner,
+                                inquiry = inquiry,
+                                sp = current_sp,
+                                action = "new"
+                            )
+                            notification.save()
 
-                                isnotify = IsEmployeeNotified(
-                                    employee = employee,
-                                    notified = False
-                                )
-                                isnotify.save()
+                            isnotify = IsEmployeeNotified(
+                                employee = owner,
+                                notified = False
+                            )
+                            isnotify.save()
+
+                            req = Request(
+                                inquiry = inquiry,
+                                demande = "by call center"
+                            )
+                            req.save()
                         
                         print("haaaaaaaaaaaaa ana")
-                        print(remainder_checked[q])
+                        print(req)
                         
                         if remainder_checked[q] == "on":
                             print("waaaaaaaaaaaaaaaaaaaa rani dkhjaaaalt")

@@ -1,0 +1,84 @@
+{% extends 'layout/master.html' %} {% block title %}Action Inquiry{% endblock %}
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div
+  class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}"
+>
+  <div class="layout-container">
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+      {% if is_navbar %}
+      <!-- Navbar: Start -->
+      {% include "parts/navbar.html" %}
+      <!-- Navbar: End -->
+      {% endif %}
+
+      <!-- ######################################################################### -->
+      <!-- Content wrapper: Start -->
+      <div class="content-wrapper">
+        <div class="container">
+
+            <h3>making action</h3>
+
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="radio" id="work"  name="inquiry_action" value="work">
+                <label for="work">work</label><br>
+                <input type="radio" id="visit"  name="inquiry_action" value="visit">
+                <label for="visit">visit</label><br>
+                <input type="radio" id="inspiction"  name="inquiry_action" value="inspiction">
+                <label for="inspiction">inspiction</label><br>
+                <input type="radio" id="design"  name="inquiry_action" value="design">
+                <label for="design">design</label><br>
+                <input type="radio" id="follow up"  name="inquiry_action" value="follow up">
+                <label for="follow up">follow up</label><br>
+
+
+                <button class="btn btn-success" type="submit">Add New Action</button>
+            </form>
+
+        </div>
+
+        <!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div
+          class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0"
+        >
+          {% else %}
+          <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %} {% block content %} {% endblock content %}
+          </div>
+          <!-- / Content: End -->
+
+          <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+          <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+      </div>
+
+      <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+  </div>
+  <!-- Layout wrapper: End -->
+  {% endblock layout %}
+</div>

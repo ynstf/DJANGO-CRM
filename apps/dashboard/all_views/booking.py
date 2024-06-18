@@ -7,7 +7,7 @@ from web_project import TemplateLayout
 from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, Email, Service, Booking
 from apps.authentication.models import Employee,Permission
 from apps.dashboard.models import (Advence, EmployeeAction, Inquiry, InquiryNotify,
-    InquiryReminder, InquiryStatus, IsEmployeeNotified, Language, Nationality, Source, Status)
+    InquiryReminder, InquiryStatus, IsEmployeeNotified, Language, Nationality, Source, Status, Request)
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 import io
@@ -100,7 +100,12 @@ def make_booking_view(request,id):
             )
             booking.save()
 
+            req = Request.objects.filter(inquiry=inquiry).last()
+            req.booking = booking
+            req.schedule = schedule_time
+
             if inquiry.services.have_reminder == 'True':
+                req.schedule = schedule_time
                 reminder = InquiryReminder(
                     employee = employee,
                     inquiry=inquiry,
@@ -109,6 +114,8 @@ def make_booking_view(request,id):
                     schedule=schedule_time
                 )
                 reminder.save()
+
+            req.save()
 
         print()
         
@@ -192,10 +199,10 @@ def edit_booking_view(request,id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
 
-    inquiry = Inquiry.objects.get(id = id)
-    quotations = Quotation.objects.filter(inquiry=inquiry)
 
-
+    req = Request.objects.get(id = id)
+    inquiry = req.inquiry
+    quotations = req.quotation.all()
     
 
     if request.method == 'POST':
@@ -208,28 +215,27 @@ def edit_booking_view(request,id):
         schedule_time = request.POST.get('schedule-time')
 
 
-        inquiry = Inquiry.objects.get(id=id)
         customer_id = inquiry.customer.id
         customer = Customer.objects.get(id=customer_id)
         employee_id = request.user.employee.id
         employee = Employee.objects.get(id=employee_id)
 
 
-
         srv_id = inquiry.services.id
         quotation_service = Service.objects.get(id=srv_id)
 
-        booking = Booking.objects.get(inquiry=inquiry)
+        booking = req.booking
         booking.booking_date = quotation_date
         booking.details = booking_details
         booking.booking_number = booking_number
         booking.save()
 
-        reminder = InquiryReminder.objects.get(inquiry=inquiry)
-        reminder.schedule = schedule_time
-        reminder.save()
+        if schedule_time:
+            reminder = InquiryReminder.objects.filter(inquiry=inquiry).last()
+            reminder.schedule = schedule_time
+            reminder.save()
         
-        return redirect('inquiry_info', id=id)
+        return redirect('inquiry_info', id=inquiry.id)
 
 
 
@@ -240,21 +246,27 @@ def edit_booking_view(request,id):
 
 
     #book infos
-    book = Booking.objects.get(inquiry=inquiry)
-    reminder = InquiryReminder.objects.get(inquiry=inquiry)
+    book = req.booking
+
+    reminder = InquiryReminder.objects.filter(inquiry=inquiry).last()
+    
     # monthly reminnder
+    have_reminder = service.have_reminder
     reminder_time = service.reminder_time
+
     # Get today's date
     today = datetime.now()
     # Add 5 months to today's date
     scheduling = today + timedelta(days=reminder_time*30)
 
-    quotations=[]
+
+
+    """quotations=[]
     for q in Quotation.objects.filter(inquiry=Inquiry.objects.get(id = id)):
         print(q.data)
         quotations.append([d for d in q.data.split(",*,")])
 
-    cols = Inquiry.objects.get(id=id).services.columns
+    cols = inquiry.services.columns
     cols_list = cols.split(',')
 
     defult_data = []
@@ -275,7 +287,7 @@ def edit_booking_view(request,id):
 
         defult_data.append(
             {"detail":details[i], "result":result, "columns":cols_list[1:-2], "price":prices[i], "quantity":quantities[i] , "total":float(prices[i])*float(quantities[i])}
-        )
+        )"""
     
     # Render the initial page with the full customer list
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
@@ -284,26 +296,29 @@ def edit_booking_view(request,id):
                 'layout_path': layout_path,
                 'notifications':notifications,
                 'notifications_counter':notifications_counter,
-                'inquiry': Inquiry.objects.get(id=id),
+                'inquiry': inquiry,
                 'date':date,
                 'service' : service,
-                'quotations':defult_data,
                 'services':Service.objects.all(),
                 'sp':sp,
                 'scheduling':scheduling,
                 'reminder_time':reminder_time,
                 'book':book,
                 'reminder':reminder,
+                'have_reminder':have_reminder,
                 }
     
     context = TemplateLayout.init(request, context)
     return render(request, 'booking/edit_booking.html',context)
 
 
-def generate_invoice_view(request, id):
+def generate_invoice_view(request, request_id):
+
+    req = Request.objects.get(id = request_id)
+    inquiry = req.inquiry
+    quotations = req.quotation.all()
+
     # Retrieve the inquiry and associated quotations
-    inquiry = Inquiry.objects.get(id=id)
-    quotations = Quotation.objects.filter(inquiry=inquiry)
     customer = Customer.objects.get(id=inquiry.customer.id)
     phone = PhoneNumber.objects.filter(customer=customer)[0]
     email = Email.objects.filter(customer=customer)[0]
@@ -343,7 +358,8 @@ def generate_invoice_view(request, id):
     
 
 
-    booking = Booking.objects.get(inquiry=inquiry)
+    #booking = Booking.objects.get(inquiry=inquiry)
+    booking = req.booking
     date=booking.booking_date
     service=booking.booking_service
 
