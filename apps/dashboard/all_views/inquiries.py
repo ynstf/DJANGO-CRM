@@ -26,6 +26,7 @@ import cloudinary.uploader
 import json
 from datetime import datetime
 from django.contrib import messages as msgs
+from django.db.models import Q
 
 
 ################# permissions ############
@@ -323,7 +324,6 @@ def make_inq_done(request,inq_id):
 
     return redirect('inquiries_list')
 
-
 def make_action(request,inq_id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
     notifications_counter = notifications.count()
@@ -384,10 +384,6 @@ def make_action(request,inq_id):
 
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiry/make_action.html',context)
-
-
-
-
 
 
 
@@ -733,13 +729,14 @@ def inquiries_list_view(request):
         except:
             totale = 0
             
-
+        reqs = Request.objects.filter(inquiry=i) 
         try:
             inquiry.append({'info':i,
                             'state':InquiryStatus.objects.get(inquiry=i),
                             'advence' : advence,
                             'totale':totale,
-                            'action':EmployeeAction.objects.filter(inquiry=i).last()
+                            'action':EmployeeAction.objects.filter(inquiry=i).last(),
+                            'requests':reqs
                         })
         except:
             inquiry.append({'info':i,
@@ -817,9 +814,6 @@ def inquiry_info_view(request, id):
     inquiry_state = InquiryStatus.objects.get(inquiry=inquiry)
     customer = inquiry.customer
     requests = Request.objects.filter(inquiry=inquiry)
-
-
-
 
     # upload images 
     if request.method == 'POST':
@@ -1097,7 +1091,8 @@ def make_quotation_view(request, id):
             except:
                 req = Request(
                     inquiry = inquiry,
-                    demande = "by call center"
+                    demande = "by call center",
+                    aproved = True
                 )
                 req.save()
                 req.quotation.add(quotation)
@@ -1217,7 +1212,31 @@ def edit_quotation_view(request, id):
             quotation.save()
 
             req.quotation.add(quotation)
+
+            if request.user.employee.position.name == 'super provider':
+                req.aproved = False
+                # notify all cc and admins
+                cc = Position.objects.get(name="call center")
+                admin = Position.objects.get(name="admin")
+                all_employees = Employee.objects.filter(Q(position=cc) | Q(position=admin))
+                #create notification
+                for employee in all_employees:
+                    notification = InquiryNotify(
+                        employee = employee,
+                        inquiry = inquiry,
+                        service = inquiry.services,
+                        action = "need approve"
+                    )
+                    notification.save()
+                    isnotify = IsEmployeeNotified(
+                        employee = employee,
+                        notified = False
+                    )
+                    isnotify.save()
+
             req.save()
+
+
         
         return redirect('inquiry_info', id=inquiry.id)
 
@@ -1277,126 +1296,31 @@ def edit_quotation_view(request, id):
 
 
 
-"""@login_required(login_url='/')
-@user_passes_test(lambda u: u.groups.filter(name__in=['provider', 'admin', 'call_center']).exists() or (Permission.objects.get(name="edit quotation") in u.employee.permissions.all()) )
-def edit_quotation_view(request,id):
-    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
-    notifications_counter = notifications.count()
-    messages = MessageNotify.objects.filter(employee=request.user.employee)
-    messages_counter = messages.count()
+def make_approvment(request, req_id):
+    req = Request.objects.get(id = req_id)
+    req.aproved = True
+    req.save()
 
-    req = Request.objects.get(id = id)
     inquiry = req.inquiry
-    quotations = req.quotation.all()
 
-    print(quotations)
-    date=quotations[0].quotation_date
-    service=quotations[0].quotation_service
-
-    quotations=[]
-    for q in req.quotation.all():
-        print(q.data)
-        quotations.append([d for d in q.data.split(",*,")])
-
-    cols = inquiry.services.columns
-    cols_list = cols.split(',')
-
-    defult_data = []
-    details = []
-    prices = []
-    quantities = []
-    for i in range(len(quotations)):
-        details.append(quotations[i][0])
-        prices.append(quotations[i][len(quotations[i])-2])
-        quantities.append(quotations[i][len(quotations[i])-1])
-    
-    for i in range(len(quotations)):
-        data = []
-        for d in quotations[i][1:-2]:
-            data.append(d)
-
-        result = [{"column_name": col, "data": d} for col, d in zip(cols_list[1:-2], data)]
-
-        defult_data.append(
-            {"detail":details[i], "result":result, "columns":cols_list[1:-2], "price":prices[i], "quantity":quantities[i] , "total":float(prices[i])*float(quantities[i])}
+    #create notification
+    for employee in inquiry.handler.all():
+        notification = InquiryNotify(
+            employee = employee,
+            inquiry = inquiry,
+            service = inquiry.services,
+            action = "approvement"
         )
-    
+        notification.save()
+        isnotify = IsEmployeeNotified(
+            employee = employee,
+            notified = False
+        )
+        isnotify.save()
 
-    if request.method == 'POST':
-        quotation_service = request.POST.get('quotation-service')
-        quotation_date = request.POST.get('quotation-date')
-
-        #ids = request.POST.getlist('quotation-id')
-        details = request.POST.getlist('quotation-details')
-        prices = request.POST.getlist('quotation-price')
-        quantities = request.POST.getlist('quotation-quantity')
-        
-
-        customer_id = inquiry.customer.id
-        customer = Customer.objects.get(id=customer_id)
-        employee_id = request.user.employee.id
-        employee = Employee.objects.get(id=employee_id)
-
-        print(employee,inquiry,customer,quotation_service,quotation_date,details,prices,quantities)
-        
-        srv_id = quotation_service
-        quotation_service = Service.objects.get(id=srv_id)
-
-        #delete old values
-        quots = req.quotation.all()
-        quots.delete()
-
-        
-
-        #save the new values
-        for i in range(len(prices)):
-            columns_str = ""
-            for col in cols_list:
-                columns_str = columns_str + request.POST.getlist(f'quotation-{col}')[i] + ',*,'
-
-            columns_str = columns_str[0:-3]
-
-            quotation = Quotation(
-                employee=employee,
-                customer=customer,
-                inquiry=inquiry,
-                quotation_service=quotation_service,
-                quotation_sp=inquiry.sp,
-                invoice_counter=inquiry.sp.reference,
-                quotation_date=quotation_date,
-                data = columns_str,
-                total=float(prices[i])*float(quantities[i])
-            )
-            quotation.save()
-
-            req.quotation.add(quotation)
-            req.save()
-
-        return redirect('inquiry_info', id=inquiry.id)
+    return redirect('inquiry_info', id=inquiry.id) 
 
 
-
-    # Render the initial page with the full customer list
-    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
-
-    context = {'position': request.user.employee.position,
-                'layout_path': layout_path,
-                'notifications':notifications,
-                'notifications_counter':notifications_counter,
-                'inquiry': inquiry,
-                'date':date,
-                'service' : service,
-                #'quotations':req.quotation.all(),
-                'services':Service.objects.all(),
-                'messages':messages,
-                'messages_counter':messages_counter,
-                'quotations':defult_data,
-
-                }
-    
-    context = TemplateLayout.init(request, context)
-    return render(request, 'inquiry/edit_quotation.html',context)
-"""
 @login_required(login_url='/')
 def edit_inquiry(request,id):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)

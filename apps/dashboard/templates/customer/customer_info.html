@@ -105,14 +105,7 @@
                         <h6>Services: {{ inquiry.services.id }} - {{ inquiry.services }}</h6>
                         <h6>Description: {{ inquiry.description }}</h6>
 
-                        {% if inquiry.has_quotations and user.employee.position.name == "admin"  %}
-                            <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
-                        {% endif %}
-                        {% for permission in user.employee.permissions.all %}
-                            {% if permission.name == "extract quotations" %}
-                                <a class="btn btn-primary" href="{% url 'generate_pdf' id=inquiry.id %}" target="_blank">Quotations</a>
-                            {% endif %}
-                        {% endfor %}
+
                         <br>
                     </li>
                     <!-- Add other inquiry details as needed -->

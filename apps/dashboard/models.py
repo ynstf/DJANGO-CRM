@@ -238,6 +238,8 @@ class InquiryNotify(models.Model):
                                                     ('reminder', 'reminder'),
                                                     ('complain', 'complain'),
                                                     ('done', 'done'),
+                                                    ('need approve', 'need approve'),
+                                                    ('approvement', 'approvement'),
                                                     ], blank=True, null=True)
     # Add other fields as needed
 
@@ -283,6 +285,8 @@ class Request(models.Model):
     demande = models.CharField(max_length=20, choices=[('by call center', 'by call center'), ('work', 'work'), ('visit', 'visit'), ('inspiction', 'inspiction'), ('design', 'design'), ('follow up', 'follow up')], blank=True, null=True)
     quotation =  models.ManyToManyField(Quotation, blank=True, null=True)
     schedule = models.DateField(blank=True, null=True)
+    aproved = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f'request for {self.inquiry}'

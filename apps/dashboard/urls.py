@@ -48,7 +48,7 @@ from .views import (make_inq_connecting, make_inq_sendQ,
 from .all_views.admin import crm_page, crm_pdf_view, generate_statistics_pdf
 from .all_views.admin import super_provider, super_provider_edit, service_info,service_edit
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
-from .all_views.inquiries import map,edit_inquiry,make_action
+from .all_views.inquiries import map,edit_inquiry,make_action, make_approvment
 from .all_views.infos import check_phone_number, delete_owner_from_inquiry, delete_quotation
 from .all_views.calendar import calendar_view, reminder_day_view
 urlpatterns = [
@@ -156,6 +156,8 @@ urlpatterns = [
     path('make_inq_done/<int:inq_id>', make_inq_done, name='make_inq_done'),
 
     path('make_action/<int:inq_id>', make_action, name='make_action'),
+
+    path('make_approvment/<int:req_id>', make_approvment, name='make_approvment'),
 
 ]
 

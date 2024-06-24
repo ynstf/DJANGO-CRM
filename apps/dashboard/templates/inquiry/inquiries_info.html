@@ -287,7 +287,7 @@
             
             <div id="update2">
                 <br>
-                {% if not quotations %}
+                <!-- {% if not quotations %}
                     {% if user.employee.position.name == "super provider" or user.employee.position.name == "call center" %}
                         <div style="text-align: center;">
                             <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations</a>
@@ -302,7 +302,7 @@
                         {% endfor %}
                     {% endif %}
                 {% endif %}
-                <br>
+                <br> -->
                 <!-- Add other inquiry details as needed -->
 
             
@@ -312,9 +312,17 @@
             <div>
                 {% if requests.last.quotation.all and not requests.last.booking %}
                     <h3 style="color:#264f13;">Quotations <small> (demand {% if requests.last.demande != 'by call center' %} for {% endif %} {{requests.last.demande}} )</small> 
-                        <a class="btn btn-primary" href="{% url 'generate_pdf' requests.last.id %}" target="_blank">Quotation PDF</a> 
+
                         <a class="btn btn-dark" href="{% url 'edit_quotation' requests.last.id %}">Edit Quotations</a>
-                        {% if not requests.last.booking %} <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-success" > Make Booking </a>{% endif %}</h3>
+
+                        {% if requests.last.aproved  %}
+                            <a class="btn btn-primary" href="{% url 'generate_pdf' requests.last.id %}" target="_blank">Quotation PDF</a> 
+                            {% if not requests.last.booking %} <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-success" > Make Booking </a>{% endif %}
+                        {% endif %}
+                        {% if not requests.last.aproved and user.employee.position.name != "super provider" %}
+                            <a class="btn btn-primary" href="{% url 'make_approvment' requests.last.id %}" >Make Approvement</a> 
+                        {% endif %}
+                    </h3>
                     <table class="table">
                         <thead>
                             <tr>
@@ -369,9 +377,15 @@
                         {% if data.request.quotation.all %}
                             <li>
                                 <h5>(Quotation {% if data.request.demande != 'by call center' %} for {% endif %} {{data.request.demande}}) 
-                                    <a class="btn btn-primary" href="{% url 'generate_pdf' data.request.id %}" target="_blank">Quotation PDF</a> 
                                     <a class="btn btn-dark" href="{% url 'edit_quotation' data.request.id %}">Edit Quotations</a>
-                                    <a href="{{ data.whatsapp_link }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>                        
+                                    
+                                    {% if data.request.aproved  %}
+                                        <a class="btn btn-primary" href="{% url 'generate_pdf' data.request.id %}" target="_blank">Quotation PDF</a> 
+                                        <a href="{{ data.whatsapp_link }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>      
+                                    {% endif %}
+                                    {% if not data.request.aproved and user.employee.position.name != "super provider" %}
+                                        <a class="btn btn-primary" href="{% url 'make_approvment' data.request.id %}" >Make Approvement</a> 
+                                    {% endif %}
                                 </h5>
                                 <table class="table">
                                     <thead>
@@ -412,10 +426,17 @@
             {% for request in history_book  %}
                 {% if request.book.booking %}
                 <li>
+                    
+
                     <h5>(Booking {% if request.book.demande != 'by call center' %} for {% endif %} {{request.book.demande}}) 
-                        <a class="btn btn-primary" href="{% url 'generate_invoice' request.book.id %}" target="_blank">INVOICE PDF</a> 
                         <a class="btn btn-dark" href="{% url 'edit_booking' request.book.id %}">Edit Booking</a>
-                        <a href="{{ request.whatsapp_link_invoice }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>   
+                        
+                        
+                        {% if request.book.aproved  %}
+                        <a class="btn btn-primary" href="{% url 'generate_invoice' request.book.id %}" target="_blank">INVOICE PDF</a> 
+                        <a href="{{ request.whatsapp_link_invoice }}" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a>        
+                        {% endif %}
+
                     </h5>
                     <table class="table">
                         <thead>

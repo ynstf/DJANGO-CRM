@@ -778,6 +778,10 @@
                                     });
                                 </script>
                             </th>
+                            <th>
+                                <strong style="cursor: pointer;" >Quotations </strong><br>
+                                
+                            </th>
                             {% if user.employee.position.name != "super provider" or "sp" in cols %}
                                 <th>
                                     <strong id="sp_sort" style="cursor: pointer;">Service Provider <span>&#8595;</span></strong>
@@ -969,6 +973,14 @@
                                         <div class="line">Source : {{ inquiry.info.source }}</div> 
                                     {% endif %}
                                     <div class="line">Status : {{ inquiry.state.status }}</div>
+                                </td>
+
+                                <td>
+                                    {% if inquiry.requests.last.aproved %}
+                                        <a class="btn btn-primary" href="{% url 'generate_pdf' inquiry.requests.last.id %}" target="_blank">Quotation PDF</a> 
+                                    {% else %}
+                                        <p>you dont any Approved Quotaion</p>
+                                    {% endif %}
                                 </td>
 
                                 {% if user.employee.position.name != "super provider" or "sp" in cols %}
