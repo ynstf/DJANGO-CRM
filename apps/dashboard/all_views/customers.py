@@ -218,7 +218,7 @@ def add_customer_view(request):
         inq_date = request.POST.getlist('inquiry-date_inq')
         inq_source = request.POST.getlist('customer-source')
         inq_service = request.POST.getlist('inquiry-services')
-        inq_employees = request.POST.getlist('inquiry-employees')
+        #inq_employees = request.POST.getlist('inquiry-employees')
         team_leader = request.POST.getlist('inquiry-team_leader')
         sp = request.POST.getlist('inquiry-superprovider')
 
@@ -230,6 +230,7 @@ def add_customer_view(request):
 
         # counter to know inquiries of each address
         inq_counters = request.POST.get('inq_counters')
+
         
 
 
@@ -343,11 +344,17 @@ def add_customer_view(request):
             for i in range(1,len(s)+1):
                 try:
                     print('dkheeeeeeeeeeeeeelt')
-                    for _ in range(s[f"{i}"]):
+                    for inq_per_address in range(s[f"{i}"]):
+
+                        inq_employees = request.POST.getlist(f'inquiry-employees_{i}_{inq_per_address+1}')
+                        print("debuuuug")
+                        print(f"inquiry-employees_{i}_{inq_per_address+1}")
+                        print(inq_employees)
+
                         print(adress_name[i-1])
                         address = addresses[i-1]
                         services_set = Service.objects.get(name=inq_service[q])
-                        owner = Employee.objects.get(id=inq_employees[q])
+                        #owner = Employee.objects.get(id=inq_employees[q])
                         team = Employee.objects.get(id=team_leader[q])
                         
 
@@ -366,7 +373,7 @@ def add_customer_view(request):
                                 services=services_set,
                                 sp=current_sp,
                                 description=inq_desc[q],
-                                owner=owner,
+                                #owner=owner,
                                 team_leader=team,
                                 
                             )
@@ -381,7 +388,25 @@ def add_customer_view(request):
                             inquiry.handler.add(request.user.employee)
                             inquiry.save()"""
 
-                            inquiry.handler.add(owner)
+                            for id_employee in inq_employees:
+                                owner = Employee.objects.get(id=id_employee)
+                                inquiry.handler.add(owner)
+                                
+
+                                notification = InquiryNotify(
+                                    employee = owner,
+                                    inquiry = inquiry,
+                                    sp = current_sp,
+                                    action = "new"
+                                )
+                                notification.save()
+
+                                isnotify = IsEmployeeNotified(
+                                    employee = owner,
+                                    notified = False
+                                )
+                                isnotify.save()
+
                             inquiry.save()
 
 
@@ -396,19 +421,7 @@ def add_customer_view(request):
                             #all_employees = Employee.objects.filter(sp=current_sp)
                             
                             #for employee in all_employees:
-                            notification = InquiryNotify(
-                                employee = owner,
-                                inquiry = inquiry,
-                                sp = current_sp,
-                                action = "new"
-                            )
-                            notification.save()
 
-                            isnotify = IsEmployeeNotified(
-                                employee = owner,
-                                notified = False
-                            )
-                            isnotify.save()
 
                             req = Request(
                                 inquiry = inquiry,

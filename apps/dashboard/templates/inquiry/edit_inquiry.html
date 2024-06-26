@@ -27,7 +27,7 @@
             <h1>Edit Inquiry</h1>
           </center>
           <br />
-            {% if user.employee == inquiry.owner or user.employee.position.name == "call center" %}
+            {% if user.employee in inquiry.handler.all or user.employee.position.name == "call center" %}
                 <hr>
                 <h3 style="color: #105794;">{{user.employee.position.name}} update State</h3>
                 <ul>
@@ -77,7 +77,7 @@
 
             <div class="col-md-4">
               <label for="id_customer-source">Source :</label>
-              <select name="customer-source" class="form-control" required>
+              <select name="customer-source" class="form-control" required {% if user.employee.position.name == "super provider" %} disabled {% endif %} >
                 <option value="{{inquiry.source.id}}" selected>
                   {{inquiry.source}}
                 </option>
@@ -94,6 +94,7 @@
                 class="form-control"
                 name="inquiry-superprovider"
                 required
+                {% if user.employee.position.name == "super provider" %} disabled {% endif %}
               >
                 <!-- Populate dropdown menu with super providers -->
                 <option value="{{inquiry.sp.id}}" selected>
@@ -108,7 +109,7 @@
               </select>
 
               <label for="serviceList">Services:</label>
-              <div id="serviceList">
+              <div id="serviceList" >
                 <option value="{{inquiry.services.id}}" selected>
                   {{inquiry.services.name}}
                 </option>
@@ -116,14 +117,6 @@
                 <!-- Services will be displayed here -->
               </div>
 
-              <label for="employeeList">Employees owner:</label>
-              <div id="employeeList">
-                <option value="{{inquiry.owner.id}}" selected>
-                  {{inquiry.owner}}
-                </option>
-
-                <!-- Employees will be displayed here -->
-              </div>
 
               <label for="team_leader">Team Leader:</label>
               <select
@@ -131,6 +124,7 @@
                 class="form-control"
                 name="inquiry-team_leader"
                 required
+                {% if user.employee.position.name == "super provider" %} disabled {% endif %}
               >
                 <option value="{{inquiry.team_leader.id}}" selected>
                   {{inquiry.team_leader}}
@@ -152,6 +146,7 @@
                 class="form-control"
                 placeholder="Inquiry description..."
                 aria-label="Inquiry Number"
+                {% if user.employee.position.name == "super provider" %} disabled {% endif %}
               >
 {{inquiry.description}}</textarea
               >
@@ -294,7 +289,13 @@
                         name: "inquiry-services",
                         required: true,
                         class: "form-control",
+                        {% if user.employee.position.name == "super provider" %} 
+                          disabled: true,
+                          readonly: true
+                        {% endif %}
+
                       });
+                      
                       $.each(response.services, function (index, service) {
                         console.log(service);
                         var option = $("<option>", {

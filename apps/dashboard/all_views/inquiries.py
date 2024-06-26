@@ -388,9 +388,12 @@ def make_action(request,inq_id):
 
 
 def get_messages(request):
-
-    messages = MessageNotify.objects.filter(employee=request.user.employee)
-    messages_counter = messages.count()
+    try:
+        messages = MessageNotify.objects.filter(employee=request.user.employee)
+        messages_counter = messages.count()
+    except:
+        messages = []
+        messages_counter = 0
     messages_data = [{'message': str(message)} for message in messages]
     return JsonResponse({'messages': messages_data, 'messages_counter': messages_counter}, safe=False)
 
@@ -445,9 +448,13 @@ def get_notifications(request):
         pass
 
 
+    try:
+        notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+        notifications_counter = notifications.count()
+    except:
+        notifications = []
+        notifications_counter = 0
 
-    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
-    notifications_counter = notifications.count()
     notifications_data = [{'message': str(notification)} for notification in notifications]
     return JsonResponse({'notifications': notifications_data, 'notifications_counter': notifications_counter}, safe=False)
 
@@ -1334,7 +1341,7 @@ def edit_inquiry(request,id):
         inq_source = request.POST.get('customer-source')
         inq_service = request.POST.get('inquiry-services')
         team_leader = request.POST.get('inquiry-team_leader')
-        inq_employees = request.POST.get('inquiry-employees')
+        #inq_employees = request.POST.get('inquiry-employees')
         sp = request.POST.get('inquiry-superprovider')
         inq_desc = request.POST.get('inquiry-description')
 
@@ -1344,7 +1351,7 @@ def edit_inquiry(request,id):
         src = Source.objects.get(id=inq_source)
         tl = Employee.objects.get(id=team_leader)
         sup = SuperProvider.objects.get(id=sp)
-        owner = Employee.objects.get(id=inq_employees)
+        #owner = Employee.objects.get(id=inq_employees)
         desc = inq_desc
 
         print("service:" ,srv)
@@ -1352,12 +1359,12 @@ def edit_inquiry(request,id):
         print("team :",tl)
         print("sp: ",sup)
         print("desc:",desc)
-        print("owner",owner)
+        #print("owner",owner)
 
         inquiry.services = srv
         inquiry.source = src
         inquiry.sp = sup
-        inquiry.owner = owner
+        #inquiry.owner = owner
         inquiry.description = desc
         inquiry.team_leader = tl
 
@@ -1366,10 +1373,10 @@ def edit_inquiry(request,id):
         inquiry.save()
 
         for owner in owners:
+            print('owner::::::::::::::',owner)
             employee = Employee.objects.get(id=owner)
             inquiry.handler.add(employee)
-            inquiry.save()
-
+            
             notification = InquiryNotify(
                 employee = employee,
                 inquiry = inquiry,
@@ -1383,6 +1390,7 @@ def edit_inquiry(request,id):
                 notified = False
             )
             isnotify.save()
+        inquiry.save()
 
 
         return redirect("inquiry_info",id=id)

@@ -57,10 +57,10 @@
                                     <input class="form-check-input" type="radio" name="merge_option" id="merge-yes" value="yes">
                                     <label class="form-check-label" for="merge-yes">Merge</label>
                                 </div>
-                                <div class="form-check">
+                                <!-- <div class="form-check">
                                     <input class="form-check-input" type="radio" name="merge_option" id="merge-no" value="no">
                                     <label class="form-check-label" for="merge-no">No Merge</label>
-                                </div>
+                                </div> -->
                             </div>
                         
                             <input type="hidden" id="merge-option-selected" name="merge_option_selected" value="">
@@ -687,9 +687,10 @@
                                     if (response.employees && response.employees.length > 0) {
                                         var selectElement = $('<select>', {
                                             id: 'inquiry-employees',
-                                            name: 'inquiry-employees',
+                                            name: 'inquiry-employees_'+addressIndex+'_'+inqCounters[addressIndex],
                                             required: true,
-                                            class:"form-control"
+                                            class:"form-control",
+                                            multiple: "multiple" // This attribute allows multiple selections
                                         });
                                         $.each(response.employees, function(index, employeeName) {
                                             console.log(employeeName)
