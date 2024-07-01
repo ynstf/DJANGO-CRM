@@ -52,15 +52,16 @@
 
                         <div class="col-md-4">
                             <div id="merge" style="display: none;">
-                                <p>Phone number already exists for <a href="" id="customer-link"><span id="existing-customer-name"></span></a>. Do you want to merge?</p>
+                                <p>Phone number already exists for <a href="" id="customer-link"><span id="existing-customer-name"></span></a>.<!--  Do you want to merge? --> </p>
+
+
+                                
+                                <!-- 
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="merge_option" id="merge-yes" value="yes">
-                                    <label class="form-check-label" for="merge-yes">Merge</label>
+                                    <label class="form-check-label" for="merge-yes" >Merge</label>
                                 </div>
-                                <!-- <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="merge_option" id="merge-no" value="no">
-                                    <label class="form-check-label" for="merge-no">No Merge</label>
-                                </div> -->
+                                -->
                             </div>
                         
                             <input type="hidden" id="merge-option-selected" name="merge_option_selected" value="">
@@ -91,6 +92,21 @@
                                                         }
                                                 
                                                 $('#merge').show();
+                                                                                                         // Set specific input fields to readonly
+                                                $('#id_customer-first_name').prop('readonly', true);
+                                                $('#id_customer-last_name').prop('readonly', true);
+                                                $('#id_customer-gender').prop('disabled', true);
+                                                $('#id_customer-nationality').prop('disabled', true);
+                                                $('#id_customer-language').prop('disabled', true);
+                                                $('#id_customer-trn').prop('readonly', true);
+
+                                                $('#id_customer-first_name').val(data.customer.first_name);
+                                                $('#id_customer-last_name').val(data.customer.last_name);
+                                                $('#id_customer-gender').val(data.customer.gender);
+                                                $('#id_customer-nationality').val(data.customer.nationality);
+                                                $('#id_customer-language').val(data.customer.language);
+                                                $('#id_customer-trn').val(data.customer.trn);
+                                                
                                                 $('#merge-yes').on('change', function(){
                                                     if ($(this).is(':checked')) {
 
