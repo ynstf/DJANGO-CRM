@@ -81,7 +81,7 @@ from .all_views.inquiries import (inquiries_list_view, edit_quotation_view,
                                     inquiry_info_view, make_quotation_view, 
                                     generate_pdf_view, notifications_view,
                                     get_notifications, make_inq_connecting,
-                                    make_inq_sendQ,make_inq_pending,
+                                    make_inq_sendQ,make_inq_sendB,make_inq_pending,
                                     make_inq_new,get_notify_state_view,
                                     make_employee_notified_view, make_inq_cancel,
                                     add_advence_view, make_complain_view, make_inq_complain,
@@ -96,6 +96,7 @@ notifications = notifications_view
 make_inq_connecting = make_inq_connecting
 get_notifications = get_notifications
 make_inq_sendQ=make_inq_sendQ
+make_inq_sendB=make_inq_sendB
 make_inq_pending = make_inq_pending
 make_inq_new = make_inq_new
 get_notify_state = get_notify_state_view

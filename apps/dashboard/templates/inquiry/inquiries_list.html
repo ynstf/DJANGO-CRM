@@ -899,7 +899,12 @@
                                             <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
                                             <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
                                         </td>
-                                    {% elif inquiry.state.status.name == "send Q or B" %}
+                                    {% elif inquiry.state.status.name == "send Q" %}
+                                        <td style="background-color: #afc1ef; color: black;">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "send B" %}
                                         <td style="background-color: #afc1ef; color: black;">
                                             <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
                                             <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>

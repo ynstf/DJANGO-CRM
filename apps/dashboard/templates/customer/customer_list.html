@@ -434,7 +434,9 @@
                                     <td style="background-color:  #abd08e ; color: black;">{{ customer.statu.name }}</td>
                                 {% elif customer.statu.name == "connecting" %}
                                     <td style="background-color:  #ffd4ba ; color: black;">{{ customer.statu.name }}</td>
-                                {% elif customer.statu.name == "send Q or B" %}
+                                {% elif customer.statu.name == "send Q" %}
+                                    <td style="background-color: #afc1ef; color: black;">{{ customer.statu.name }}</td>
+                                {% elif customer.statu.name == "send B" %}
                                     <td style="background-color: #afc1ef; color: black;">{{ customer.statu.name }}</td>
                                 {% elif customer.statu.name == "pending" %}
                                     <td style="background-color: #f4af85; color: black;">{{ customer.statu.name }}</td>

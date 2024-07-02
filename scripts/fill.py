@@ -18,7 +18,7 @@ def run():
 
     Permissions = ["extract quotations", "customer list", "see customer info", "edit customer", "add customer", "inquiry list", "inquiry info", "make quotation", "edit quotation"]
 
-    status = ["new", "connecting", "pending", "cancel", "done", "underproccess", "send Q or B", "complain", 'reminder']
+    status = ["new", "connecting", "pending", "cancel", "done", "underproccess", "send Q", "send B", "complain", 'reminder']
 
     # Create Languages
     for language in Languages:

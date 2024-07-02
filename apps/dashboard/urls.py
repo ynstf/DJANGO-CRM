@@ -39,7 +39,7 @@ from .views import (get_languages, get_status, get_nationalities,
                     get_services_by_sp,get_employees_by_sp)
 
 # importation for make inquiry state change
-from .views import (make_inq_connecting, make_inq_sendQ,
+from .views import (make_inq_connecting, make_inq_sendQ, make_inq_sendB,
                     make_inq_pending, make_inq_cancel,
                     make_inq_underproccess, make_inq_new,
                     make_inq_complain, make_inq_done)
@@ -150,6 +150,7 @@ urlpatterns = [
     path('make_inq_new/<int:inq_id>', make_inq_new, name='make_inq_new'),
     path('make_inq_connecting/<int:inq_id>', make_inq_connecting, name='make_inq_connecting'),
     path('make_inq_sendQ/<int:inq_id>', make_inq_sendQ, name='make_inq_sendQ'),
+    path('make_inq_sendB/<int:inq_id>', make_inq_sendB, name='make_inq_sendB'),
     path('make_inq_pending/<int:inq_id>', make_inq_pending, name='make_inq_pending'),
     path('make_inq_cancel/<int:inq_id>', make_inq_cancel, name='make_inq_cancel'),
     path('make_inq_complain/<int:inq_id>', make_inq_complain, name='make_inq_complain'),

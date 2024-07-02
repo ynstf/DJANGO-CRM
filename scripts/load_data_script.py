@@ -12,7 +12,7 @@ fake = Faker()
 @transaction.atomic
 def run():
 
-    status = ["new","connecting","pending","cancel","underproccess","send Q or B"]
+    status = ["new","connecting","pending","cancel","underproccess","send Q","send B"]
     status_objs = [Status.objects.get_or_create(name=state)[0] for state in status]
 
     # Create Languages

@@ -232,6 +232,7 @@ class InquiryNotify(models.Model):
                                                     ('connecting', 'connecting'),
                                                     ('cancel', 'cancel'),
                                                     ('send quotation', 'send quotation'),
+                                                    ('send bill', 'send bill'),
                                                     ('pending', 'pending'),
                                                     ('underpreccess', 'underpreccess'),
                                                     ('updated', 'updated'),

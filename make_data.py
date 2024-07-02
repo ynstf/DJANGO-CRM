@@ -43,7 +43,7 @@ def run_and_save_to_excel():
                 "telegram", "recommended customer", "whats up broadcast", "whats up marketing", "sms campaign",
                 "email marketing"])
         description = fake.text()
-        status1 = choice(["new", "connecting", "pending", "cancel", "underproccess", "send Q or B"])
+        status1 = choice(["new", "connecting", "pending", "cancel", "underproccess","send Q", "send B"])
         status = choice([status1,'done'])
 
         data.append([

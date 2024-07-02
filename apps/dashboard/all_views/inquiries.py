@@ -190,7 +190,7 @@ def make_inq_connecting(request,inq_id):
     return redirect('inquiries_list')
 
 def make_inq_sendQ(request,inq_id):
-    sendQ  = Status.objects.get(name = "send Q or B")
+    sendQ  = Status.objects.get(name = "send Q")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
     inq_state.status = sendQ
@@ -213,6 +213,39 @@ def make_inq_sendQ(request,inq_id):
             inquiry = inquiry,
             service = inquiry.services,
             action = "send quotation"
+        )
+        notification.save()
+        isnotify = IsEmployeeNotified(
+            employee = employee,
+            notified = False
+        )
+        isnotify.save()
+    return redirect('inquiries_list')
+
+def make_inq_sendB(request,inq_id):
+    sendB  = Status.objects.get(name = "send B")
+    inquiry = Inquiry.objects.get(id = inq_id)
+    inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.status = sendB
+    inq_state.save()
+
+    #create action
+    action = EmployeeAction(
+        from_employee=request.user.employee,
+        inquiry = inquiry,
+        status = InquiryStatus.objects.get(inquiry = inquiry).status
+    )
+    action.save()
+
+    #create notification
+    cc = Position.objects.get(name="call center")
+    all_employees = Employee.objects.filter(position=cc)
+    for employee in all_employees:
+        notification = InquiryNotify(
+            employee = employee,
+            inquiry = inquiry,
+            service = inquiry.services,
+            action = "send bill"
         )
         notification.save()
         isnotify = IsEmployeeNotified(
@@ -960,7 +993,7 @@ def inquiry_info_view(request, id):
 
     status = []
     call_center_actions = ['pending','new','cancel','done','complain','underproccess']
-    service_provider_actions = ['connecting','send Q or B','underproccess','new']
+    service_provider_actions = ['connecting','send Q','send B','underproccess','new']
     for state in Status.objects.all():
         if request.user.employee.position.name == "call center" and state.name in call_center_actions :
             status.append(state)
@@ -1398,7 +1431,7 @@ def edit_inquiry(request,id):
 
     status = []
     call_center_actions = ['pending','new','cancel','done','complain','underproccess']
-    service_provider_actions = ['connecting','send Q or B','underproccess','new']
+    service_provider_actions = ['connecting','send Q','send B','underproccess','new']
     for state in Status.objects.all():
         if request.user.employee.position.name == "call center" and state.name in call_center_actions :
             status.append(state)
