@@ -835,6 +835,7 @@
                             {% if user.employee.position.name != "super provider" or "map" in cols %}
                                 <th style="cursor: pointer;"><strong>Map</strong></th>
                             {% endif %}
+                            <th>Delete</th>
 
 
                             <!-- Add other columns as needed -->
@@ -1071,6 +1072,7 @@
                                 {% endif %}
 
 
+                                <td><a href="{% url 'delete_inq' inquiry.info.id %}" class="btn btn-danger btn-sm">Delete</a></td>
 
                                 <!-- Add other columns as needed -->
                             </tr>

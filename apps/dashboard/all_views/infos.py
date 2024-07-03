@@ -1,7 +1,8 @@
 
 import django.contrib.auth
 from django.http import JsonResponse
-from apps.dashboard.models import Quotation
+from apps.dashboard.models import Customer, Quotation
+from django.shortcuts import redirect
 from ..models import Inquiry, Language, Nationality, Source, Service, Status, SuperProvider, PhoneNumber
 from apps.authentication.models import Employee
 
@@ -99,6 +100,19 @@ def delete_owner_from_inquiry(request):
     else:
         # Handle non-AJAX requests
         return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
+
+def delete_customer(request,id):
+    customer = Customer.objects.get(id=id)
+    customer.delete()
+    return redirect('customer_list')
+
+
+def delete_inq(request,id):
+    inq = Inquiry.objects.get(id=id)
+    inq.delete()
+    return redirect('inquiries_list')
+
+
 
 def delete_quotation(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':

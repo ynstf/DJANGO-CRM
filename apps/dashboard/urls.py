@@ -49,7 +49,8 @@ from .all_views.admin import crm_page, crm_pdf_view, generate_statistics_pdf
 from .all_views.admin import super_provider, super_provider_edit, service_info,service_edit
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
 from .all_views.inquiries import map,edit_inquiry,make_action, make_approvment
-from .all_views.infos import check_phone_number, delete_owner_from_inquiry, delete_quotation
+from .all_views.infos import (check_phone_number, delete_owner_from_inquiry,
+                            delete_quotation, delete_customer,delete_inq)
 from .all_views.calendar import calendar_view, reminder_day_view
 urlpatterns = [
 
@@ -107,6 +108,8 @@ urlpatterns = [
     path('delete_email/<int:id_mail>', delete_email, name='delete_email'),
     path('delete_address/<int:id_address>', delete_address, name='delete_address'),
     path('delete_inquiry/<int:id_inq>', delete_inquiry, name='delete_inquiry'),
+    path('delete_customer/<int:id>', delete_customer, name='delete_customer'),
+    path('delete_inq/<int:id>', delete_inq, name='delete_inq'),
 
     # get informations
     path('get_languages', get_languages, name='get_languages'),

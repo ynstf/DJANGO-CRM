@@ -416,6 +416,7 @@
                             <th>TRN</th>
                             <th>Email</th>
                             <th>Phone Number</th>
+                            <th>Delete</th>
 
                             <!-- Add other columns as needed -->
                         </tr>
@@ -454,7 +455,7 @@
 
                                 <td> 
 
-                                    {% if user.employee.position.name == 'call center' %}
+                                    {% if user.employee.position.name == 'call center' or user.employee.position.name == 'admin' %}
                                     <a href="{% url 'customer_info' customer.info.id %}">{{ customer.info.first_name }}</a>
                                     {% else %}
                                         {{ customer.info.first_name }}
@@ -478,6 +479,7 @@
                                 <td>{{ customer.info.trn }}</td>
                                 <td>{{ customer.email.email }}</td>
                                 <td>{{ customer.number.number }}</td>
+                                <td><a href="{% url 'delete_customer' customer.info.id %}" class="btn btn-danger btn-sm">Delete</a></td>
 
                                 <!-- Add other columns as needed -->
                             </tr>

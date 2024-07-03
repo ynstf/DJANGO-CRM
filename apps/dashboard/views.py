@@ -136,6 +136,7 @@ delete_inquiry = delete_inquiry_view
 
 
 
+
 ############### customer manupilations #################
 from .all_views.customers import merge_customer,customer_list_view, add_customer_view, customer_info_view, edit_customer_view
 customer_list = customer_list_view

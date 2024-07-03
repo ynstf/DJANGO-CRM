@@ -38,3 +38,9 @@ def delete_inquiry_view(request, id_inq):
     inquiry.delete()
     return redirect('edit_customer', id=id)
 
+def delete_inq(request, id_inq):
+    inquiry = get_object_or_404(Inquiry, id=id_inq)
+    id = inquiry.customer.id
+    inquiry.delete()
+    return redirect('inquiry_list')
+
