@@ -32,6 +32,7 @@ from xhtml2pdf import pisa
 import io
 
 
+    
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def crm_page(request):
@@ -213,6 +214,55 @@ def crm_page(request):
     except:
         effic = 0.0
         
+
+    #Response time rate
+    def to_hours(time_value):
+        if isinstance(time_value, timedelta):
+            return time_value.total_seconds() / 3600  # Convert timedelta to hours
+        elif isinstance(time_value, (int, float)):
+            return time_value / 3600  # Assume the int/float is in seconds, convert to hours
+        else:
+            raise ValueError(f"Unsupported type: {type(time_value)}")
+
+    rates = []
+    for sp in SuperProvider.objects.all():
+        #levels = ["good","intermidiate","bad","NotInquiry"]
+        inquiries = Inquiry.objects.filter(sp=sp)
+        mean = 'No Rate'
+        level = 'No Data'
+        if inquiries.count()==0:
+            level = 'No Inquiry'
+        else :
+            times = []
+            for inquiry in inquiries:
+                created = inquiry.date_inq
+                state = InquiryStatus.objects.get(inquiry=inquiry)
+                new = Status.objects.get(name='new')
+                if state.status != new:
+                    updated = state.update
+                    times.append(updated-created)
+            # calculate the mean
+            if times:
+                # Convert all times to hours
+                times_in_hours = [to_hours(t) for t in times]
+                
+                # Calculate mean
+                mean = sum(times_in_hours) / len(times_in_hours)
+
+                if mean < 2:
+                    level='good'
+                if mean >= 2 and mean < 5:
+                    level='intermidiate'
+                if mean >= 5:
+                    level='bad'
+                
+                print(f"The mean time is: {mean:.2f} hours")
+            else:
+                print("The list is empty.")
+
+
+        rates.append({"name":sp.name, "time":mean, "level":level})
+    
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'title':title,
                 'position': request.user.employee.position,
@@ -262,6 +312,7 @@ def crm_page(request):
 
                 'sources_data':sources_data,
 
+                'rates':rates
                 }
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard/crm.html', context)

@@ -416,7 +416,9 @@
                             <th>TRN</th>
                             <th>Email</th>
                             <th>Phone Number</th>
+                            {% if user.employee.position.name == "admin" %}
                             <th>Delete</th>
+                            {% endif %}
 
                             <!-- Add other columns as needed -->
                         </tr>
@@ -479,8 +481,9 @@
                                 <td>{{ customer.info.trn }}</td>
                                 <td>{{ customer.email.email }}</td>
                                 <td>{{ customer.number.number }}</td>
+                                {% if user.employee.position.name == "admin" %}
                                 <td><a href="{% url 'delete_customer' customer.info.id %}" class="btn btn-danger btn-sm">Delete</a></td>
-
+                                {% endif %}
                                 <!-- Add other columns as needed -->
                             </tr>
                         {% endfor %}
