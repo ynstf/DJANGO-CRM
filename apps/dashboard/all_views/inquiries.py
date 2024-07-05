@@ -120,6 +120,7 @@ def make_inq_cancel(request,inq_id):
     cancel = Status.objects.get(name = "cancel")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.preUpdate = inq_state.update
     inq_state.status = cancel
     try:
         inq_state.canceling_causes = canceling_causes
@@ -141,6 +142,10 @@ def make_inq_new(request,inq_id):
     new = Status.objects.get(name = "new")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    try:
+        inq_state.preUpdate = inq_state.update
+    except:
+        pass
     inq_state.status = new
     inq_state.save()
 
@@ -158,6 +163,7 @@ def make_inq_connecting(request,inq_id):
     connecting = Status.objects.get(name = "connecting")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.preUpdate = inq_state.update
     inq_state.status = connecting
     inq_state.save()
 
@@ -193,6 +199,7 @@ def make_inq_sendQ(request,inq_id):
     sendQ  = Status.objects.get(name = "send Q")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.preUpdate = inq_state.update
     inq_state.status = sendQ
     inq_state.save()
 
@@ -226,6 +233,7 @@ def make_inq_sendB(request,inq_id):
     sendB  = Status.objects.get(name = "send B")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.preUpdate = inq_state.update
     inq_state.status = sendB
     inq_state.save()
 
@@ -259,6 +267,7 @@ def make_inq_pending(request,inq_id):
     pending  = Status.objects.get(name = "pending")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.preUpdate = inq_state.update
     inq_state.status = pending
     inq_state.save()
 
@@ -293,6 +302,7 @@ def make_inq_complain(request,inq_id):
     complain  = Status.objects.get(name = "complain")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.preUpdate = inq_state.update
     inq_state.status = complain
     inq_state.save()
 
@@ -327,6 +337,7 @@ def make_inq_done(request,inq_id):
     done  = Status.objects.get(name = "done")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.preUpdate = inq_state.update
     inq_state.status = done
     inq_state.save()
 
@@ -376,6 +387,7 @@ def make_action(request,inq_id):
 
         new = Status.objects.get(name = "new")
         inq_state = InquiryStatus.objects.get(inquiry=inquiry)
+        inq_state.preUpdate = inq_state.update
         inq_state.status = new
         inq_state.save()
 
@@ -770,13 +782,35 @@ def inquiries_list_view(request):
             totale = 0
             
         reqs = Request.objects.filter(inquiry=i) 
+
         try:
+            stt = InquiryStatus.objects.get(inquiry=i)
+            act = EmployeeAction.objects.filter(inquiry=i).last()
+            
+            """delai = "null"
+            if stt.update and i.date_inq:
+                delai = stt.update - i.date_inq"""
+
+            delai = "null"
+            if stt.update and stt.preUpdate:
+                delai = stt.update - stt.preUpdate
+                if delai.total_seconds() < 60 * 60:  # less than 1 hour
+                    delai_minutes = int(delai.total_seconds() / 60)
+                    delai = f"{delai_minutes} minutes"
+                elif delai.total_seconds() < 24 * 60 * 60:  # less than 24 hours
+                    delai_hours = int(delai.total_seconds() / (60 * 60))
+                    delai = f"{delai_hours} hours"
+                else:  # more than 24 hours
+                    delai_days = delai.days
+                    delai = f"{delai_days} days"
+            
             inquiry.append({'info':i,
-                            'state':InquiryStatus.objects.get(inquiry=i),
+                            'state':stt,
                             'advence' : advence,
                             'totale':totale,
-                            'action':EmployeeAction.objects.filter(inquiry=i).last(),
-                            'requests':reqs
+                            'action':act,
+                            'requests':reqs,
+                            'delai':delai
                         })
         except:
             inquiry.append({'info':i,

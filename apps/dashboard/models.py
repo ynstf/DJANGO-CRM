@@ -176,6 +176,7 @@ class InquiryStatus(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     canceling_causes = models.CharField(max_length=200, blank=True, null=True)
     update = models.DateTimeField(auto_now=True, blank=True, null=True)
+    preUpdate = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.inquiry} is {self.status}'

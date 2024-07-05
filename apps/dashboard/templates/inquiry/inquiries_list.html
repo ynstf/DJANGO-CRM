@@ -661,6 +661,10 @@
                                     </script>
                                 </th>
                             {% endif %}
+
+                            {% if user.employee.position.name == "admin" %}
+                            <th>Delai</th>
+                            {% endif %}
                             
 
                             {% if user.employee.position.name == 'admin' %}
@@ -841,6 +845,8 @@
                             {% endif %}
 
 
+
+
                             <!-- Add other columns as needed -->
                         </tr>
                     </thead>
@@ -951,6 +957,10 @@
                                         <div class="line">Created : {{ inquiry.info.date_inq }}</div>
                                         <div class="line">Updated : {{ inquiry.state.update }}</div>
                                     </td>
+                                {% endif %}
+
+                                {% if user.employee.position.name == "admin" %}
+                                <td>{{ inquiry.delai }}</td>
                                 {% endif %}
                                 
 
@@ -1077,6 +1087,7 @@
                                 {% if user.employee.position.name == "admin" %}
                                 <td><a href="{% url 'delete_inq' inquiry.info.id %}" class="btn btn-danger btn-sm">Delete</a></td>
                                 {% endif %}
+
                                 <!-- Add other columns as needed -->
                             </tr>
                         {% endfor %}

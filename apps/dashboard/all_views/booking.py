@@ -19,6 +19,7 @@ def make_inq_underproccess(request,inq_id):
     underproccess = Status.objects.get(name = "underproccess")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
+    inq_state.preUpdate = inq_state.update
     inq_state.status = underproccess
     inq_state.save()
 
