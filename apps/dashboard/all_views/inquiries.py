@@ -27,7 +27,7 @@ import json
 from datetime import datetime
 from django.contrib import messages as msgs
 from django.db.models import Q
-
+from django.utils import timezone
 
 ################# permissions ############
 """
@@ -120,8 +120,8 @@ def make_inq_cancel(request,inq_id):
     cancel = Status.objects.get(name = "cancel")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
-    inq_state.preUpdate = inq_state.update
     inq_state.status = cancel
+    inq_state.cancelDelay = timezone.now()
     try:
         inq_state.canceling_causes = canceling_causes
     except:
@@ -142,11 +142,9 @@ def make_inq_new(request,inq_id):
     new = Status.objects.get(name = "new")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
-    try:
-        inq_state.preUpdate = inq_state.update
-    except:
-        pass
     inq_state.status = new
+    inq_state.newDelay = timezone.now()
+
     inq_state.save()
 
     #create action
@@ -163,8 +161,8 @@ def make_inq_connecting(request,inq_id):
     connecting = Status.objects.get(name = "connecting")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
-    inq_state.preUpdate = inq_state.update
     inq_state.status = connecting
+    inq_state.connectDelay = timezone.now()
     inq_state.save()
 
 
@@ -199,8 +197,8 @@ def make_inq_sendQ(request,inq_id):
     sendQ  = Status.objects.get(name = "send Q")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
-    inq_state.preUpdate = inq_state.update
     inq_state.status = sendQ
+    inq_state.sendqDelay = timezone.now()
     inq_state.save()
 
     #create action
@@ -233,8 +231,8 @@ def make_inq_sendB(request,inq_id):
     sendB  = Status.objects.get(name = "send B")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
-    inq_state.preUpdate = inq_state.update
     inq_state.status = sendB
+    inq_state.sendbDelay = timezone.now()
     inq_state.save()
 
     #create action
@@ -267,8 +265,8 @@ def make_inq_pending(request,inq_id):
     pending  = Status.objects.get(name = "pending")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
-    inq_state.preUpdate = inq_state.update
     inq_state.status = pending
+    inq_state.pendingDelay = timezone.now()
     inq_state.save()
 
     #create action
@@ -302,7 +300,6 @@ def make_inq_complain(request,inq_id):
     complain  = Status.objects.get(name = "complain")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
-    inq_state.preUpdate = inq_state.update
     inq_state.status = complain
     inq_state.save()
 
@@ -337,8 +334,8 @@ def make_inq_done(request,inq_id):
     done  = Status.objects.get(name = "done")
     inquiry = Inquiry.objects.get(id = inq_id)
     inq_state = InquiryStatus.objects.get(inquiry = inquiry)
-    inq_state.preUpdate = inq_state.update
     inq_state.status = done
+    inq_state.doneDelay = timezone.now()
     inq_state.save()
 
     #create action
@@ -387,7 +384,6 @@ def make_action(request,inq_id):
 
         new = Status.objects.get(name = "new")
         inq_state = InquiryStatus.objects.get(inquiry=inquiry)
-        inq_state.preUpdate = inq_state.update
         inq_state.status = new
         inq_state.save()
 
@@ -429,8 +425,6 @@ def make_action(request,inq_id):
 
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiry/make_action.html',context)
-
-
 
 def get_messages(request):
     try:
@@ -787,22 +781,26 @@ def inquiries_list_view(request):
             stt = InquiryStatus.objects.get(inquiry=i)
             act = EmployeeAction.objects.filter(inquiry=i).last()
             
-            """delai = "null"
-            if stt.update and i.date_inq:
-                delai = stt.update - i.date_inq"""
 
-            delai = "null"
-            if stt.update and stt.preUpdate:
-                delai = stt.update - stt.preUpdate
-                if delai.total_seconds() < 60 * 60:  # less than 1 hour
-                    delai_minutes = int(delai.total_seconds() / 60)
-                    delai = f"{delai_minutes} minutes"
-                elif delai.total_seconds() < 24 * 60 * 60:  # less than 24 hours
-                    delai_hours = int(delai.total_seconds() / (60 * 60))
-                    delai = f"{delai_hours} hours"
-                else:  # more than 24 hours
-                    delai_days = delai.days
-                    delai = f"{delai_days} days"
+            newDelay = stt.newDelay 
+            connectDelay = stt.connectDelay 
+            underproccessDelay = stt.underproccessDelay 
+            sendqDelay = stt.sendqDelay 
+            pendingDelay = stt.pendingDelay 
+            sendbDelay = stt.sendbDelay 
+            doneDelay = stt.doneDelay
+            cancelDelay = stt.cancelDelay
+
+
+            new_connect = (connectDelay - newDelay) if newDelay is not None and connectDelay is not None and connectDelay > newDelay else '_'
+            connect_sendqDelay = (sendqDelay - connectDelay) if sendqDelay is not None and connectDelay is not None and sendqDelay > connectDelay else '_'
+            sendqDelay_underproccessDelay = (underproccessDelay - sendqDelay) if underproccessDelay is not None and sendqDelay is not None and underproccessDelay > sendqDelay else '_'
+            underproccessDelay_sendbDelay = (sendbDelay - underproccessDelay) if sendbDelay is not None and underproccessDelay is not None and sendbDelay > underproccessDelay else '_'
+            
+            sendqDelay_pendingDelay = (pendingDelay - sendqDelay) if sendqDelay is not None and pendingDelay is not None and pendingDelay > sendqDelay else '_'
+            connect_underproccessDelay = (underproccessDelay - connectDelay) if underproccessDelay is not None and connectDelay is not None and underproccessDelay > connectDelay else '_'
+            sendbDelay_doneDelay = (doneDelay - sendbDelay) if doneDelay is not None and sendbDelay is not None and doneDelay - sendbDelay else '_'
+
             
             inquiry.append({'info':i,
                             'state':stt,
@@ -810,7 +808,15 @@ def inquiries_list_view(request):
                             'totale':totale,
                             'action':act,
                             'requests':reqs,
-                            'delai':delai
+                            
+                            'connect_sendqDelay': connect_sendqDelay,
+                            'new_connect': new_connect,
+                            'sendqDelay_underproccessDelay': sendqDelay_underproccessDelay,
+                            'underproccessDelay_sendbDelay': underproccessDelay_sendbDelay,
+                            'sendqDelay_pendingDelay': sendqDelay_pendingDelay,
+                            'connect_underproccessDelay': connect_underproccessDelay,
+                            'sendbDelay_doneDelay': sendbDelay_doneDelay,
+
                         })
         except:
             inquiry.append({'info':i,

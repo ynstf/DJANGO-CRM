@@ -176,10 +176,19 @@ class InquiryStatus(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     canceling_causes = models.CharField(max_length=200, blank=True, null=True)
     update = models.DateTimeField(auto_now=True, blank=True, null=True)
-    preUpdate = models.DateTimeField(blank=True, null=True)
+
+    newDelay = models.DateTimeField(blank=True, null=True)
+    connectDelay = models.DateTimeField(blank=True, null=True)
+    underproccessDelay = models.DateTimeField(blank=True, null=True)
+    sendqDelay = models.DateTimeField(blank=True, null=True)
+    pendingDelay = models.DateTimeField(blank=True, null=True)
+    sendbDelay = models.DateTimeField(blank=True, null=True)
+    doneDelay = models.DateTimeField(blank=True, null=True)
+    cancelDelay = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.inquiry} is {self.status}'
+
 
 class EmployeeAction(models.Model):
     from_employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)

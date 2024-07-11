@@ -844,6 +844,10 @@
                             <th>Delete</th>
                             {% endif %}
 
+                            {% if user.employee.position.name == "admin" %}
+                            <th>time history</th>
+                            {% endif %}
+
 
 
 
@@ -1088,6 +1092,130 @@
                                 <td><a href="{% url 'delete_inq' inquiry.info.id %}" class="btn btn-danger btn-sm">Delete</a></td>
                                 {% endif %}
 
+                                {% if user.employee.position.name == "admin" %}
+                                <td>
+                                    <div class="container">
+                                        <button id="showPopupButton-{{inquiry.info.id}}" class="btn btn-primary">Show Info</button>
+                                    
+                                        <!-- Popup Modal -->
+                                        <div class="modal fade" id="infoModal-{{inquiry.info.id}}" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel-{{inquiry.info.id}}" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="infoModalLabel-{{inquiry.info.id}}">Information of Delay</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>new to connecting</th>
+                                                                    <th>connecting to send Quotation</th>
+                                                                    <!-- Add more columns as needed -->
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{inquiry.new_connect}}</td>
+                                                                    <td>{{inquiry.connect_sendqDelay}}</td>
+                                                                    <!-- Add more data as needed -->
+                                                                </tr>
+                                                            </tbody>
+                                                            
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>send Quotation to Underproccess</th>
+                                                                    <th>Underproccess to send Bill</th>
+                                                                    <!-- Add more columns as needed -->
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{inquiry.sendqDelay_underproccessDelay}}</td>
+                                                                    <td>{{inquiry.underproccessDelay_sendbDelay}}</td>
+                                                                    <!-- Add more data as needed -->
+                                                                </tr>
+                                                            </tbody>
+
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>send Quotation to Pending</th>
+                                                                    <th>connect to Underproccess</th>
+                                                                    <!-- Add more columns as needed -->
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{inquiry.sendqDelay_pendingDelay}}</td>
+                                                                    <td>{{inquiry.connect_underproccessDelay}}</td>
+                                                                    <!-- Add more data as needed -->
+                                                                </tr>
+                                                            </tbody>
+
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>send Bill to Done</th>
+                                                                    <!-- Add more columns as needed -->
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{inquiry.sendbDelay_doneDelay}}</td>
+                                                                    <!-- Add more data as needed -->
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- jQuery and Bootstrap JS -->
+                                    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+                                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                                    <script>
+
+                                        
+                                        function enableRefresh() {
+                                            refreshingEnabled = true;
+                                        }
+                                        
+                                        function disableRefresh() {
+                                            refreshingEnabled = false;
+                                        }
+                                        
+                                        $(document).ready(function() {
+                                            // Start the auto-refresh when the page loads
+                                            
+                                            
+                                            // Show modal and stop auto-refresh
+                                            $('#showPopupButton-{{inquiry.info.id}}').click(function() {
+                                                $('#infoModal-{{inquiry.info.id}}').modal('show');
+                                                disableRefresh();
+                                            });
+                                            
+                                            // Restart auto-refresh when the modal is hidden
+                                            $('#infoModal-{{inquiry.info.id}}').on('hidden.bs.modal', function () {
+                                                enableRefresh();
+                                                console.log('Refreshing enabled');
+                                            });
+                                            // Handle refresh on modal close (e.g., by clicking the Close button)
+                                            $('#infoModal-{{inquiry.info.id}}').on('click', '[data-dismiss="modal"]', function () {
+                                                enableRefresh();
+                                                console.log('Refreshing enabled from modal close button');
+                                            });
+                                        });
+                                    </script>
+                                </td>
+                                {% endif %}
+                                
+                                
                                 <!-- Add other columns as needed -->
                             </tr>
                         {% endfor %}
@@ -1142,29 +1270,60 @@
         <!--/ Content wrapper: End -->
     </div>
 
-    <script>
-        // Function to fetch and update content
-        function refreshContent() {
-            $.ajax({
-                url: window.location.href,
-                type: 'GET',
-                success: function(data) {
-                    // Extract the HTML content within the #update element from the response data
-                    var updatedContent = $(data).find('#update').html();
-                    console.log(updatedContent)
-                    
-                    // Replace the content within the #update element with the updated content
-                    $('#update').html(updatedContent);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching content:', error);
+    {% if user.employee.position.name != "admin" %}
+        <script>
+            var opened = true;
+            // Function to fetch and update content
+            function refreshContent() {
+
+                $.ajax({
+                    url: window.location.href,
+                    type: 'GET',
+                    success: function(data) {
+                        // Extract the HTML content within the #update element from the response data
+                        var updatedContent = $(data).find('#update').html();
+                        console.log(updatedContent)
+                        
+                        // Replace the content within the #update element with the updated content
+                        $('#update').html(updatedContent);
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching content:', error);
+                    }
+                });
+            }
+            
+            
+            // Call the refreshContent function every 10 seconds
+            setInterval(refreshContent, 10000); // 10000 milliseconds = 10 seconds
+        </script>
+    {% endif %}
+
+    {% if user.employee.position.name == "admin" %}
+        <script>
+            var refreshingEnabled = true;
+            var refreshInterval;
+            refreshInterval = setInterval(refreshContent, 20000); // 10000 milliseconds = 10 seconds
+
+            function refreshContent() {
+                if (refreshingEnabled) {
+                    $.ajax({
+                        url: window.location.href,
+                        type: 'GET',
+                        success: function(data) {
+                            var updatedContent = $(data).find('#update').html();
+                            console.log(updatedContent);
+                            $('#update').html(updatedContent);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching content:', error);
+                        }
+                    });
                 }
-            });
-        }
-        
-        // Call the refreshContent function every 10 seconds
-        setInterval(refreshContent, 10000); // 10000 milliseconds = 10 seconds
-    </script>
+            }
+        </script>
+    {% endif %}
     <!-- / Layout page: End -->
     </div>
 

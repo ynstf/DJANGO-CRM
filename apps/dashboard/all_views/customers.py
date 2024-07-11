@@ -15,7 +15,7 @@ from ..models import Email,PhoneNumber,WhatsApp,Landline
 import json
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
-
+from django.utils import timezone
 
 ######### permissions #########
 """
@@ -416,6 +416,7 @@ def add_customer_view(request):
                                 inquiry = inquiry,
                                 status= new
                             )
+                            inq_state.newDelay = timezone.now()
                             inq_state.save()
 
                             #all_employees = Employee.objects.filter(sp=current_sp)
