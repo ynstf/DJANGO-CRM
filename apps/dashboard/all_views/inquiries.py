@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.urls import reverse
 from urllib.parse import quote
 from datetime import timedelta
-from apps.dashboard.models import QuotationForm, Advence, Invoice, Complain, Message, MessageNotify, IsEmployeeReadMessage
+from apps.dashboard.models import Landline, WhatsApp, Emirate, QuotationForm, Advence, Invoice, Complain, Message, MessageNotify, IsEmployeeReadMessage, Points, Address
 import cloudinary
 import cloudinary.uploader
 import json
@@ -112,6 +112,309 @@ def map(request):
 
 ################# inquiries ###################
 
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center']).exists() )
+def inq_from_points(request):
+
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    points = Points.objects.all()
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
+            'messages':messages,
+            'messages_counter':messages_counter,
+            'points':points
+
+            }
+    context = TemplateLayout.init(request, context)
+    return render(request, "inquiry/points.html", context)
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center']).exists() )
+def cancel_point(request,id):
+    point = Points.objects.get(id = id)
+    point.approved = "F"
+    point.save()
+    return redirect('from_points')
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['call_center']).exists() )
+def add_inq_from_points(request,id):
+
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    point = Points.objects.get(id = id)
+
+    # delete the notification for this inquiry id
+    try :
+        the_notifications = InquiryNotify.objects.filter(point=point)
+        for notify in the_notifications:
+            if notify.employee.user == request.user:
+                notify.delete()
+                notify_info = IsEmployeeNotified.objects.filter(employee = request.user.employee)
+                notify_info.delete()
+    except :
+        pass
+
+    if request.method == 'POST':
+        #customer fields
+
+        #contact fields
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        gender = request.POST.get('gender')
+        nationality_id = request.POST.get('nationality')
+        language_id = request.POST.get('language')
+        trn = request.POST.get('trn')
+
+
+        phone_form = request.POST.getlist('customer-phone_numbers')
+        whatsapp_form = request.POST.getlist('customer-whats_apps')
+        landline_form = request.POST.getlist('customer-landlines')
+        email_form = request.POST.getlist('customer-emails')
+        
+        merge_option = request.POST.get('merge_option')
+        merge = merge_option == 'yes'
+        adress_name = request.POST.get('address-address_name')
+        adress_type = request.POST.get('address-type')
+        emarate = request.POST.get('address-emirate')
+        adress_desc = request.POST.get('address-description_location')
+        location = request.POST.get('address-location')
+        inq_date = request.POST.get('inquiry-date_inq')
+        inq_source = request.POST.get('customer-source')
+        inq_service = request.POST.get('inquiry-services')
+        team_leader = request.POST.get('inquiry-team_leader')
+        sp = request.POST.get('inquiry-superprovider')
+        remainder_checked = request.POST.get('remainder_check')
+        schedule_time = request.POST.get('inquiry-reminder')
+        inq_desc = request.POST.get('inquiry-description')
+
+        user_already_exist = False
+        common_element = set(phone_form) & set(list(PhoneNumber.objects.values_list('number',flat=True)))
+        if merge and common_element and '+971' not in set(phone_form) :
+            phone = list(common_element)[0]
+            print('already exist :',phone)
+            customer = PhoneNumber.objects.get(number = phone).customer
+            user_already_exist = True
+            print(customer.first_name)
+        else:
+            # Find the nationality and language instances
+            nationality = Nationality.objects.get(id=nationality_id) if nationality_id else None
+            language = Language.objects.get(id=language_id) if language_id else None
+
+            # Save the customer
+            # Create the customer
+            customer = Customer.objects.create(
+                                employee = Employee.objects.get(user=request.user),
+                                first_name=first_name,
+                                last_name=last_name,
+                                gender=gender,
+                                nationality=nationality,
+                                language=language,
+                                trn=trn
+                            )
+
+
+
+            # Save the emails
+            for e in email_form:
+                email = Email(customer=customer,email=e)
+                email = email.save() 
+
+            # Save the phones
+            for p in phone_form:
+                phone = PhoneNumber(customer=customer,number=p)
+                phone = phone.save()
+
+            # Save the whatsapps
+            for w in whatsapp_form:
+                whatsapp = WhatsApp(customer=customer,whatsapp=w)
+                whatsapp = whatsapp.save()
+
+            # Save the landlines
+            for l in landline_form:
+                landline = Landline(customer=customer,landline=l)
+                landline = landline.save()
+
+            try:
+                coords = location.split(",")
+                latitude = coords[0]
+                longitude = coords[1]
+            except:
+                latitude = 0
+                longitude = 0
+
+            google_maps_link = f"https://www.google.com/maps?q={latitude},{longitude}"
+
+            if emarate and adress_type :
+                address = Address(
+                    customer=customer,
+                    address_name=adress_name,
+                    type=adress_type,
+                    emirate=Emirate.objects.get(id=emarate),  # Replace with the actual Emirate retrieval
+                    description_location=adress_desc,
+                    location=location,
+                    location_url=google_maps_link,
+                )
+                address.save()
+            else:
+                if emarate=="" and adress_type=="" :
+                    address = Address(
+                    customer=customer,
+                    address_name=adress_name,
+                    description_location=adress_desc,
+                    location=location,
+                    location_url=google_maps_link,
+                    )
+                    address.save()
+                else:
+                    if emarate=="":
+                        address = Address(
+                            customer=customer,
+                            address_name=adress_name,
+                            type=adress_type,
+                            description_location=adress_desc,
+                            location=location,
+                            location_url=google_maps_link,
+                        )
+                        address.save()
+
+                    if adress_type=="" :
+                        address = Address(
+                            customer=customer,
+                            address_name=adress_name,
+                            emirate=Emirate.objects.get(id=emarate),  # Replace with the actual Emirate retrieval
+                            description_location=adress_desc,
+                            location=location,
+                            location_url=google_maps_link,
+                        )
+                    
+                        address.save()
+
+            #
+            services_set = Service.objects.get(name=inq_service)
+            #owner = Employee.objects.get(id=inq_employees[q])
+            team = Employee.objects.get(id=team_leader)
+            current_inq_source_id = inq_source
+            current_inq_source = Source.objects.get(id=current_inq_source_id)
+            current_sp = SuperProvider.objects.get(id=sp)
+
+            inquiry = Inquiry(
+                            customer=customer,
+                            address=address,
+                            source = current_inq_source,
+                            services=services_set,
+                            sp=current_sp,
+                            description=inq_desc,
+                            #owner=owner,
+                            team_leader=team,
+                            )
+            inquiry.save()
+
+            inq_employees = request.POST.getlist(f'inquiry-employees')
+            
+            for id_employee in inq_employees:
+                owner = Employee.objects.get(id=id_employee)
+                inquiry.handler.add(owner)
+                
+                notification = InquiryNotify(
+                    employee = owner,
+                    inquiry = inquiry,
+                    sp = current_sp,
+                    action = "new"
+                )
+                notification.save()
+
+                isnotify = IsEmployeeNotified(
+                    employee = owner,
+                    notified = False
+                )
+                isnotify.save()
+
+            inquiry.save()
+
+
+
+            new = Status.objects.get(name = "new")
+            inq_state = InquiryStatus(
+                inquiry = inquiry,
+                status= new
+            )
+            inq_state.newDelay = timezone.now()
+            inq_state.save()
+
+
+            req = Request(
+                inquiry = inquiry,
+                demande = "by call center"
+            )
+            req.save()
+        
+        
+        if remainder_checked == "on":
+            employee_id = request.user.employee.id
+            employee = Employee.objects.get(id=employee_id)
+            reminder = InquiryReminder(
+                employee = employee,
+                inquiry=inquiry,
+                service=services_set,
+                gool='inquiry',
+                schedule=schedule_time
+            )
+            reminder.save()
+
+        point.approved = "T"
+        point.inquiry = inquiry
+        point.save()
+        return redirect('from_points')
+
+
+    # selection fields
+    Sources = Source.objects.all()
+    Genders = [{'gender':"Male",'id':'male'},
+                {'gender':"Female",'id':'female'}]
+    Nationalities = Nationality.objects.all()
+    Services = Service.objects.all()
+    Languages = Language.objects.all()
+    types = [{'type':"House",'id':'house'},
+                {'type':"Company",'id':'company'}]
+    Emirates = Emirate.objects.all()
+    all_sp = SuperProvider.objects.all()
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {'position': request.user.employee.position,
+            'layout_path': layout_path,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
+            'messages':messages,
+            'messages_counter':messages_counter,
+            'point':point,
+
+            'Sources':Sources,
+            'Genders':Genders,
+            'Nationalities':Nationalities,
+            'Services':Services,
+            'Languages':Languages,
+            'Emirates':Emirates,
+            'types':types,
+            'all_sp':all_sp,
+            'team_leaders':Employee.objects.filter(position=Position.objects.get(name='team leader')),
+
+            }
+    context = TemplateLayout.init(request, context)
+    return render(request, "inquiry/add_inq_point.html", context)
 
 def make_inq_cancel(request,inq_id):
     if request.method == 'POST':

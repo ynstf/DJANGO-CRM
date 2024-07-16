@@ -1,0 +1,165 @@
+{% extends 'layout/master.html' %}
+{% load static %}
+{% block title %}Add Customer{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            
+            <br>
+            <center><h2>Add Customer</h2></center>
+            <br>
+            
+
+            <form method="post" id="customerForm"  enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- {{ customer_form.as_p }} -->
+                <div><ul>
+
+
+
+                <br><br>
+                
+                </ul></div>
+
+                <h3>Customer Details</h3>
+                <div>
+                    <ul>
+
+                        <div class="col-md-4">
+                            <label for="id_customer-first_name" > First name : </label>
+                            <input type="text" id="id_customer-first_name" name="customer-first_name" class="form-control" placeholder="First name..." aria-label="First name" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="id_customer-last_name" > Last name : </label>
+                            <input type="text" id="id_customer-last_name" name="customer-last_name" class="form-control" placeholder="Last name..." aria-label="First name" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_customer-gender">Gender :</label>
+                            <select id="id_customer-gender" name="customer-gender" class="form-control">
+                                    <option value="" selected disabled>Select gender...</option>
+                                    {% for gender in Genders %}
+                                        <option value="{{ gender.id }}">{{ gender.gender }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_customer-nationality">Nationality :</label>
+                            <select id="id_customer-nationality" name="customer-nationality" class="form-control">
+                                    <option value="" selected disabled>Select Nationality...</option>
+                                    {% for Nationality in Nationalities  %}
+                                        <option value="{{ Nationality.id }}">{{ Nationality }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+
+                    </ul>
+
+                    <br>
+
+                    <h3>Contact Information</h3>
+                    <!-- add Phone Number forms -->
+                    <ul>
+                        <br>
+                        <div class="col-md-4">
+                            <label for="id_customer-phone_numbers"> Phone Number: </label>
+                            <input type="text" id="id_customer-phone_numbers" value="+971" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
+                        </div>
+                        <br>
+                    </ul>
+
+                    <h3>Inquiry Information</h3>
+                    <!-- add Phone Number forms -->
+                    <ul>
+                        <br>
+                        <div class="col-md-4">
+                            <label for="id_customer-Description"> Description: </label>
+                            <textarea type="text" id="id_customer-Description" name="customer-desc" class="form-control"  required></textarea>
+                        </div>
+                        <br>
+                    </ul>
+                </div>
+
+
+                </div>
+
+
+                <br><br>
+                
+                <div style="text-align: center;">
+                    <br><br>
+                    <button class="btn btn-success" type="submit">Add Customer</button>
+                </div>
+            </form>
+            <!--<button class="btn btn-primary" type="button" onclick="showInquirySection()">Add Inquiry</button>-->
+
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

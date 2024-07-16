@@ -48,11 +48,18 @@ from .views import (make_inq_connecting, make_inq_sendQ, make_inq_sendB,
 from .all_views.admin import crm_page, crm_pdf_view, generate_statistics_pdf
 from .all_views.admin import super_provider, super_provider_edit, service_info,service_edit
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
-from .all_views.inquiries import map,edit_inquiry,make_action, make_approvment
+from .all_views.inquiries import map,edit_inquiry,make_action, make_approvment, inq_from_points, add_inq_from_points,cancel_point
 from .all_views.infos import (check_phone_number, delete_owner_from_inquiry,
                             delete_quotation, delete_customer,delete_inq)
 from .all_views.calendar import calendar_view, reminder_day_view
+from .all_views.team import points_list_view, point_view, make_point_view
 urlpatterns = [
+
+    #team leader
+    path("points_list/",points_list_view,name="points_list"),
+    path("point/<int:id>",point_view,name="point"),
+    path("make_point/",make_point_view,name="make_point"),
+
 
     #chat
     path("chat_page/",chat_page,name="chat_page"),
@@ -147,6 +154,9 @@ urlpatterns = [
     path('edit_booking/<int:id>', edit_booking, name='edit_booking'),
     path('delete_owner_from_inquiry', delete_owner_from_inquiry, name='delete_owner_from_inquiry'),
     path('delete_quotation', delete_quotation, name='delete_quotation'),
+    path("from_points/",inq_from_points,name="from_points"),
+    path("inq_from_point/<int:id>",add_inq_from_points,name="add_inq_from_points"),
+    path("cancel_point/<int:id>",cancel_point,name="cancel_point"),
     
     # inquiry state
     path('make_inq_underproccess/<int:inq_id>', make_inq_underproccess, name='make_inq_underproccess'),

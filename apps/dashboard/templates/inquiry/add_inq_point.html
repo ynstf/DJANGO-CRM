@@ -1,0 +1,689 @@
+{% extends 'layout/master.html' %}
+{% load static %}
+{% block title %}Add Customer{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            
+            <br>
+            <center><h2>Add Customer</h2></center>
+            <br>
+            
+
+            <form method="post" id="customerForm"  enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- {{ customer_form.as_p }} -->
+                <div><ul>
+
+
+
+                <br><br>
+                
+                </ul></div>
+
+                <h3>Customer Details</h3>
+                <div>
+                    <ul>
+
+                        <div class="col-md-4">
+                            <div id="merge" style="display: none;">
+                                <p>Phone number already exists for <a href="" id="customer-link"><span id="existing-customer-name"></span></a>. Do you want to merge?  </p>
+
+
+                                
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="merge_option" id="merge-yes" value="yes">
+                                    <label class="form-check-label" for="merge-yes" >Merge</label>
+                                </div>
+                                
+                            </div>
+                        
+                            <input type="hidden" id="merge-option-selected" name="merge_option_selected" value="">
+                            <label for="id_customer-phone_numbers"> Phone Number: </label>
+                            <input type="text" id="id_customer-phone_numbers" value="{{ point.number }}" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
+                        </div>
+                        
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            $(document).ready(function(){
+                                $('#id_customer-phone_numbers').on('change', function(){
+                                    var phoneNumber = $(this).val();
+                                    console.log(phoneNumber)
+                                    $.ajax({
+                                        url: '{% url "check_phone_number" %}',  // The URL for your AJAX view
+                                        data: { 'phone_number': phoneNumber },
+                                        success: function(data){
+                                            if (data.exists) {
+                                                $('#existing-customer-name').text(`${data.customer.first_name} ${data.customer.last_name}`);
+                                                
+                                                var idValue = data.customer.id;
+                                                        if (idValue) {
+                                                            var url = '{% url "customer_info" 0 %}'.replace('0', idValue);
+                                                            $('#customer-link').attr('href', url);
+                                                        } else {
+                                                            // Handle the case where idValue is empty or not provided
+                                                            console.error('Customer id not found.');
+                                                        }
+                                                
+                                                $('#merge').show();
+                                                
+                                                $('#merge-yes').on('change', function(){
+                                                    if ($(this).is(':checked')) {
+
+                                                         // Set specific input fields to readonly
+                                                        $('#id_customer-first_name').prop('readonly', true);
+                                                        $('#id_customer-last_name').prop('readonly', true);
+                                                        $('#id_customer-gender').prop('disabled', true);
+                                                        $('#id_customer-nationality').prop('disabled', true);
+                                                        $('#id_customer-language').prop('disabled', true);
+                                                        $('#id_customer-trn').prop('readonly', true);
+
+                                                        $('#id_customer-first_name').val(data.customer.first_name);
+                                                        $('#id_customer-last_name').val(data.customer.last_name);
+                                                        $('#id_customer-gender').val(data.customer.gender);
+                                                        $('#id_customer-nationality').val(data.customer.nationality);
+                                                        $('#id_customer-language').val(data.customer.language);
+                                                        $('#id_customer-trn').val(data.customer.trn);
+
+                                                        
+
+                                                    }
+                                                });
+                                                $('#merge-no').on('change', function(){
+                                                    if ($(this).is(':checked')) {
+                                                        $('input[type="text"]').prop('readonly', false);
+                                                        $('select').prop('disabled', false);
+                                                        $('#id_customer-first_name').val('');
+                                                        $('#id_customer-last_name').val('');
+                                                        $('#id_customer-gender').val('');
+                                                        $('#id_customer-nationality').val('');
+                                                        $('#id_customer-language').val('');
+                                                        $('#id_customer-trn').val('');
+                                                    }
+                                                });
+                                            } else {
+                                                $('#merge').hide();
+                                            }
+                                        }
+                                    });
+                                });
+                        
+                                $('input[name="merge_option"]').on('change', function(){
+                                    $('#merge-option-selected').val(this.value);
+                                });
+
+                                $('#id_customer-phone_numbers').change()
+                            });
+                        </script> 
+
+
+                        
+
+
+                        <div class="col-md-4">
+                            <label for="id_customer-first_name" > First name : </label>
+                            <input type="text" id="id_customer-first_name" value="{{ point.first_name }}" name="first_name" class="form-control" placeholder="First name..." aria-label="First name" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="id_customer-last_name" > Last name : </label>
+                            <input type="text" id="id_customer-last_name" value="{{ point.last_name }}" name="last_name" class="form-control" placeholder="Last name..." aria-label="First name" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_customer-gender">Gender :</label>
+                            <select id="id_customer-gender" name="gender" class="form-control">
+                                    <option value="{{ point.gender }}" selected >{{ point.gender }}</option>
+                                    {% for gender in Genders %}
+                                        <option value="{{ gender.id }}">{{ gender.gender }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_customer-nationality">Nationality :</label>
+                            <select id="id_customer-nationality" name="nationality" class="form-control">
+                                    <option value="{{ point.nationality.id }}" selected >{{ point.nationality }}</option>
+                                    {% for Nationality in Nationalities  %}
+                                        <option value="{{ Nationality.id }}">{{ Nationality }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_customer-language">Language :</label>
+                            <select id="id_customer-language" name="language" class="form-control">
+                                    <option value="" selected disabled>Select Language...</option>
+                                    {% for Language in Languages %}
+                                        <option value="{{ Language.id }}">{{ Language }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_customer-trn" > TRN : </label>
+                            <input type="text" id="id_customer-trn" name="trn" class="form-control" placeholder="TRN..." aria-label="TRN">
+                        </div>
+                        
+                    </ul>
+
+                    <br>
+
+                    <h3>Contact Information</h3>
+                    <!-- add Phone Number forms -->
+                    <ul>
+
+                        
+                        
+
+                        <!-- add Landlines forms -->
+                        <div class="col-md-4">
+                            <label for="id_customer-landlines">Landlines :</label>
+                            <input type="text" id="id_customer-landlines" name="customer-landlines" class="form-control" placeholder="Landlines..." aria-label="Landlines">
+                        </div>
+                        <div id="additional-landlines"></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewLandline()">Add New Landline</button>
+                        <script>
+                            var landlineCounter = 2;
+                        
+                            function addNewLandline() {
+                                var container = document.createElement('div');
+                                container.className = 'col-md-4';
+                        
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_customer-landline-' + landlineCounter);
+                                label.textContent = 'Landline ' + landlineCounter + ' :';
+                        
+                                var input = document.createElement('input');
+                                input.type = 'text';
+                                input.id = 'id_customer-landline-' + landlineCounter;
+                                input.name = 'customer-landlines';
+                                input.className = 'form-control';
+                                input.placeholder = 'Landline ' + landlineCounter + '...';
+                                input.setAttribute('aria-label', 'Landline ' + landlineCounter);
+                        
+                                container.appendChild(label);
+                                container.appendChild(input);
+                        
+                                var button = document.createElement('button');
+                                button.type = 'button';
+                                button.className = 'btn btn-danger btn-sm';
+                                button.textContent = 'Remove';
+                                button.onclick = function () {
+                                    container.remove();
+                                };
+                        
+                                container.appendChild(button);
+                        
+                                document.getElementById('additional-landlines').appendChild(container);
+                        
+                                // Optionally, you can clear the value of the new input
+                                input.value = '';
+                        
+                                landlineCounter++;
+                            }
+                        </script>
+
+                        <br><br>
+
+                        <!-- add WhatsApp forms -->
+                        <div class="col-md-4">
+                            <label for="id_customer-whats_apps">WhatsApp :</label>
+                            <input type="text" id="id_customer-whats_apps" value='+971' name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
+                        </div>
+                        <div id="additional-whatsapps"></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewWhatsapp()">Add New WhatsApp</button>
+                        <script>
+                            var whatsappCounter = 2;
+                        
+                            function addNewWhatsapp() {
+                                var container = document.createElement('div');
+                                container.className = 'col-md-4';
+                        
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_customer-whatsapp-' + whatsappCounter);
+                                label.textContent = 'WhatsApp ' + whatsappCounter + ' :';
+                        
+                                var input = document.createElement('input');
+                                input.type = 'text';
+                                input.id = 'id_customer-whatsapp-' + whatsappCounter;
+                                input.name = 'customer-whats_apps';
+                                input.className = 'form-control';
+                                input.value = '+971';
+                                input.placeholder = 'WhatsApp ' + whatsappCounter + '...';
+                                input.setAttribute('aria-label', 'WhatsApp ' + whatsappCounter);
+                        
+                                container.appendChild(label);
+                                container.appendChild(input);
+                        
+                                var button = document.createElement('button');
+                                button.type = 'button';
+                                button.className = 'btn btn-danger btn-sm';
+                                button.textContent = 'Remove';
+                                button.onclick = function () {
+                                    container.remove();
+                                };
+                        
+                                container.appendChild(button);
+                        
+                                document.getElementById('additional-whatsapps').appendChild(container);
+                        
+
+                        
+                                whatsappCounter++;
+                            }
+                        </script>
+                        
+                        <br><br>
+
+                        <!-- add Emails forms -->
+                        <div class="col-md-4">
+                            <label for="id_customer-emails">Email :</label>
+                            <input type="text" id="id_customer-emails" name="customer-emails" class="form-control" placeholder="Email..." aria-label="Email">
+                        </div>
+                        <div id="additional-emails"></div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewEmail()">Add New Email</button>
+                        <script>
+                            var emailCounter = 2;
+                        
+                            function addNewEmail() {
+                                var container = document.createElement('div');
+                                container.className = 'col-md-4';
+                        
+                                var label = document.createElement('label');
+                                label.setAttribute('for', 'id_customer-email-' + emailCounter);
+                                label.textContent = 'Email ' + emailCounter + ' :';
+                        
+                                var input = document.createElement('input');
+                                input.type = 'text';
+                                input.id = 'id_customer-email-' + emailCounter;
+                                input.name = 'customer-emails';
+                                input.className = 'form-control';
+                                input.placeholder = 'Email ' + emailCounter + '...';
+                                input.setAttribute('aria-label', 'Email ' + emailCounter);
+                        
+                                container.appendChild(label);
+                                container.appendChild(input);
+                        
+                                var button = document.createElement('button');
+                                button.type = 'button';
+                                button.className = 'btn btn-danger btn-sm';
+                                button.textContent = 'Remove';
+                                button.onclick = function () {
+                                    container.remove();
+                                };
+                        
+                                container.appendChild(button);
+                        
+                                document.getElementById('additional-emails').appendChild(container);
+                        
+                                // Optionally, you can clear the value of the new input
+                                input.value = '';
+                        
+                                emailCounter++;
+                            }
+                        </script>
+                        
+                        <br><br>
+                    </ul>
+                </div>
+
+                <br>
+                <h3>Addresses Details</h3>
+                <div class="col-md-4"></div>
+
+                    <div id="newaddressSection" class="address-form" >
+                        <ul>
+
+                            <div class="col-md-4">
+                                <label for="id_address-address_name"> Address Name :</label>
+                                <input type="text" value='' name="address-address_name" class="form-control" placeholder="Address name..." aria-label="Address name">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_address-type"> Type :</label>
+                                <select name="address-type" class="form-control">
+                                    <option value="" selected>Select Type...</option>
+                                    {% for Type in types %}
+                                        <option value="{{ Type.id }}">{{ Type.type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_address-emirate">  Emirate :</label>
+                                <select name="address-emirate" class="form-control">
+                                    <option value="" selected>Select Emirate...</option>
+                                    {% for Emirate in Emirates %}
+                                        <option value="{{ Emirate.id }}">{{ Emirate }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_address-description_location"> Description location : </label>
+                                <textarea name="address-description_location" class="form-control" placeholder="Description location..." aria-label="Description location"></textarea>
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label for="id_address-location"> Map Location:</label>
+                                <div id="map"></div>
+                            <input type="text" id="searchInput_${addressCounter}"  name="address-location" class="form-control" placeholder="Location..." oninput="searchLocation(${addressCounter})" >
+                            
+
+
+                            <br>
+                            <iframe id="mapIframe_${addressCounter}"  frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="" style="border: 1px solid black"></iframe><br/>
+
+
+                            
+                            <input type="hidden" name="address-customer" id="id_address-customer">
+                            </div>
+
+
+                            <br><br>
+                            <!-- Container for inquiries associated with this address -->
+                            <ul class="inq-container" id="inqContainer_${addressCounter}">
+
+                                <h3>Inquiry </h3>
+
+                                
+                                    
+                                    <div class="col-md-4">
+                                        <label for="id_customer-source">Source :</label>
+                                        <select name="customer-source" class="form-control" required>
+                                            <option value="" selected disabled>Select Source...</option>
+                                            {% for Source in Sources %}
+                                                <option value="{{ Source.id }}">{{ Source }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="superProvider">Select Super Provider:</label>
+                                        <select id="superProvider" class="form-control" name="inquiry-superprovider" required>
+                                            <!-- Populate dropdown menu with super providers -->
+                                            {% for superProvider in all_sp %}
+                                                <option value="{{ superProvider.id }}">{{ superProvider.name }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                        <label for="serviceList">Services:</label>
+                                        <div id="serviceList">
+                                            <!-- Services will be displayed here -->
+                                        </div>
+
+                                        <label for="employeeList">Employees owner:</label>
+                                        <div id="employeeList">
+                                            <!-- Employees will be displayed here -->
+                                        </div>
+
+                                        <label for="team_leader">Team Leader:</label>
+                                        <select id="team_leader" class="form-control" name="inquiry-team_leader" required>
+                                            <!-- Populate dropdown menu with super providers -->
+                                            <option value="{{ point.employee.id }}" selected>{{ point.employee }}</option>
+                                            {% for team_leader in team_leaders %}
+                                                <option value="{{ team_leader.id }}">{{ team_leader.first_name }} {{ team_leader.last_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="id_inquiry-description"> Description : </label>
+                                        <textarea name="inquiry-description" class="form-control" placeholder="Inquiry description..." aria-label="Inquiry Number">{{ point.description }}</textarea>
+                                    </div>
+
+                                    <br>
+                                
+                                    <div class="col-md-4">
+                                        <label for="remainder_check_${addressIndex}_${inqCounters[addressIndex]}">Have Remainder? :</label>
+                                        <input type="checkbox" id="remainder_check_${addressIndex}_${inqCounters[addressIndex]}" name="remainder_check" onclick="toggleReminder('${addressIndex}_${inqCounters[addressIndex]}')">
+                                    </div>
+                                    
+                                    <div class="col-md-4" id="reminderField_${addressIndex}_${inqCounters[addressIndex]}"" style="display: none;">
+                                        <label for="id_service-reminder">Reminder :</label>
+                                        <input type="date" id="id_service-reminder_${addressIndex}_${inqCounters[addressIndex]}" name="inquiry-reminder" class="form-control" >
+                                    </div>
+
+                                    <br>
+
+                                    <script>
+                                        $(document).ready(function() {
+
+                                        $('#superProvider').change(function() {
+                                            var superProviderId = $(this).val();
+                                            console.log(superProviderId)
+                                            $.ajax({
+                                                type: 'GET',
+                                                url: '/get_services_by_sp/',
+                                                data: {
+                                                    'super_provider_id': superProviderId
+                                                },
+                                                dataType: 'json',
+                                                success: function(response) {
+                                                    $('#serviceList').empty();
+                                                    if (response.services && response.services.length > 0) {
+                                                        var selectElement = $('<select>', {
+                                                            id: 'inquiry-services',
+                                                            name: 'inquiry-services',
+                                                            required: true,
+                                                            class:"form-control"
+                                                        });
+                                                        $.each(response.services, function(index, serviceName) {
+                                                            console.log(serviceName)
+                                                            var option = $('<option>', {
+                                                                value: serviceName.name,
+                                                                text: serviceName.id + " - " + serviceName.name
+                                                            });
+                                                            selectElement.append(option);
+                                                        });
+                                                        $('#serviceList').append(selectElement);
+                                                    } else {
+                                                        $('#serviceList').text('No services available');
+                                                    }
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error('Error:', error);
+                                                }
+                                            });
+                                        });
+
+                                        $('#superProvider').change();
+                                        });
+
+                                        $(document).ready(function() {
+
+                                        $('#superProvider').change(function() {
+                                            var superProviderId = $(this).val();
+                                            console.log(superProviderId)
+                                            $.ajax({
+                                                type: 'GET',
+                                                url: '/get_employees_by_sp/',
+                                                data: {
+                                                    'super_provider_id': superProviderId
+                                                },
+                                                dataType: 'json',
+                                                success: function(response) {
+                                                    $('#employeeList').empty();
+                                                    if (response.employees && response.employees.length > 0) {
+
+                                                        var selectElement = $('<select>', {
+                                                            id: 'inquiry-employees',
+                                                            name: 'inquiry-employees',
+                                                            required: true,
+                                                            class:"form-control",
+                                                            multiple: "multiple" // This attribute allows multiple selections
+                                                        });
+                                                        $.each(response.employees, function(index, employeeName) {
+                                                            
+                                                            console.log("ha wa7ed")
+                                                            console.log(employeeName)
+                                                            var option = $('<option>', {
+                                                                value: employeeName.id,
+                                                                text: employeeName.id + " - " + employeeName.name
+                                                            });
+                                                            selectElement.append(option);
+                                                        });
+                                                        $('#employeeList').append(selectElement);
+                                                    } else {
+                                                        $('#employeeList').text('No employees available');
+                                                    }
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error('Error:', error);
+                                                }
+                                            });
+                                        });
+
+                                        $('#superProvider').change();
+                                        });
+                                    </script>
+                            </ul>
+
+                        </ul>
+                    </div>
+
+                    
+                    <br>
+                
+
+                <!-- JavaScript code to add new address forms dynamically -->
+                <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+
+                <script>
+                    function toggleReminder(coords) {
+                        var reminderField = document.getElementById('reminderField_'+coords);
+                        var checkbox = document.getElementById('remainder_check_'+coords);
+                        var input = document.getElementById('id_service-reminder_'+coords);
+                        
+                        if (checkbox.checked) {
+                            reminderField.style.display = 'block';
+                            input.setAttribute('required', 'required');
+                        } else {
+                            reminderField.style.display = 'none';
+                            input.removeAttribute('required');
+                        }
+                    }
+                </script>
+
+
+                
+
+                </div>
+
+                
+                <div style="text-align: center;">
+                    <br><br>
+                    {% if point.inquiry %}
+                    {% else %}
+                    <button class="btn btn-success" type="submit">Add Customer</button>
+                    {% endif %}
+                    <button class="btn btn-danger" type="button" id="cancel-button">Cancel</button>
+                    <script>
+                        document.getElementById('cancel-button').addEventListener('click', function() {
+                            window.location.href = '{% url "cancel_point" point.id %}';  // Replace 'some_view_name' with your target view
+                        });
+                    </script>
+                    
+
+                </div>
+                
+            </form>
+            <!--<button class="btn btn-primary" type="button" onclick="showInquirySection()">Add Inquiry</button>-->
+
+            <script>
+                // JavaScript to clone address and inquiry sections
+                document.getElementById('add-sections').addEventListener('click', function () {
+                var addressSection = document.querySelector('.address-form-section').cloneNode(true);
+                var inquirySection = document.querySelector('.inquiry-form-section').cloneNode(true);
+        
+                // Clear input values in cloned sections
+                addressSection.querySelectorAll('input').forEach(function (input) {
+                    input.value = '';
+                });
+        
+                inquirySection.querySelectorAll('input').forEach(function (input) {
+                    input.value = '';
+                });
+        
+                // Append cloned sections to the form
+                document.querySelector('form').appendChild(addressSection);
+                document.querySelector('form').appendChild(inquirySection);
+                });
+                
+        
+                function showAddressSection() {
+                    document.getElementById('addressSection').style.display = 'block';
+                }
+        
+                function showInquirySection() {
+                    document.getElementById('inquirySection').style.display = 'block';
+                }
+            </script>
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

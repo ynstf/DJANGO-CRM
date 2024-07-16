@@ -1,9 +1,8 @@
 {% extends 'layout/master.html' %}
 
-{% block title %}Notifications{% endblock %}
+{% block title %}Point Information{% endblock %}
 
 {% block layout %}
-{% load static %}
 <!-- Layout wrapper: Start -->
 <div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
 <div class="layout-container">
@@ -27,39 +26,48 @@
 <!-- ######################################################################### -->
     <!-- Content wrapper: Start -->
     <div class="content-wrapper">
+
+        <br>
         <div class="container">
-            
-            <center><h2>Notifications</h2></center>
-
-
-            {% if notifications %}
-            <ul>
-                {% for notification in notifications %}
-                <li>
-                    {% if notification.inquiry %}
-                        new
-                        {% if notification.action == 'new' %}
-                            inquiry
-                        {% else %}
-                            {{ notification.action }}
-                        {% endif %}
-                        <a href="{% url 'inquiry_info' notification.inquiry.id %}">{{ notification.inquiry.address }}</a>
-                    {% else %}
-                        <span> {{ notification.action }} <a href="{% url 'add_inq_from_points' notification.point.id %}">{{ notification.point.first_name }} - {{ notification.point.last_name }} <small>(from {{ notification.point.employee }})</small></a></span>
-                    {% endif %}
-                </li>
-                                    <hr>
-                {% endfor %}
-            </ul>
-            {% else %}
+            <br>
+            <center><h2>Point Information</h2></center>
+            <br>
+            <h3>Customer Details</h3>
             <br><br>
-                <center><p> you dont have any notification in this moment</p></center>
+            <p><span style="font-weight: bold; font-size: 1.17em;">First Name:</span> {{ point.first_name }}</p>
+            <br>
+            <p><span style="font-weight: bold; font-size: 1.17em;">Last Name:</span> {{ point.last_name }}</p>
+            <br>
+            <p><span style="font-weight: bold; font-size: 1.17em;">Phone Number:</span> {{ point.number }}</p>
+            <br>
+            <p><span style="font-weight: bold; font-size: 1.17em;">Description:</span> {{ point.description }}</p>
+            <br>
+            <p><span style="font-weight: bold; font-size: 1.17em;">Gender:</span> {{ point.gender }}</p>
+            <br>
+            <p><span style="font-weight: bold; font-size: 1.17em;">Nationality:</span> {{ point.nationality }}</p>
+            <br>
+            <p><span style="font-weight: bold; font-size: 1.17em;">Approvement:</span> 
+                {% if point.approved == 'T' %}
+                    ✔️
+                {% elif point.approved == 'F' %}
+                    ❌
+                {% else %}
+                    🕒
+                {% endif %}
+            </p>
+            <br>
+            {% if point.canceling_causes %}
+                <p><span style="font-weight: bold; font-size: 1.17em;">Causes:</span> {{ point.canceling_causes }}</p>
+                <br>
             {% endif %}
-            
-
-
-
+            <!-- Add other customer details as needed -->
+            <hr>
+            <a style="text-align: right;" href="" class="btn btn-primary">Edit Point</a>
         </div>
+        
+
+
+
 <!-- ######################################################################### -->
 
         <!-- Content: Start -->

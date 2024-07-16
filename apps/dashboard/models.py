@@ -152,7 +152,36 @@ class IsEmployeeReadMessage(models.Model):
         return f'employee :{self.employee}'
 
 
+class Points(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE,  blank=True, null=True)
 
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    gender = models.CharField(max_length=6, choices=[('male', 'Male'), ('female', 'Female')], blank=True, null=True)
+    nationality = models.ForeignKey(Nationality, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Nationality model
+
+    number = models.CharField(max_length=20)
+    description = models.TextField(blank=True, null=True)
+    STATUS_CHOICES = [
+        ('T', 'True'),
+        ('F', 'False'),
+        ('N', 'Not yet'),
+    ]
+
+    approved = models.CharField(
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default='N',
+    )
+    canceling_causes = models.CharField(max_length=200, blank=True, null=True)
+
+    register = models.DateTimeField(auto_now_add=True)
+    update = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+
+    def __str__(self):
+        return f'employee :{self.employee}'
 
 class Complain(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE)
@@ -188,7 +217,6 @@ class InquiryStatus(models.Model):
 
     def __str__(self):
         return f'{self.inquiry} is {self.status}'
-
 
 class EmployeeAction(models.Model):
     from_employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
@@ -236,6 +264,7 @@ class InvoiceForm(models.Model):
 class InquiryNotify(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, blank=True, null=True)
+    point = models.ForeignKey(Points, on_delete=models.CASCADE, blank=True, null=True)
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, blank=True, null=True)
     sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     action = models.CharField(max_length=50, choices=[('new', 'new'),
@@ -251,6 +280,7 @@ class InquiryNotify(models.Model):
                                                     ('done', 'done'),
                                                     ('need approve', 'need approve'),
                                                     ('approvement', 'approvement'),
+                                                    ('new point', 'new point'),
                                                     ], blank=True, null=True)
     # Add other fields as needed
 
