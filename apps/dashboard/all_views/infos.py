@@ -1,7 +1,7 @@
 
 import django.contrib.auth
 from django.http import JsonResponse
-from apps.dashboard.models import Customer, Quotation
+from apps.dashboard.models import Customer, Quotation, Points
 from django.shortcuts import redirect
 from ..models import Inquiry, Language, Nationality, Source, Service, Status, SuperProvider, PhoneNumber
 from apps.authentication.models import Employee
@@ -26,7 +26,6 @@ def get_status_view(request):
     states = [stt.name for stt in Status.objects.all()]
     return JsonResponse({'data': states})
 
-
 def get_services_by_sp_view(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         # Retrieve the super provider ID from the request parameters
@@ -48,7 +47,6 @@ def get_services_by_sp_view(request):
     else:
         # Handle non-AJAX requests
         return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
-
 
 def get_employees_by_sp_view(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -72,8 +70,6 @@ def get_employees_by_sp_view(request):
     else:
         # Handle non-AJAX requests
         return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
-
-
 
 def delete_owner_from_inquiry(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -106,13 +102,10 @@ def delete_customer(request,id):
     customer.delete()
     return redirect('customer_list')
 
-
 def delete_inq(request,id):
     inq = Inquiry.objects.get(id=id)
     inq.delete()
     return redirect('inquiries_list')
-
-
 
 def delete_quotation(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -135,7 +128,6 @@ def delete_quotation(request):
         # Handle non-AJAX requests
         return JsonResponse({'error': 'This endpoint is only accessible via AJAX.'}, status=400)
 
-
 def check_phone_number(request):
     phone_number = request.GET.get('phone_number', None)
     if phone_number:
@@ -150,6 +142,33 @@ def check_phone_number(request):
                 'language': customer.language.id if customer.language else None,
                 'trn': customer.trn,
                 'id': customer.id
+            }
+            return JsonResponse({'exists': True, 'customer': customer_data})
+        except PhoneNumber.DoesNotExist:
+            return JsonResponse({'exists': False})
+    return JsonResponse({'exists': False})
+
+def check_point_number(request):
+    phone_number = request.GET.get('phone_number', None)
+    if phone_number:
+        try:
+
+            
+            try:
+                point = Points.objects.get(number=phone_number, approved="N")
+            except Points.DoesNotExist:
+                point = None  # Handle the case where no matching object is found
+            except Points.MultipleObjectsReturned:
+                points = Points.objects.filter(number=phone_number, approved="N")  # Handle multiple objects case
+                point = points.first()  # Or choose how you want to handle multiple objects
+
+
+            customer_data = {
+                'first_name': point.first_name,
+                'last_name': point.last_name,
+                'gender': point.gender,
+                'nationality': point.nationality.id if point.nationality else None,
+                'id': point.id
             }
             return JsonResponse({'exists': True, 'customer': customer_data})
         except PhoneNumber.DoesNotExist:

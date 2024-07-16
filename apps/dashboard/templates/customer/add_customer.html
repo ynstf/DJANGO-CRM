@@ -63,6 +63,11 @@
                                 </div>
                                 -->
                             </div>
+
+                            <div id="point_exist" style="display: none;">
+                                <p style="color: red;" >Phone number already exists in points for <a href="" id="point-link"><span id="existing-point-name"></span></a>.<!--  Do you want to merge? --> </p>
+
+                            </div>
                         
                             <input type="hidden" id="merge-option-selected" name="merge_option_selected" value="">
                             <label for="id_customer-phone_numbers"> Phone Number: </label>
@@ -143,6 +148,93 @@
                                                 });
                                             } else {
                                                 $('#merge').hide();
+                                            }
+                                        }
+                                    });
+                                });
+                        
+                                $('input[name="merge_option"]').on('change', function(){
+                                    $('#merge-option-selected').val(this.value);
+                                });
+
+
+                                // ---------------------------------------------------------------
+
+                                $('#id_customer-phone_numbers').on('change', function(){
+                                    var phoneNumber = $(this).val();
+                                    console.log(phoneNumber)
+                                    $.ajax({
+                                        url: '{% url "check_point_number" %}',  // The URL for your AJAX view
+                                        data: { 'phone_number': phoneNumber },
+                                        success: function(data){
+                                            if (data.exists) {
+                                                console.log('haaaaaaaaaaaaaaaaaa')
+                                                console.log(data)
+                                                $('#existing-point-name').text(`${data.customer.first_name} ${data.customer.last_name}`);
+                                                
+                                                var idValue = data.customer.id;
+                                                        if (idValue) {
+                                                            var url = '{% url "add_inq_from_points" 0 %}'.replace('0', idValue);
+                                                            $('#point-link').attr('href', url);
+                                                        } else {
+                                                            // Handle the case where idValue is empty or not provided
+                                                            console.error('Customer id not found.');
+                                                        }
+                                                
+                                                $('#point_exist').show();
+
+                                                 // Set specific input fields to readonly
+                                                // $('#id_customer-first_name').prop('readonly', true);
+                                                // $('#id_customer-last_name').prop('readonly', true);
+                                                // $('#id_customer-gender').prop('disabled', true);
+                                                // $('#id_customer-nationality').prop('disabled', true);
+                                                // $('#id_customer-language').prop('disabled', true);
+                                                // $('#id_customer-trn').prop('readonly', true);
+
+                                                // $('#id_customer-first_name').val(data.customer.first_name);
+                                                // $('#id_customer-last_name').val(data.customer.last_name);
+                                                // $('#id_customer-gender').val(data.customer.gender);
+                                                // $('#id_customer-nationality').val(data.customer.nationality);
+                                                // $('#id_customer-language').val(data.customer.language);
+                                                // $('#id_customer-trn').val(data.customer.trn);
+                                                
+                                                // $('#merge-yes').on('change', function(){
+                                                //     if ($(this).is(':checked')) {
+
+                                                //          // Set specific input fields to readonly
+                                                //         $('#id_customer-first_name').prop('readonly', true);
+                                                //         $('#id_customer-last_name').prop('readonly', true);
+                                                //         $('#id_customer-gender').prop('disabled', true);
+                                                //         $('#id_customer-nationality').prop('disabled', true);
+                                                //         $('#id_customer-language').prop('disabled', true);
+                                                //         $('#id_customer-trn').prop('readonly', true);
+
+                                                //         $('#id_customer-first_name').val(data.customer.first_name);
+                                                //         $('#id_customer-last_name').val(data.customer.last_name);
+                                                //         $('#id_customer-gender').val(data.customer.gender);
+                                                //         $('#id_customer-nationality').val(data.customer.nationality);
+                                                //         $('#id_customer-language').val(data.customer.language);
+                                                //         $('#id_customer-trn').val(data.customer.trn);
+
+                                                        
+
+                                                //     }
+                                                // });
+                                                // $('#merge-no').on('change', function(){
+                                                //     if ($(this).is(':checked')) {
+                                                //         $('input[type="text"]').prop('readonly', false);
+                                                //         $('select').prop('disabled', false);
+                                                //         $('#id_customer-first_name').val('');
+                                                //         $('#id_customer-last_name').val('');
+                                                //         $('#id_customer-gender').val('');
+                                                //         $('#id_customer-nationality').val('');
+                                                //         $('#id_customer-language').val('');
+                                                //         $('#id_customer-trn').val('');
+                                                //     }
+                                                // });
+                                                
+                                            } else {
+                                                $('#point_exist').hide();
                                             }
                                         }
                                     });

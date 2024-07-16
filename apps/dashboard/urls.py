@@ -50,7 +50,7 @@ from .all_views.admin import super_provider, super_provider_edit, service_info,s
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
 from .all_views.inquiries import map,edit_inquiry,make_action, make_approvment, inq_from_points, add_inq_from_points,cancel_point
 from .all_views.infos import (check_phone_number, delete_owner_from_inquiry,
-                            delete_quotation, delete_customer,delete_inq)
+                            delete_quotation, delete_customer,delete_inq, check_point_number)
 from .all_views.calendar import calendar_view, reminder_day_view
 from .all_views.team import points_list_view, point_view, make_point_view
 urlpatterns = [
@@ -127,6 +127,7 @@ urlpatterns = [
     path('get_services_by_sp/', get_services_by_sp, name='get_services_by_sp'),
     path('get_employees_by_sp/', get_employees_by_sp, name='get_employees_by_sp'),
     path('check-phone-number/', check_phone_number, name='check_phone_number'),
+    path('check_point_number/', check_point_number, name='check_point_number'),
 
     # notifications
     path('notifications', notifications, name='notifications'),
