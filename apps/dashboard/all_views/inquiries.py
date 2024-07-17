@@ -562,6 +562,27 @@ def make_inq_sendB(request,inq_id):
             notified = False
         )
         isnotify.save()
+
+    #create notification if inquiry from point
+    if Points.objects.filter(inquiry=inquiry).exists():
+        p = Points.objects.get(inquiry=inquiry)
+        p.save()
+        admins = Position.objects.get(name="admin")
+        all_employees = Employee.objects.filter(position=admins)
+        for employee in all_employees:
+            notification = InquiryNotify(
+                employee = employee,
+                inquiry = inquiry,
+                point = Points.objects.get(inquiry=inquiry),
+                service = inquiry.services,
+                action = "one point need rating"
+            )
+            notification.save()
+            isnotify = IsEmployeeNotified(
+                employee = employee,
+                notified = False
+            )
+            isnotify.save()
     return redirect('inquiries_list')
 
 def make_inq_pending(request,inq_id):

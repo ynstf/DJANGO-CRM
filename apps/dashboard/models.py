@@ -175,6 +175,8 @@ class Points(models.Model):
         default='N',
     )
     canceling_causes = models.CharField(max_length=200, blank=True, null=True)
+    score = models.FloatField(null=True, blank=True)  # New float field
+
 
     register = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True, blank=True, null=True)
@@ -281,6 +283,7 @@ class InquiryNotify(models.Model):
                                                     ('need approve', 'need approve'),
                                                     ('approvement', 'approvement'),
                                                     ('new point', 'new point'),
+                                                    ('one point need rating', 'one point need rating'),
                                                     ], blank=True, null=True)
     # Add other fields as needed
 

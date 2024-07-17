@@ -1,0 +1,152 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Points List{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+        <div class="container" id="update">
+            <center><h2>Point List</h2></center>
+            <br>
+                
+            <!-- Table to display service information -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer Name</th>
+                        <th>Phone Number</th>
+                        <th>Description</th>
+                        <th>Approvement</th>
+                        <th>Rating</th>
+
+                        <!-- Add other columns as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for point in points %}
+                        <tr>
+                            <td>{{point.id}}</td>
+                            
+                            <td><a href="{% url 'point' point.id %}"> {{point.first_name}} - {{point.last_name}} </a></td>
+                            
+                            <td>{{point.number}}</td>
+
+                            <td>{{point.description}}</td>
+
+                            <td>
+                                {% if point.approved == 'T' %}
+                                    <p>✔️</p>
+                                {%elif point.approved == 'F' %}
+                                    <p>❌</p>
+                                {% else %}
+                                    <p>🕒</p>
+                                {% endif %}
+                            </td>
+
+
+                            {% if user.employee.position.name != "super provider" or "advenced_price" in cols %}
+                                <td style="min-width: 100px;" >
+                                    <form method="post" action="{% url 'add_rate' point.id %}">
+                                        {% csrf_token %}
+                                        <div style="display: flex;">
+                                            <input id="advence_price" type="number" step="0.01" value="{{ point.score|floatformat:2|default_if_none:0 }}" name="advence_price" class="form-control mr-2" placeholder="Enter price">
+                                            <button class="btn btn-sm btn-success" type="submit">Add price</button>
+                                        </div>
+                                    </form>
+                                    
+
+                                    
+                                </td>
+                            {% endif %}
+                            
+
+                            <!-- Add other columns as needed -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+    <script>
+        // Function to fetch and update content
+        function refreshContent() {
+            $.ajax({
+                url: window.location.href,
+                type: 'GET',
+                success: function(data) {
+                    // Extract the HTML content within the #update element from the response data
+                    var updatedContent = $(data).find('#update').html();
+                    console.log(updatedContent)
+                    
+                    // Replace the content within the #update element with the updated content
+                    $('#update').html(updatedContent);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching content:', error);
+                }
+            });
+        }
+        
+        // Call the refreshContent function every 10 seconds
+        setInterval(refreshContent, 10000); // 10000 milliseconds = 10 seconds
+    </script>
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

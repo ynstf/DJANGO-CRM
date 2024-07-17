@@ -36,7 +36,7 @@
             <ul>
                 {% for notification in notifications %}
                 <li>
-                    {% if notification.inquiry %}
+                    {% if notification.inquiry and not notification.point %}
                         new
                         {% if notification.action == 'new' %}
                             inquiry
@@ -45,7 +45,12 @@
                         {% endif %}
                         <a href="{% url 'inquiry_info' notification.inquiry.id %}">{{ notification.inquiry.address }}</a>
                     {% else %}
+                        {% if user.employee.position.name == 'call center' %}
                         <span> {{ notification.action }} <a href="{% url 'add_inq_from_points' notification.point.id %}">{{ notification.point.first_name }} - {{ notification.point.last_name }} <small>(from {{ notification.point.employee }})</small></a></span>
+                        {% elif user.employee.position.name == 'admin' %}
+                        <span> {{ notification.action }} <a href="{% url 'points_admin' %}">{{ notification.point.first_name }} - {{ notification.point.last_name }} <small>(from {{ notification.point.employee }})</small></a></span>
+
+                        {% endif %}
                     {% endif %}
                 </li>
                                     <hr>

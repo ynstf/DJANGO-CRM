@@ -1,38 +1,111 @@
 ############### admin manupilations #################
+from collections import defaultdict
+from datetime import datetime, timedelta
+import io
+import json
+import random
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.models import User, Group
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User, Group
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect
+from django.db.models import Count
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import get_template
+from django.utils import timezone
+from django.utils.timezone import make_aware
+
+from xhtml2pdf import pisa
+
+from apps.authentication.models import Employee, Position, Permission
+from apps.dashboard.models import (Booking, Complain, Inquiry, InquiryStatus, InvoiceForm,
+                                Quotation, QuotationForm, Service, Source, Status, SuperProvider,
+                                InquiryNotify, Points, MessageNotify)
+from apps.dashboard.models_com import SuperProvider as SuperProviderCom, Service as ServiceCom
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
-from apps.authentication.models import Employee, Position, Permission
-from django.http import JsonResponse
-from apps.dashboard.models import (Booking, Complain, Inquiry, InquiryStatus, InvoiceForm,
-    Quotation, QuotationForm, Service, Source, Status, SuperProvider)
-from django.shortcuts import render
-from django.db.models import Count
-from django.utils import timezone
-from datetime import timedelta
-from collections import defaultdict
-from apps.dashboard.models_com import Service
-import random
-import json
 
-
-from datetime import datetime, timedelta
-from django.contrib import messages
-from django.utils.timezone import make_aware
-from django.http import HttpResponse
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-import io
 
 
     
+
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def add_rate(request, id):
+
+    point = Points.objects.get(id=id)
+
+    if request.method == 'POST':
+        advence_price = request.POST.get('advence_price')
+
+        point.score = float(advence_price)
+        point.save()
+
+
+    return redirect('points_admin')
+
+
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists() )
+def points_admin(request):
+    
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+
+
+    # Handle search form submission
+    if request.method == 'GET':
+
+        # to show just the points with the same service with employer
+        points = Points.objects.all().order_by('-update')
+
+        search_counter = points.count()
+        # Pagination
+        page = request.GET.get('page', 1)
+        paginator = Paginator(points, 40)  # Show 40 customers per page
+
+        try:
+            points = paginator.page(page)
+        except PageNotAnInteger:
+            points = paginator.page(1)
+        except EmptyPage:
+            points = paginator.page(paginator.num_pages)
+
+
+    # Render the initial page with the full customer list
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    
+    
+    context = {'position': request.user.employee.position,
+                'layout_path': layout_path,
+                'points_with_pages': points,
+                'notifications':notifications,
+                'notifications_counter':notifications_counter,
+                "search_counter":search_counter,
+                "states":Status.objects.all(),
+                'messages':messages,
+                'messages_counter':messages_counter,
+                'points':points
+
+                
+                }
+    
+
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/points_list.html',context)
+
+
+
+
+
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
 def crm_page(request):
