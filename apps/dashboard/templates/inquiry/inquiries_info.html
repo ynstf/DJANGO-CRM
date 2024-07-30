@@ -129,7 +129,7 @@
                 <hr>
             
                 <h3 style="color:#479d1f;">Inquiry
-                    {% if user.employee.position.name == "call center" or user.employee.position.name == "super provider" %}
+                    {% if user.employee.position.name == "call center" or user.employee.position.name == "super provider" or user.employee.position.name == "admin" %}
                         <!-- {% if not booking_number and quotations %}
                             <a href="{% url 'make_booking' inquiry.id %}" class="btn btn-primary" style="background-color: #146fba ;"> Booking </a>
                         {% endif %} -->
