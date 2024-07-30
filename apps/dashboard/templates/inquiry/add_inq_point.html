@@ -52,7 +52,9 @@
 
                         <div class="col-md-4">
                             <div id="merge" style="display: none;">
-                                <p>Phone number already exists for <a href="" id="customer-link"><span id="existing-customer-name"></span></a>. Do you want to merge?  </p>
+                                <p>Phone number already exists for <a href="" id="customer-link"><span id="existing-customer-name"></span>
+                                </a> with services : <span id="services-customer" style="color: brown;"></span>
+                                . Do you want to merge?  </p>
 
 
                                 
@@ -81,6 +83,7 @@
                                         success: function(data){
                                             if (data.exists) {
                                                 $('#existing-customer-name').text(`${data.customer.first_name} ${data.customer.last_name}`);
+                                                $('#services-customer').text(`${data.customer.services} `);
                                                 
                                                 var idValue = data.customer.id;
                                                         if (idValue) {
@@ -442,14 +445,6 @@
                                             <!-- Employees will be displayed here -->
                                         </div>
 
-                                        <label for="team_leader">Team Leader:</label>
-                                        <select id="team_leader" class="form-control" name="inquiry-team_leader" required>
-                                            <!-- Populate dropdown menu with super providers -->
-                                            <option value="{{ point.employee.id }}" selected>{{ point.employee }}</option>
-                                            {% for team_leader in team_leaders %}
-                                                <option value="{{ team_leader.id }}">{{ team_leader.first_name }} {{ team_leader.last_name }}</option>
-                                            {% endfor %}
-                                        </select>
                                     </div>
 
                                     <div class="col-md-4">

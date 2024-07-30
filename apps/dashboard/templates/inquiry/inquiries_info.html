@@ -91,7 +91,7 @@
 
                     {% for whatsApp in customer.whatsapp_set.all %}
                         {% if whatsApp.whatsapp %}
-                            <h6>WhatsApp Numbers: {{ whatsApp.whatsapp }}</h6>
+                            <h6>WhatsApp Numbers: {{ whatsApp.whatsapp }} <a href="{{ simple_whatsapp_link }}" target="_blank" class="btn btn-success"> <img height="30px" width="30px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt=""> send via whatsapp</a> </h6>   
                             
                         {% endif %}
                     {% endfor %}
@@ -349,6 +349,9 @@
                 
                 {% if user.employee.position.name == "call center" and not requests.last.quotation.all %}
                     <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations by call center</a>
+                {% endif %}
+                {% if user.employee.position.name == "admin" and not requests.last.quotation.all %}
+                    <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations by Admin</a>
                 {% endif %}
                 {% if requests.last.demande == 'work' and user.employee.position.name == "super provider" and not requests.last.quotation.all %}
                     <a style="text-align: right;" href="{% url 'make_quotation' inquiry.id %}" class="btn btn-secondary">Add Quotations for work</a>

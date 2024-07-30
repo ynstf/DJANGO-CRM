@@ -985,6 +985,7 @@ def statistics_view(request):
     finish = request.GET.get('finish')
     service = request.GET.get('service')
     sp = request.GET.get('sp')
+    source = request.GET.get('source')
 
     # Calculate the date range for the last 30 days
     end_date = timezone.now().date()
@@ -1022,6 +1023,13 @@ def statistics_view(request):
         complains = Complain.objects.filter(inquiry__services=service)
         service = int(service)
         search_str["service"]=service
+    
+    if source :
+        inquiries = inquiries.filter(source=source)
+        bookings = bookings.filter(inquiry__source=source)
+        complains = Complain.objects.filter(inquiry__source=source)
+        source = int(source)
+        search_str["source"]=source
     
     if sp :
         inquiries = inquiries.filter(sp=sp)
@@ -1235,43 +1243,6 @@ def statistics_view(request):
     services_counts = list(services_counter.keys())
 
 
-
-    """
-    # Calculate the date range for the last 30 days
-    service_colors = {}  # Dictionary to store colors for each service
-    import random
-    random.seed(24)  # Seed the random number generator for reproducibility
-
-    # Query the database to get the counts of inquiries for each date and service within the last 30 days
-    service_data = defaultdict(lambda: defaultdict(int))
-    services = Service.objects.all()
-    for service in services:
-        inquiries = inquiries.filter(date_inq__range=(start_date, end_date), services=service)
-        for inquiry in inquiries:
-            inquiry_date = inquiry.date_inq.strftime('%Y-%m-%d')
-            service_data[inquiry_date][service.name] += 1
-    # Prepare the aggregated data for the chart
-    dates = sorted(service_data.keys())
-    service_names = [service.name for service in services]
-    service_counts = {service: [] for service in service_names}
-    colors = ["31, 119, 180","255, 127, 14","44, 160, 44","214, 39, 40","148, 103, 189","140, 86, 75","227, 119, 194","127, 127, 127","188, 189, 34","23, 190, 207","26, 85, 255","255, 0, 191","128, 255, 0","255, 191, 0","0, 255, 204"]
-    
-    for date in dates:
-        color_counter = 0
-        for service in service_names:
-            service_counts[service].append(service_data[date][service])
-            rgb_values = [random.randint(0, 255) for _ in range(3)]
-            rgb_string = ', '.join(map(str, rgb_values))
-            #service_colors[service] = rgb_string
-            service_colors[service] = colors[color_counter]
-            color_counter+=1
-            #print(service_names,colors[color_counter])
-            
-    
-    # Convert the service_colors dictionary to a JSON object
-    service_colors_json = json.dumps(service_colors)
-    print(service_colors_json)
-    """
     # Calculate the date range for the last 30 days
     service_colors = {}  # Dictionary to store colors for each service
     random.seed(24)  # Seed the random number generator for reproducibility
@@ -1343,6 +1314,7 @@ def statistics_view(request):
         'services_counts': services_counts,
         'service_colors_json': service_colors_json,
         'services':Service.objects.all(),
+        'sources':Source.objects.all(),
         'states':Status.objects.all(),
         'service_providers':SuperProvider.objects.all(),
         'search_str':search_str,
@@ -1385,8 +1357,6 @@ def statistics_view(request):
 
     return render(request, 'admin/statistics/inquiry_statistics.html', context)
 
-
-
 def generate_statistics_pdf(request):
     # Get parameters from request
     status = request.GET.get('status', '')
@@ -1394,6 +1364,7 @@ def generate_statistics_pdf(request):
     finish = request.GET.get('finish', '')
     service = request.GET.get('service', '')
     sp = request.GET.get('sp', '')
+    source = request.GET.get('source', '')
 
 
 
@@ -1435,6 +1406,13 @@ def generate_statistics_pdf(request):
         service = int(service)
         search_str["service"]=service
     
+    if source :
+        inquiries = inquiries.filter(source=source)
+        bookings = bookings.filter(inquiry__source=source)
+        complains = Complain.objects.filter(inquiry__source=source)
+        source = int(source)
+        search_str["source"]=source
+
     if sp :
         inquiries = inquiries.filter(sp=sp)
         bookings = bookings.filter(inquiry__sp=sp)
@@ -1607,6 +1585,7 @@ def generate_statistics_pdf(request):
                 'user':request.user,
 
                 'services':Service.objects.all(),
+                'sources':Source.objects.all(),
                 'permissions':Permission.objects.all(),
 
                 'all_inq':Inquiry.objects.all().count(),
@@ -1651,6 +1630,7 @@ def generate_statistics_pdf(request):
                 'this_first':request.GET.get('start', ''),
                 'this_end':request.GET.get('finish', ''),
                 'this_service': Service.objects.get(id=request.GET.get('service', '')) if request.GET.get('service', '').isdigit() and Service.objects.filter(id=request.GET.get('service', '')).exists() else None,                
+                'this_source': Source.objects.get(id=request.GET.get('source', '')) if request.GET.get('source', '').isdigit() and Source.objects.filter(id=request.GET.get('source', '')).exists() else None,                
                 'this_status':Status.objects.get(id=request.GET.get('status', '')) if request.GET.get('status', '').isdigit() and Status.objects.filter(id=request.GET.get('status', '')).exists() else None,
 
                 }

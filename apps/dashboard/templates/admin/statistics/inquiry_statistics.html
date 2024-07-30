@@ -92,6 +92,20 @@
                 </div>
 
                 <div class="col-md-2">
+                    <label for="">Source : </label>
+                    <select name="source"  class="form-control">
+                        <option value="" selected>Sources</option>
+                        {% for source in sources %}
+                            {% if source.id == search_str.source %}
+                                <option value="{{source.id}}" selected>{{source}}</option>
+                            {% else %}
+                                <option value="{{source.id}}">{{source}}</option>
+                            {% endif %}                            
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
                     <label for="">SP : </label>
                     <select name="sp"  class="form-control">
                         <option value="" selected>Service Provider</option>
@@ -107,7 +121,9 @@
 
                 <div class="col-md-2">
                     <br>
+                    <center>
                     <button type="submit"  class="form-control">search</button>
+                    </center>
                     <br>
                 </div>
 
@@ -124,7 +140,6 @@
             <p>{{inquiries}}</p>
         
             <div class="row gy-4">
-
                 <!-- booking of all time -->
                 <div id="monthly_inquiries" class="col-xl-3 col-sm-6 mt-5">
                     <div class="card">
@@ -732,6 +747,7 @@
             <input type="hidden" name="finish" value="{{ request.GET.finish }}">
             <input type="hidden" name="service" value="{{ request.GET.service }}">
             <input type="hidden" name="sp" value="{{ request.GET.sp }}">
+            <input type="hidden" name="source" value="{{ request.GET.source }}">
             <center><button type="button" class="btn btn-success" onclick="generatePDF()">Generate PDF</button></center>
             
         </form>

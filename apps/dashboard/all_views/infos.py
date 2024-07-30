@@ -134,6 +134,9 @@ def check_phone_number(request):
         try:
             phone_record = PhoneNumber.objects.get(number=phone_number)
             customer = phone_record.customer
+            inquiries = Inquiry.objects.filter(customer=customer)
+            services = [inquiry.services.name for inquiry in inquiries]
+            services = ", ".join(services)
             customer_data = {
                 'first_name': customer.first_name,
                 'last_name': customer.last_name,
@@ -141,7 +144,9 @@ def check_phone_number(request):
                 'nationality': customer.nationality.id if customer.nationality else None,
                 'language': customer.language.id if customer.language else None,
                 'trn': customer.trn,
-                'id': customer.id
+                'id': customer.id,
+                'services': services
+
             }
             return JsonResponse({'exists': True, 'customer': customer_data})
         except PhoneNumber.DoesNotExist:

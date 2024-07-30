@@ -875,13 +875,7 @@
                                             <!-- Employees will be displayed here -->
                                         </div>
 
-                                        <label for="team_leader">Team Leader:</label>
-                                        <select id="team_leader" class="form-control" name="inquiry-team_leader" required>
-                                            <!-- Populate dropdown menu with super providers -->
-                                            {% for team_leader in team_leaders %}
-                                                <option value="{{ team_leader.id }}">{{ team_leader.first_name }} {{ team_leader.last_name }}</option>
-                                            {% endfor %}
-                                        </select>
+
                                     </div>
 
                                     <div class="col-md-4">
@@ -893,7 +887,7 @@
                                 
                                     <div class="col-md-4">
                                         <label for="remainder_check_${addressIndex}_${inqCounters[addressIndex]}">Have Remainder? :</label>
-                                        <input type="checkbox" id="remainder_check_${addressIndex}_${inqCounters[addressIndex]}" name="remainder_check" onclick="toggleReminder('${addressIndex}_${inqCounters[addressIndex]}')">
+                                        <input type="checkbox" id="remainder_check_${addressIndex}_${inqCounters[addressIndex]}" name="remainder_check_${addressIndex}_${inqCounters[addressIndex]}" onclick="toggleReminder('${addressIndex}_${inqCounters[addressIndex]}')">
                                     </div>
                                     
                                     <div class="col-md-4" id="reminderField_${addressIndex}_${inqCounters[addressIndex]}"" style="display: none;">

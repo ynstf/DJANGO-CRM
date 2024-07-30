@@ -195,7 +195,6 @@ def add_inq_from_points(request,id):
         inq_date = request.POST.get('inquiry-date_inq')
         inq_source = request.POST.get('customer-source')
         inq_service = request.POST.get('inquiry-services')
-        team_leader = request.POST.get('inquiry-team_leader')
         sp = request.POST.get('inquiry-superprovider')
         remainder_checked = request.POST.get('remainder_check')
         schedule_time = request.POST.get('inquiry-reminder')
@@ -248,121 +247,117 @@ def add_inq_from_points(request,id):
                 landline = Landline(customer=customer,landline=l)
                 landline = landline.save()
 
-            try:
-                coords = location.split(",")
-                latitude = coords[0]
-                longitude = coords[1]
-            except:
-                latitude = 0
-                longitude = 0
+        try:
+            coords = location.split(",")
+            latitude = coords[0]
+            longitude = coords[1]
+        except:
+            latitude = 0
+            longitude = 0
 
-            google_maps_link = f"https://www.google.com/maps?q={latitude},{longitude}"
+        google_maps_link = f"https://www.google.com/maps?q={latitude},{longitude}"
 
-            if emarate and adress_type :
+        if emarate and adress_type :
+            address = Address(
+                customer=customer,
+                address_name=adress_name,
+                type=adress_type,
+                emirate=Emirate.objects.get(id=emarate),  # Replace with the actual Emirate retrieval
+                description_location=adress_desc,
+                location=location,
+                location_url=google_maps_link,
+            )
+            address.save()
+        else:
+            if emarate=="" and adress_type=="" :
                 address = Address(
-                    customer=customer,
-                    address_name=adress_name,
-                    type=adress_type,
-                    emirate=Emirate.objects.get(id=emarate),  # Replace with the actual Emirate retrieval
-                    description_location=adress_desc,
-                    location=location,
-                    location_url=google_maps_link,
+                customer=customer,
+                address_name=adress_name,
+                description_location=adress_desc,
+                location=location,
+                location_url=google_maps_link,
                 )
                 address.save()
             else:
-                if emarate=="" and adress_type=="" :
+                if emarate=="":
                     address = Address(
-                    customer=customer,
-                    address_name=adress_name,
-                    description_location=adress_desc,
-                    location=location,
-                    location_url=google_maps_link,
+                        customer=customer,
+                        address_name=adress_name,
+                        type=adress_type,
+                        description_location=adress_desc,
+                        location=location,
+                        location_url=google_maps_link,
                     )
                     address.save()
-                else:
-                    if emarate=="":
-                        address = Address(
-                            customer=customer,
-                            address_name=adress_name,
-                            type=adress_type,
-                            description_location=adress_desc,
-                            location=location,
-                            location_url=google_maps_link,
-                        )
-                        address.save()
 
-                    if adress_type=="" :
-                        address = Address(
-                            customer=customer,
-                            address_name=adress_name,
-                            emirate=Emirate.objects.get(id=emarate),  # Replace with the actual Emirate retrieval
-                            description_location=adress_desc,
-                            location=location,
-                            location_url=google_maps_link,
-                        )
-                    
-                        address.save()
-
-            #
-            services_set = Service.objects.get(name=inq_service)
-            #owner = Employee.objects.get(id=inq_employees[q])
-            team = Employee.objects.get(id=team_leader)
-            current_inq_source_id = inq_source
-            current_inq_source = Source.objects.get(id=current_inq_source_id)
-            current_sp = SuperProvider.objects.get(id=sp)
-
-            inquiry = Inquiry(
-                            customer=customer,
-                            address=address,
-                            source = current_inq_source,
-                            services=services_set,
-                            sp=current_sp,
-                            description=inq_desc,
-                            #owner=owner,
-                            team_leader=team,
-                            )
-            inquiry.save()
-
-            inq_employees = request.POST.getlist(f'inquiry-employees')
-            
-            for id_employee in inq_employees:
-                owner = Employee.objects.get(id=id_employee)
-                inquiry.handler.add(owner)
+                if adress_type=="" :
+                    address = Address(
+                        customer=customer,
+                        address_name=adress_name,
+                        emirate=Emirate.objects.get(id=emarate),  # Replace with the actual Emirate retrieval
+                        description_location=adress_desc,
+                        location=location,
+                        location_url=google_maps_link,
+                    )
                 
-                notification = InquiryNotify(
-                    employee = owner,
-                    inquiry = inquiry,
-                    sp = current_sp,
-                    action = "new"
-                )
-                notification.save()
+                    address.save()
 
-                isnotify = IsEmployeeNotified(
-                    employee = owner,
-                    notified = False
-                )
-                isnotify.save()
+        #
+        services_set = Service.objects.get(name=inq_service)
+        current_inq_source_id = inq_source
+        current_inq_source = Source.objects.get(id=current_inq_source_id)
+        current_sp = SuperProvider.objects.get(id=sp)
 
-            inquiry.save()
+        inquiry = Inquiry(
+                        customer=customer,
+                        address=address,
+                        source = current_inq_source,
+                        services=services_set,
+                        sp=current_sp,
+                        description=inq_desc,
+                        )
+        inquiry.save()
 
-
-
-            new = Status.objects.get(name = "new")
-            inq_state = InquiryStatus(
-                inquiry = inquiry,
-                status= new
-            )
-            inq_state.newDelay = timezone.now()
-            inq_state.save()
-
-
-            req = Request(
-                inquiry = inquiry,
-                demande = "by call center"
-            )
-            req.save()
+        inq_employees = request.POST.getlist(f'inquiry-employees')
         
-        
+        for id_employee in inq_employees:
+            owner = Employee.objects.get(id=id_employee)
+            inquiry.handler.add(owner)
+            
+            notification = InquiryNotify(
+                employee = owner,
+                inquiry = inquiry,
+                sp = current_sp,
+                action = "new"
+            )
+            notification.save()
+
+            isnotify = IsEmployeeNotified(
+                employee = owner,
+                notified = False
+            )
+            isnotify.save()
+
+        inquiry.save()
+
+
+
+        new = Status.objects.get(name = "new")
+        inq_state = InquiryStatus(
+            inquiry = inquiry,
+            status= new
+        )
+        inq_state.newDelay = timezone.now()
+        inq_state.save()
+
+
+        req = Request(
+            inquiry = inquiry,
+            demande = "by call center"
+        )
+        req.save()
+    
+    
         if remainder_checked == "on":
             employee_id = request.user.employee.id
             employee = Employee.objects.get(id=employee_id)
@@ -1338,6 +1333,8 @@ def inquiry_info_view(request, id):
     pdf_url = reverse('generate_pdf', args=[id])
     absolute_pdf_url = request.build_absolute_uri(pdf_url)
     whatsapp_link = f'https://api.whatsapp.com/send?phone={phone_number}&text={quote(message)}%0A{quote(str(absolute_pdf_url))}'
+    whatsnum = phone_number.replace('+','')
+    simple_whatsapp_link = f'https://api.whatsapp.com/send?phone={whatsnum}'
 
 
     message = "Your Invoice ready, check the link"
@@ -1389,6 +1386,7 @@ def inquiry_info_view(request, id):
             'quotations': Quotation.objects.filter(inquiry=Inquiry.objects.get(id=id)),
             'permissions_list':[p.name for p in request.user.employee.permissions.all()],
             'whatsapp_link':whatsapp_link,
+            'simple_whatsapp_link':simple_whatsapp_link,
             'whatsapp_link_invoice':whatsapp_link_invoice,
             'connect_with_customer_whatsapp_link':connect_with_customer_whatsapp_link,
             'canceling_cause': inquiry_state.canceling_causes,

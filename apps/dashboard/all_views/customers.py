@@ -345,95 +345,82 @@ def add_customer_view(request):
                 try:
                     print('dkheeeeeeeeeeeeeelt')
                     for inq_per_address in range(s[f"{i}"]):
+                        remainder_checked = request.POST.get(f'remainder_check_{i}_{inq_per_address+1}')
+
+                        print("q : ",q)
+                        print("s : ",s)
+                        print("i : ",i,)
+                        print("inq_per_address :",inq_per_address)
+                        print("remainder_checked :",remainder_checked)
 
                         inq_employees = request.POST.getlist(f'inquiry-employees_{i}_{inq_per_address+1}')
-                        print("debuuuug")
-                        print(f"inquiry-employees_{i}_{inq_per_address+1}")
-                        print(inq_employees)
-
-                        print(adress_name[i-1])
                         address = addresses[i-1]
                         services_set = Service.objects.get(name=inq_service[q])
-                        #owner = Employee.objects.get(id=inq_employees[q])
-                        team = Employee.objects.get(id=team_leader[q])
-                        
-
-                        print(inq_source[q])
                         current_inq_source_id = inq_source[q]
                         current_inq_source = Source.objects.get(id=current_inq_source_id)
                         current_sp = SuperProvider.objects.get(id=sp[q])
-                        print(current_inq_source)
-                        print(inq_source)
 
-                        if True:
-                            inquiry = Inquiry(
-                                customer=customer,
-                                address=address,
-                                source = current_inq_source,
-                                services=services_set,
-                                sp=current_sp,
-                                description=inq_desc[q],
-                                #owner=owner,
-                                team_leader=team,
-                                
-                            )
-                            inquiry.save()
+                        print("customer :",customer)
+                        print("address :",address)
+                        print("source :",current_inq_source)
+                        print("services :",services_set)
+                        print("sp :",current_sp)
+                        print("description :",inq_desc[q])
 
+                        inquiry = Inquiry(
+                            customer=customer,
+                            address=address,
+                            source = current_inq_source,
+                            services=services_set,
+                            sp=current_sp,
+                            description=inq_desc[q],
+                            
+                        )
+                        inquiry.save()
+                        print("1")
+
+                        for id_employee in inq_employees:
+                            owner = Employee.objects.get(id=id_employee)
+                            inquiry.handler.add(owner)
                             
 
-                            """employees = Employee.objects.filter(sp=current_sp)
-                            for employee in employees:
-                                inquiry.handler.add(employee)
-                                inquiry.save()
-                            inquiry.handler.add(request.user.employee)
-                            inquiry.save()"""
-
-                            for id_employee in inq_employees:
-                                owner = Employee.objects.get(id=id_employee)
-                                inquiry.handler.add(owner)
-                                
-
-                                notification = InquiryNotify(
-                                    employee = owner,
-                                    inquiry = inquiry,
-                                    sp = current_sp,
-                                    action = "new"
-                                )
-                                notification.save()
-
-                                isnotify = IsEmployeeNotified(
-                                    employee = owner,
-                                    notified = False
-                                )
-                                isnotify.save()
-
-                            inquiry.save()
-
-
-
-                            new = Status.objects.get(name = "new")
-                            inq_state = InquiryStatus(
+                            notification = InquiryNotify(
+                                employee = owner,
                                 inquiry = inquiry,
-                                status= new
+                                sp = current_sp,
+                                action = "new"
                             )
-                            inq_state.newDelay = timezone.now()
-                            inq_state.save()
+                            notification.save()
 
-                            #all_employees = Employee.objects.filter(sp=current_sp)
-                            
-                            #for employee in all_employees:
-
-
-                            req = Request(
-                                inquiry = inquiry,
-                                demande = "by call center"
+                            isnotify = IsEmployeeNotified(
+                                employee = owner,
+                                notified = False
                             )
-                            req.save()
+                            isnotify.save()
+
+                        print("2")
+                        inquiry.save()
+
+
+                        print("3")
+                        new = Status.objects.get(name = "new")
+                        inq_state = InquiryStatus(
+                            inquiry = inquiry,
+                            status= new
+                        )
+                        inq_state.newDelay = timezone.now()
+                        inq_state.save()
+
+                        print("4")
+
+                        req = Request(
+                            inquiry = inquiry,
+                            demande = "by call center"
+                        )
+                        req.save()
+                        print("5")
                         
-                        print("haaaaaaaaaaaaa ana")
-                        print(req)
-                        
-                        if remainder_checked[q] == "on":
+                        if remainder_checked == "on":
                             print("waaaaaaaaaaaaaaaaaaaa rani dkhjaaaalt")
                             employee_id = request.user.employee.id
                             employee = Employee.objects.get(id=employee_id)
@@ -445,7 +432,7 @@ def add_customer_view(request):
                                 schedule=schedule_time[q]
                             )
                             reminder.save()
-
+                        print("6")
                         q+=1
 
                 except:
