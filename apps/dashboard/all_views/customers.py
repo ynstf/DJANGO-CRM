@@ -16,6 +16,8 @@ import json
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.utils import timezone
+import cloudinary
+import cloudinary.uploader
 
 ######### permissions #########
 """
@@ -377,6 +379,28 @@ def add_customer_view(request):
                             
                         )
                         inquiry.save()
+
+                        # upload images 
+                        if request.method == 'POST':
+                            try:
+                                imgs = request.FILES.getlist(f'images_{i}_{inq_per_address+1}')
+                                print(imgs)
+                                # Upload images to Cloudinary
+                                image_urls = []
+                                for img in imgs:
+                                    cloudinary_response = cloudinary.uploader.upload(img)
+                                    image_urls.append(cloudinary_response['secure_url'])
+                                # Get the public URL(s) of the uploaded image(s)
+                                try:
+                                    urls = inquiry.cloudinary_urls.split(',**,')
+                                except:
+                                    urls = []
+                                image_urls+=urls
+                                # Save the URL(s) to the model
+                                inquiry.cloudinary_urls = ',**,'.join(image_urls)
+                                inquiry.save()
+                            except:
+                                pass
                         print("1")
 
                         for id_employee in inq_employees:
@@ -439,16 +463,6 @@ def add_customer_view(request):
                     pass
 
 
-        """
-        if not user_already_exist:
-            return redirect('customer_list')  # Redirect to the customer list page
-        else:
-            #return redirect('merge_customer' ,id=customer.id)
-            id_addresses = []
-            for adr in addresses:
-                id_addresses.append(adr.id)
-            return render(request, 'customer/merge_confirmation.html', {'customer': customer, 'id_addresses':id_addresses, 'phone':phone})
-        """
         if merge:
             messages.success(request, "The two customers have been successfully merged.")
             return redirect("customer_info", id=customer.id)
