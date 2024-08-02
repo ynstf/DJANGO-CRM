@@ -65,17 +65,19 @@
                                     <h6 class="text-muted mb-0">No Chats Found</h6>
                                 </li>
 
+                            
 
                                 {% for message in messages %}
                                     <li class="chat-contact-list-item">
                                     
                                         <a href="{% url 'conversation' Myid=user.employee.id Otherid=message.destination.id %}" class="d-flex align-items-center">
-                                        <div class="flex-shrink-0 avatar avatar-online">
+                                        <div class="flex-shrink-0 avatar avatar-{% if message.destination.is_online %}online{% else %}busy{% endif %}">
                                             <img src="{% static 'img/avatars/1.png' %}" alt="Avatar" class="rounded-circle">
                                         </div>
                                         <div class="chat-contact-info flex-grow-1 ms-3">
                                             <div class="d-flex justify-content-between align-items-center">
                                             <h6 class="chat-contact-name text-truncate fw-normal m-0">
+                                                
                                                 {% if message.haveNotify %}
                                                     
                                                     <strong>{{message.destination}} {% if message.destination.position.name == 'super provider' %}<small>({{message.destination.sp}})</small>{% endif %}</strong>
@@ -111,7 +113,7 @@
                                     <li class="chat-contact-list-item">
                                     
                                         <a href="{% url 'conversation' Myid=user.employee.id Otherid=distination.id %}" class="d-flex align-items-center">
-                                        <div class="flex-shrink-0 avatar avatar-online">
+                                        <div class="flex-shrink-0 avatar avatar-{% if distination.is_online %}online{% else %}busy{% endif %}">
                                             <img src="{% static 'img/avatars/1.png' %}" alt="Avatar" class="rounded-circle">
                                         </div>
                                         <div class="chat-contact-info flex-grow-1 ms-3">

@@ -1,12 +1,21 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
+from apps.dashboard.models import Request
+from .models import Employee
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+
+def disconnect(request):
+    employee = Employee.objects.get(user=request.user)
+    employee.is_online = False
+    employee.save()
+    return redirect('disconnect')
+    
 
 class AuthView(TemplateView):
     template_name = "auth_login_basic.html"  # Set your template name here
@@ -35,6 +44,12 @@ class AuthView(TemplateView):
             # User is authenticated, log them in
             login(request, user)
             print(True)
+            employee = Employee.objects.get(user=user)
+            employee.is_online = True
+            employee.save()
+            print("teeeeest")
+            print("teeeeest")
+            print("employee.is_online",employee.is_online)
             return redirect('dashboard')  # Replace 'dashboard' with your actual URL name
         else:
             # Authentication failed, display an error message

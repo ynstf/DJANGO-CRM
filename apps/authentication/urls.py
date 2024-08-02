@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import AuthView
+from .views import AuthView, disconnect
 from django.contrib.auth.views import LogoutView
+
 
 urlpatterns = [
     path(
@@ -11,6 +12,8 @@ urlpatterns = [
     ),
     
     # Add the following line for logout
-    path('logout/', LogoutView.as_view(), name='logout'),
+    #path('logout/', LogoutView.as_view(), name='logout'),
+    path('logout/', disconnect, name='logout'),
+    path('disconnect/', LogoutView.as_view(), name='disconnect'),
 
 ]

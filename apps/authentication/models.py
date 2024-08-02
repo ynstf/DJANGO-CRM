@@ -25,6 +25,7 @@ class Employee(models.Model):
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
     sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
     permissions = models.ManyToManyField(Permission, blank=True, null=True)
+    is_online = models.BooleanField(default=False)
 
     search_number = models.IntegerField(blank=True, null=True)
     columns = models.TextField(blank=True, null=True)
