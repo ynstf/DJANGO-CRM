@@ -114,7 +114,7 @@
                 {% endfor %}
               </select>
 
-              <label for="serviceList">Services:</label>
+              <label for="serviceList">Services :</label>
               <div id="serviceList" >
                 <option value="{{inquiry.services.id}}" selected>
                   {{inquiry.services.name}}
@@ -123,26 +123,6 @@
                 <!-- Services will be displayed here -->
               </div>
 
-
-              <label for="team_leader">Team Leader:</label>
-              <select
-                id="team_leader"
-                class="form-control"
-                name="inquiry-team_leader"
-                required
-                {% if user.employee.position.name == "super provider" %} disabled {% endif %}
-              >
-                <option value="{{inquiry.team_leader.id}}" selected>
-                  {{inquiry.team_leader}}
-                </option>
-
-                <!-- Populate dropdown menu with super providers -->
-                {% for team_leader in team_leaders %}
-                <option value="{{ team_leader.id }}">
-                  {{ team_leader.first_name }} {{ team_leader.last_name }}
-                </option>
-                {% endfor %}
-              </select>
             </div>
 
             <div class="col-md-4">
@@ -299,8 +279,8 @@
                           disabled: true,
                           readonly: true
                         {% endif %}
+                    });
 
-                      });
                       
                       $.each(response.services, function (index, service) {
                         console.log(service);

@@ -890,45 +890,46 @@ def inquiries_list_view(request):
 
         if name_query:
             search_fields.append({'name':'name',
-                                'value':name_query})
+                                'value':name_query,'id':1
+                                })
             inquiries = inquiries.filter(customer__first_name__icontains=name_query)
         
         if id_query:
             search_fields.append({'name':'id',
-                                'value':id_query})
+                                'value':id_query,'id':2})
             inquiries = inquiries.filter(id=id_query)
 
         if start_date and end_date:
-            search_fields.append({'name': 'date', 'start_date': start_date, "end_date":end_date })
+            search_fields.append({'name': 'date', 'start_date': start_date, "end_date":end_date ,'id':3})
             inquiries = inquiries.filter(date_inq__range=[start_date, end_date])
 
         if add_name_query:
             search_fields.append({'name':'add_name',
-                                'value':add_name_query})
+                                'value':add_name_query,'id':4})
             inquiries = inquiries.filter(address__address_name__icontains=add_name_query)
         
         if source_query:
             search_fields.append({'name':'source',
-                                'value':source_query})
+                                'value':source_query,'id':5})
             id = Source.objects.get(name=source_query)
             inquiries = inquiries.filter(source=id)
 
         if status_query:
             search_fields.append({'name':'status',
-                                'value':status_query})
+                                'value':status_query,'id':6})
             id = Status.objects.get(name=status_query)
 
             inquiries = inquiries.filter(inquirystatus__status=id)
 
         if language_query:
             search_fields.append({'name':'language',
-                                'value':language_query})
+                                'value':language_query,'id':7})
             id = Language.objects.get(name=language_query)
             inquiries = inquiries.filter(customer__language=id)
 
         if nationality_query:
             search_fields.append({'name':'nationality',
-                                'value':nationality_query})
+                                'value':nationality_query,'id':8})
             id = Nationality.objects.get(name=nationality_query)
             inquiries = inquiries.filter(customer__nationality=id)
 
@@ -959,7 +960,7 @@ def inquiries_list_view(request):
                 reminder = "Reminder next 12 months"
 
             search_fields.append({'name':'reminder',
-                                'value':reminder})
+                                'value':reminder,'id':9})
 
             # Filter Inquiry objects based on the related InquiryReminder objects
             inquiries = Inquiry.objects.filter(inquiryreminder__schedule__range=[today, end_date])
@@ -1735,7 +1736,6 @@ def edit_inquiry(request,id):
     if request.method == 'POST':
         inq_source = request.POST.get('customer-source')
         inq_service = request.POST.get('inquiry-services')
-        team_leader = request.POST.get('inquiry-team_leader')
         #inq_employees = request.POST.get('inquiry-employees')
         sp = request.POST.get('inquiry-superprovider')
         inq_desc = request.POST.get('inquiry-description')
@@ -1744,14 +1744,12 @@ def edit_inquiry(request,id):
 
         srv = Service.objects.get(number=inq_service)
         src = Source.objects.get(id=inq_source)
-        tl = Employee.objects.get(id=team_leader)
         sup = SuperProvider.objects.get(id=sp)
         #owner = Employee.objects.get(id=inq_employees)
         desc = inq_desc
 
         print("service:" ,srv)
         print("source :",src)
-        print("team :",tl)
         print("sp: ",sup)
         print("desc:",desc)
         #print("owner",owner)
@@ -1761,7 +1759,6 @@ def edit_inquiry(request,id):
         inquiry.sp = sup
         #inquiry.owner = owner
         inquiry.description = desc
-        inquiry.team_leader = tl
 
 
 
@@ -1895,6 +1892,122 @@ def generate_pdf_view(request, request_id):
     response['Content-Disposition'] = f'inline; filename="{inquiry.customer.first_name}_{inquiry.customer.last_name}_quotation{inquiry.id}.pdf"'
 
     return response
+
+
+
+
+
+"""
+from django.http import HttpResponse
+from django.template.loader import get_template
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.enums import TA_RIGHT
+from io import BytesIO
+import os
+from django.conf import settings
+
+# Register Arial font (or any other font that supports Arabic)
+font_path = os.path.join(settings.BASE_DIR, 'MarkaziText.ttf')
+pdfmetrics.registerFont(TTFont('Arabic', font_path))
+
+def generatePdf(request):
+
+    
+    # Get template
+    template = get_template('pdf_template.html')
+    context = {
+        "invoice_id": "123",
+        "customer_name": "جون دو",
+        "amount": 1399.99,
+        "today": "2023-08-06",
+    }
+    
+    # Render template
+    html = template.render(context)
+    
+    # Create a file-like buffer to receive PDF data
+    buffer = BytesIO()
+    
+    # Create the PDF object, using the buffer as its "file."
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    
+    # Create styles
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='RightAlign', alignment=TA_RIGHT, fontName='Arabic', fontSize=12))
+    
+    # Create story
+    story = []
+    
+    # Split the HTML into lines and create a Paragraph for each line
+    for line in html.split('\n'):
+        if line.strip():
+            story.append(Paragraph(line, styles["RightAlign"]))
+    
+    # Build PDF
+    doc.build(story)
+    
+    # Get the value of the BytesIO buffer and write it to the response
+    pdf = buffer.getvalue()
+    buffer.close()
+    
+    # Create HTTP response with PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="invoice.pdf"'
+    response.write(pdf)
+    
+    return response
+
+
+"""
+
+import os
+from django.conf import settings
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+
+def link_callback(uri, rel):
+    sUrl = settings.STATIC_URL
+    sRoot = settings.STATIC_ROOT
+
+    if uri.startswith(sUrl):
+        path = os.path.join(sRoot, uri.replace(sUrl, ""))
+    else:
+        return uri
+
+    if not os.path.isfile(path):
+        raise Exception('media URI must start with %s' % sUrl)
+    return path
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="output.pdf"'
+    
+    pisa_status = pisa.CreatePDF(html, dest=response, link_callback=link_callback)
+
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response
+
+def generatePdf(request):
+    # Path to the image file in STATIC_ROOT
+    image_path = os.path.join(settings.STATIC_ROOT, 'illustration.png')
+    font_path = os.path.join(settings.STATIC_ROOT, 'MarkaziText.ttf')
+    
+    # Make sure the path is converted to a URL path
+    context = {'image_path': image_path,
+            'font_path':font_path}
+    
+    return render_to_pdf('pdf_template.html', context)
+
+
 
 
 def make_complain_view(request, id):

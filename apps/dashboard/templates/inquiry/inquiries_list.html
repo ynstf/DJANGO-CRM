@@ -38,8 +38,9 @@
                     <form method="get" action="{% url 'inquiries_list' %}" >
 
                         <div class="mysearsh row g-3">
-
                             {% for search_field in search_fields%}
+                            <div class="row g-3 align-items-center" id="row-{{ search_field.id }}">
+                            
                                 <div class="col-md-3">
                                     <label for="search_field">Search By:</label>
                                     <select id="search_field" name="search_field" class="form-control" onchange="updatePlaceholder(this)">
@@ -135,8 +136,18 @@
                                     <input type="text" name="{{ search_field.name }}" class="form-control" value="{{ search_field.value }}" placeholder='{{ search_field.name }} ....' aria-label="Search Value">
                                 </div>
                                 {% endif %}
-                                <br>
+                                
+                                <div class="col-md-3 d-flex align-items-center" id="delete">
+                                    <button class="btn btn-danger" onclick="removeSearchRow('row-{{ search_field.id }}')">Delete</button>
+                                </div>
+                            </div>
                             {% endfor %}
+                            <script>
+                                function removeSearchRow(rowId) {
+                                    var row = document.getElementById(rowId);
+                                    row.parentNode.removeChild(row);
+                                }
+                            </script>
 
                             <div class="col-md-3">
                                 <label for="search_field">Search By:</label>
@@ -171,6 +182,12 @@
                     </form>
                 </div>
             </div>
+            <style>
+                #delete {
+                    margin-top: 30px;
+                    padding-top: 8px;
+                }
+            </style>
             
             <script>
 
@@ -470,7 +487,7 @@
                 function addSearchRow() {
                     // Create a new search row
                     var newRow = document.createElement('div');
-                    newRow.className = 'mysearsh row g-3';
+                    newRow.className = 'mysearsh row g-3 align-items-center';
             
                     var col1 = document.createElement('div');
                     col1.className = 'col-md-3';
@@ -515,12 +532,28 @@
                     col2.appendChild(label);
                     col2.appendChild(input);
             
+                    // Create delete button column
+                    var col3 = document.createElement('div');
+                    col3.className = 'col-md-3 d-flex align-items-center';
+                    col3.id = 'delete';
+
+                    var deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = function() {
+                        document.getElementById('mycontainer').removeChild(newRow);
+                    };
+                    col3.appendChild(deleteButton);
+
                     newRow.appendChild(col1);
                     newRow.appendChild(col2);
-            
+                    newRow.appendChild(col3);
+
                     // Append the new row inside the search container
                     document.getElementById('mycontainer').appendChild(newRow);
                 }
+            
+                
             </script>
 
             <div id="update">
@@ -543,7 +576,7 @@
                         text-overflow: ellipsis; /* Add ellipsis for overflow text */
                         font-size: 12px;
                     }
-                    </style>
+                </style>
                 <table class="table">
                     <thead>
                         <tr>
