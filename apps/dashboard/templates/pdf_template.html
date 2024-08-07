@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <title>Bilingual PDF</title>
     <style>
+        /*
         @font-face {
             font-family: 'MarkaziText';
             src: url('{{ font_name }}');
         }
+        */
         body {
             font-family: 'MarkaziText', sans-serif;
-            font-size: 16px; /* Base font size */
+            font-size: 14px; /* Base font size */
         }
 
         .rtl {
@@ -128,9 +130,9 @@
     <br><br>
    
     <ul class="rtl">
-        <li><h3>Amount without VAR : {{ total }} SAR</h3></li>
-        <li><h3>VAR : 0 SAR</h3></li>
-        <li><h3>Total amount: {{ total }} SAR</h3></li>
+        <li><h3>Amount without VAT : {{ total }} AED</h3></li>
+        <li><h3>VAT : {{ vat }} AED</h3></li>
+        <li><h3>Total amount: {{ total_with_vat }} AED</h3></li>
     </ul>
    
     <br><br>

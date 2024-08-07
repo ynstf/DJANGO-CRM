@@ -1979,6 +1979,13 @@ def generate_pdf_view(request, request_id):
     columns_list = service_instance.columns.split(',')
     columns_list.append('Total')
 
+    vat = service_instance.vat
+    total_with_vat = total + (total * vat)
+    print('vat')
+    print(vat)
+    print('total_with_vat')
+    print(total_with_vat)
+
     data = []
     for quotation in quotations:
         datas = quotation.data.split(',*,')
@@ -2000,6 +2007,8 @@ def generate_pdf_view(request, request_id):
         'columns_list':columns_list,
         'data':data,
         'sp':sp,
+        'vat':vat,
+        'total_with_vat':total_with_vat,
         'image_path': image_path,
         'font_name': font_path  # Use the registered font name in the template
     }

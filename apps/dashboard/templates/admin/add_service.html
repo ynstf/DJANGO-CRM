@@ -78,6 +78,11 @@
                     <label for="id_service-description">Description :</label>
                     <textarea id="id_service-description" name="service-description" class="form-control" placeholder="description..." cols="30" rows="10"></textarea>
                 </div>
+                
+                <div class="col-md-4" >
+                    <label for="id_service-vat">VAT (AED):</label>
+                    <input type="number" id="id_service-vat" name="service-vat" class="form-control" placeholder="VAT..." aria-label="VAT">
+                </div>
 
                 <div class="col-md-4">
                     <label for="remainder_check">Remainder:</label>
@@ -88,6 +93,8 @@
                     <label for="id_service-reminder">Reminder (months):</label>
                     <input type="number" id="id_service-reminder" name="service-reminder" class="form-control" placeholder="Reminder..." aria-label="Reminder">
                 </div>
+
+                
                 <script>
                     function toggleReminder() {
                         var reminderField = document.getElementById('reminderField');

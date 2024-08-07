@@ -762,6 +762,7 @@ def add_service_view(request):
         remainder_checked = request.POST.get('remainder_check')
         reminder = request.POST.get('service-reminder')
         columns = request.POST.getlist('service-column')
+        serviceVAT = request.POST.get('service-vat')
 
         print(remainder_checked)
         
@@ -775,12 +776,12 @@ def add_service_view(request):
 
         if remainder_checked == "on":
             # Save the Service instance
-            service_instance = Service.objects.create(number=number_id, name=service_name, description=description, columns=columns_str, have_reminder='True', reminder_time=reminder)
+            service_instance = Service.objects.create(number=number_id, name=service_name, description=description, vat=serviceVAT, columns=columns_str, have_reminder='True', reminder_time=reminder)
             service_instance.save()
 
         else:
             # Save the Service instance
-            service_instance = Service.objects.create(number=number_id, name=service_name, description=description, columns=columns_str, have_reminder='False')
+            service_instance = Service.objects.create(number=number_id, name=service_name, description=description, vat=serviceVAT, columns=columns_str, have_reminder='False')
             service_instance.save()
             print(remainder_checked)
 
