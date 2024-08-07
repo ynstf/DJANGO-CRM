@@ -17,6 +17,11 @@ RUN /opt/ENVCRM/bin/pip install pip --upgrade && \
 #CMD [ "python3", "manage.py", "runserver", "0.0.0.0:8000"]
 
 #RUN /opt/ENVCRM/bin/python3 manage.py runscript fill
+# Create a directory for static files
+RUN mkdir -p /app/staticfiles
+
+# Set environment variable for Django to know where to collect static files
+ENV STATIC_ROOT /app/staticfiles
 
 CMD ["/app/entrypoint.sh"]
 

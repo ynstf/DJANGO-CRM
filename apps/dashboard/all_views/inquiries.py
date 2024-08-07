@@ -1970,7 +1970,8 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.http import HttpResponse
 from xhtml2pdf import pisa
-from xhtml2pdf.default import DEFAULT_FONT
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 def link_callback(uri, rel):
     sUrl = settings.STATIC_URL
@@ -2005,18 +2006,36 @@ def generatePdf(request):
     # Path to the image file in STATIC_ROOT
     image_path = os.path.join(settings.STATIC_URL, 'illustration.png')
     font_path = os.path.join(settings.STATIC_ROOT, 'MarkaziText.ttf')
+    print(f"Font path: {font_path}")
+    print(f"Font file exists: {os.path.exists(font_path)}")
     
     # Register the custom font
     pisa.showLogging()
-    DEFAULT_FONT['helvetica'] = font_path
+    
+    # Register the font with a specific name
+    pdfmetrics.registerFont(TTFont('MarkaziText', font_path))
     
     # Make sure the path is converted to a URL path
     context = {
         'image_path': image_path,
-        'font_path': font_path
+        'font_name': 'MarkaziText'  # Use the registered font name in the template
     }
     
     return render_to_pdf('pdf_template.html', context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def make_complain_view(request, id):
@@ -2061,7 +2080,6 @@ def make_complain_view(request, id):
             return redirect('make_inq_complain', inq_id = id)
 
     return redirect('inquiry_info', id = id)
-
 
 def messages_view(request, id):
 
