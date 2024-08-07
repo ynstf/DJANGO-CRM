@@ -1820,7 +1820,7 @@ def edit_inquiry(request,id):
     context = TemplateLayout.init(request, context)
     return render(request, 'inquiry/edit_inquiry.html',context)
 
-
+"""
 def generate_pdf_view(request, request_id):
     # Retrieve the inquiry and associated quotations
 
@@ -1893,78 +1893,7 @@ def generate_pdf_view(request, request_id):
 
     return response
 
-
-
-
-
 """
-from django.http import HttpResponse
-from django.template.loader import get_template
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib.enums import TA_RIGHT
-from io import BytesIO
-import os
-from django.conf import settings
-
-# Register Arial font (or any other font that supports Arabic)
-font_path = os.path.join(settings.BASE_DIR, 'MarkaziText.ttf')
-pdfmetrics.registerFont(TTFont('Arabic', font_path))
-
-def generatePdf(request):
-
-    
-    # Get template
-    template = get_template('pdf_template.html')
-    context = {
-        "invoice_id": "123",
-        "customer_name": "جون دو",
-        "amount": 1399.99,
-        "today": "2023-08-06",
-    }
-    
-    # Render template
-    html = template.render(context)
-    
-    # Create a file-like buffer to receive PDF data
-    buffer = BytesIO()
-    
-    # Create the PDF object, using the buffer as its "file."
-    doc = SimpleDocTemplate(buffer, pagesize=letter)
-    
-    # Create styles
-    styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='RightAlign', alignment=TA_RIGHT, fontName='Arabic', fontSize=12))
-    
-    # Create story
-    story = []
-    
-    # Split the HTML into lines and create a Paragraph for each line
-    for line in html.split('\n'):
-        if line.strip():
-            story.append(Paragraph(line, styles["RightAlign"]))
-    
-    # Build PDF
-    doc.build(story)
-    
-    # Get the value of the BytesIO buffer and write it to the response
-    pdf = buffer.getvalue()
-    buffer.close()
-    
-    # Create HTTP response with PDF
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'filename="invoice.pdf"'
-    response.write(pdf)
-    
-    return response
-
-
-"""
-
 import os
 from django.conf import settings
 from django.template.loader import get_template
@@ -2002,7 +1931,7 @@ def render_to_pdf(template_src, context_dict):
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
 
-def generatePdf(request):
+def generate_pdf_view(request, request_id):
     # Path to the image file in STATIC_ROOT
     image_path = os.path.join(settings.STATIC_URL, 'illustration.png')
     font_path = os.path.join(settings.STATIC_ROOT, 'MarkaziText.ttf')
@@ -2014,9 +1943,63 @@ def generatePdf(request):
     
     # Register the font with a specific name
     pdfmetrics.registerFont(TTFont('MarkaziText', font_path))
+
+        # Retrieve the inquiry and associated quotations
+
+    req = Request.objects.get(id = request_id)
+    inquiry = req.inquiry
+    quotations = req.quotation.all()
+
+    customer = Customer.objects.get(id=inquiry.customer.id)
+    phone = PhoneNumber.objects.filter(customer=customer)[0]
+    email = Email.objects.filter(customer=customer)[0]
+    address = inquiry.address.address_name
+
+    total = 0
+    for quotation in quotations:
+        total += float(quotation.total)
+
+
+    date=quotations[0].quotation_date
+    sp_quot=quotations[0].quotation_sp
+    try:
+        sp = QuotationForm.objects.get(title = 'Quotation1')
+    except:
+        sp = ''
+
+    form = QuotationForm.objects.all().first()
+    # Create a PDF template using Django template
+    template_path = 'pdf_template.html'  # Create a template for your PDF
+    template = get_template(template_path)
+
+
+    # Retrieve the Service instance
+    service_instance = inquiry.services
+    # Convert the comma-separated string back to a list
+    columns_list = service_instance.columns.split(',')
+    columns_list.append('Total')
+
+    data = []
+    for quotation in quotations:
+        datas = quotation.data.split(',*,')
+        datas.append(quotation.total)
+        data.append(datas)
+    
     
     # Make sure the path is converted to a URL path
     context = {
+        'inquiry': inquiry,
+        'quotations': quotations,
+        'date':date,
+        'service':sp_quot,
+        'phone':phone,
+        'address':address,
+        'email':email,
+        'total':total,
+        'form':form,
+        'columns_list':columns_list,
+        'data':data,
+        'sp':sp,
         'image_path': image_path,
         'font_name': font_path  # Use the registered font name in the template
     }
