@@ -3,46 +3,64 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Arabic PDF</title>
+    <title>Bilingual PDF</title>
     <style>
-
         @font-face {
             font-family: 'MarkaziText';
             src: url('{{ font_name }}');
         }
         body {
             font-family: 'MarkaziText', sans-serif;
-
         }
-
-    </style>
-</head>
-<body>
-    <style>
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+        .ltr {
+            direction: ltr;
+            text-align: left;
+        }
         table {
             width: 100%;
         }
-    
         td {
             vertical-align: top;
         }
-    
         #services-info {
             text-align: right;
         }
-    
         #logo {
             text-align: center;
         }
-    
         #company-info {
             text-align: left;
         }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .th, .td {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+        }
+        .th {
+            background-color: #f2f2f2;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+        }
+        li p {
+            margin: 0;
+        }
     </style>
-    
+</head>
+<body>
     <table>
         <tr>
-            <td id="services-info">
+            <td id="services-info" class="rtl">
                 <br>
                 <br>
                 <center>
@@ -54,7 +72,7 @@
                 <img src="{{sp.image}}" width="100">
                 <h2 style="color: #78d64c;">QUOTATION</h2>
             </td>
-            <td id="company-info">
+            <td id="company-info" class="ltr">
                 <br>
                 <br>
                 <center>
@@ -65,11 +83,11 @@
             </td>
         </tr>
     </table>
-    
+   
     <hr>
     <br><br>
-    <h2>Quotation  To:</h2>
-    <ul>
+    <h2 class="rtl">Quotation To:</h2>
+    <ul class="rtl">
         <li><p>customer name : {{ inquiry.customer }} </p></li>
         {% if inquiry.customer.trn %}
             <li><p>customer TRN : {{ inquiry.customer.trn }} </p></li>
@@ -78,34 +96,16 @@
         <li><p>Address : {{ address }} </p></li>
         <li><p>Email : {{ email }} </p></li>
     </ul>
-    
+   
     <br>
     <br>
-    
-    <style>
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-    
-        .th, .td {
-            border: 1px solid #dddddd;
-            text-align: center;
-            padding: 8px;
-        }
-    
-        .th {
-            background-color: #f2f2f2;
-        }
-    </style>
-    
+   
     <table class="table">
         <thead>
             <tr class="tr">
                 {% for column in columns_list %}
                     <th class="th">{{column}}</th>
                 {% endfor %}
-                <!-- Add other columns as needed -->
             </tr>
         </thead>
         <tbody>
@@ -114,45 +114,26 @@
                     {% for case in line %}
                         <td class="td">{{ case }}</td>
                     {% endfor %}
-                    <!-- Add other columns as needed -->
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    
+   
     <hr>
     <br><br>
-    
-    
-    <style>
-        /* Apply styles to ensure consistent spacing */
-        li {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px; /* Adjust padding as needed */
-        }
-    
-        /* Optionally, style the <p> elements for additional control */
-        li p {
-            margin: 0;
-        }
-    </style>
-    
-    <!-- HTML content -->
-    <ul>
-        <li><h3>Amount without VAR :       {{ total }} SAR</h3></li>
-        <li><h3>VAR :       0 SAR</h3></li>
-        <li><h3>Total amount:       {{ total }} SAR</h3></li>
+   
+    <ul class="rtl">
+        <li><h3>Amount without VAR : {{ total }} SAR</h3></li>
+        <li><h3>VAR : 0 SAR</h3></li>
+        <li><h3>Total amount: {{ total }} SAR</h3></li>
     </ul>
-    
+   
     <br><br>
     <hr>
     <br>
-    <ul>
-    
-        <li><h3> service mail : {{sp.email}}</h3></li>
-        <li><h3> service number : {{ sp.phone }}</h3></li>
+    <ul class="rtl">
+        <li><h3>service mail : {{sp.email}}</h3></li>
+        <li><h3>service number : {{ sp.phone }}</h3></li>
     </ul>
 </body>
 </html>
-
