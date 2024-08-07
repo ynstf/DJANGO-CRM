@@ -1,24 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<pdf:language name="arabic"/>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>PDF Template</title>
+    <title>Arabic PDF</title>
     <style>
+
         @font-face {
             font-family: 'MarkaziText';
             src: url('{{ font_name }}');
         }
         body {
             font-family: 'MarkaziText', sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+        .arabic {
+            unicode-bidi: bidi-override;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to My PDF</h1>
-    <p>This is a sample PDF generated using xhtml2pdf. {{ image_path }}</p>
-    <p>path font {{ font_name }}</p>
-    <p>عربية</p>
-    <h1>عربية</h1>
-    <img src="{{ image_path }}" alt="Sample Image"/>
+    <h1>مرحبا بالعالم</h1>
+    <p>salam</p>
+    <p class="arabic">هذا نص باللغة العربية</p>
+    <p class="arabic">salam</p>
+    <p class="arabic">عربية</p>
 </body>
 </html>
