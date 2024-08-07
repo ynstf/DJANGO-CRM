@@ -1970,16 +1970,15 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.http import HttpResponse
 from xhtml2pdf import pisa
+from xhtml2pdf.default import DEFAULT_FONT
 
 def link_callback(uri, rel):
     sUrl = settings.STATIC_URL
     sRoot = settings.STATIC_ROOT
-
     if uri.startswith(sUrl):
         path = os.path.join(sRoot, uri.replace(sUrl, ""))
     else:
         return uri
-
     if not os.path.isfile(path):
         raise Exception('media URI must start with %s' % sUrl)
     return path
@@ -1990,24 +1989,34 @@ def render_to_pdf(template_src, context_dict):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="output.pdf"'
     
-    pisa_status = pisa.CreatePDF(html, dest=response, link_callback=link_callback)
-
-    if pisa_status.err:
+    # Create a PDF
+    pdf = pisa.pisaDocument(
+        src=html,
+        dest=response,
+        encoding='UTF-8',
+        link_callback=link_callback
+    )
+    
+    if pdf.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
 
 def generatePdf(request):
     # Path to the image file in STATIC_ROOT
-    image_path = os.path.join(settings.STATIC_ROOT, 'illustration.png')
+    image_path = os.path.join(settings.STATIC_URL, 'illustration.png')
     font_path = os.path.join(settings.STATIC_ROOT, 'MarkaziText.ttf')
     
+    # Register the custom font
+    pisa.showLogging()
+    DEFAULT_FONT['helvetica'] = font_path
+    
     # Make sure the path is converted to a URL path
-    context = {'image_path': image_path,
-            'font_path':font_path}
+    context = {
+        'image_path': image_path,
+        'font_path': font_path
+    }
     
     return render_to_pdf('pdf_template.html', context)
-
-
 
 
 def make_complain_view(request, id):
