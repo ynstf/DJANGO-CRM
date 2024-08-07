@@ -2018,7 +2018,7 @@ def generatePdf(request):
     # Make sure the path is converted to a URL path
     context = {
         'image_path': image_path,
-        'font_name': 'MarkaziText'  # Use the registered font name in the template
+        'font_name': font_path  # Use the registered font name in the template
     }
     
     return render_to_pdf('pdf_template.html', context)
