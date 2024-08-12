@@ -7,7 +7,6 @@ class Service(models.Model):
     columns = models.TextField(blank=True, null=True)
     have_reminder = models.CharField(max_length=10,blank=True, null=True)
     reminder_time =  models.IntegerField(blank=True, null=True)
-    vat =  models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return self.name

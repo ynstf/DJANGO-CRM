@@ -2,7 +2,7 @@ from django.contrib import admin
 from apps.dashboard.models import Invoice
 from .models import Service, Emirate, Source, Language, Nationality, PhoneNumber, WhatsApp, Landline, Email
 from .models import Customer, Address, Inquiry, Quotation, Booking, InquiryNotify
-from .models import Status,InquiryStatus, IsEmployeeNotified
+from .models import Status,InquiryStatus, IsEmployeeNotified, Country
 from .models import Service, InquiryReminder,SuperProvider, Request, Points
 from .models import InvoiceForm, QuotationForm, Advence, Complain, Message, MessageNotify, IsEmployeeReadMessage, GroupMessenger, MessageGroup
 
@@ -12,6 +12,10 @@ from .models import InvoiceForm, QuotationForm, Advence, Complain, Message, Mess
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('name','number','columns','description','reminder_time')
+
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ('name','numberPrefix','abr','currency','vat')
 
 @admin.register(Emirate)
 class EmirateAdmin(admin.ModelAdmin):

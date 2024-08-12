@@ -2,7 +2,7 @@
   <!-- ! Hide app brand if navbar-full -->
   {% if not navbar_full %}
   <div class="app-brand demo">
-    <a href="{% url 'dashboard' %}" class="app-brand-link">
+    <a href="{{ request.country_code_prefix }}{% url 'dashboard' %}" class="app-brand-link">
       <span class="app-brand-logo demo me-1">
         {% include 'partials/logo.html' with bgcolor="#146fba" %}
       </span>
@@ -29,23 +29,48 @@
         </a>
         <ul class="menu-sub">
           <li class="menu-item {% if 'crm_page' == request.resolver_match.url_name or title == 'crm' %}active{% endif %}">
-            <a href="{% url 'crm_page' %}" class="menu-link" >
+            <a href="{{ request.country_code_prefix }}{% url 'crm_page' %}" class="menu-link" >
               <div class="text-truncate" data-i18n="CRM">CRM</div>
             </a>
           </li>
           <li class="menu-item {% if 'statistics' == request.resolver_match.url_name or title == 'analytics' %}active{% endif %}">
-            <a href="{% url 'statistics' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'statistics' %}" class="menu-link">
               <div class="text-truncate" data-i18n="Analytics">Analytics</div>
             </a>
           </li>
         </ul>
       </li>
+
+    {% endif %}
+
+    
+    {% if user.employee.position.name == 'admin' %}
+      <li class="menu-item {% if 'title' == 'crm' or '/crm_page/' in request.path or 'title' == 'analytics' or '/statistics/' in request.path or '/dashboard/' in request.path %}active open{% endif %}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons mdi mdi-map-marker-outline"></i>
+          <div class="text-truncate" data-i18n="Dashboards">Countries</div>
+          <span class="badge bg-danger rounded-pill ms-auto">2</span>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="{{ request.country_code_prefix }}{% url 'countries' %}" class="menu-link" >
+              <div class="text-truncate" data-i18n="countries">Countries List</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="{{ request.country_code_prefix }}{% url 'add_country' %}" class="menu-link" >    
+              <div class="text-truncate" data-i18n="countries">Add Countries</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
     {% endif %}
 
 
     {% if user.employee.position.name != 'admin' %}
       <li class="menu-item">
-        <a href="{% url 'dashboard' %}" class="menu-link" >
+        <a href="{{ request.country_code_prefix }}{% url 'dashboard' %}" class="menu-link" >
           <i class="menu-icon tf-icons mdi mdi-home-outline"></i>
           
           <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
@@ -71,40 +96,40 @@
         
         {% if position.name == 'call center' %}
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
-          <a href="{% url 'customer_list' %}" class="menu-link">
+          <a href="{{ request.country_code_prefix }}{% url 'customer_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Customers</div>
           </a>
         </li>
         {% elif position.name == 'super provider' %}
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
-          <a href="{% url 'inquiries_list' %}" class="menu-link">
+          <a href="{{ request.country_code_prefix }}{% url 'inquiries_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
           </a>
         </li>
         {% elif position.name == 'team leader' %}
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
-          <a href="{% url 'inquiries_list' %}" class="menu-link">
+          <a href="{{ request.country_code_prefix }}{% url 'inquiries_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
           </a>
         </li>
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
-          <a href="{% url 'inquiries_list' %}" class="menu-link">
+          <a href="{{ request.country_code_prefix }}{% url 'inquiries_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Booking</div>
           </a>
         </li>
         {% elif position.name == 'admin' %}
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
-          <a href="{% url 'employee_list' %}" class="menu-link">
+          <a href="{{ request.country_code_prefix }}{% url 'employee_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Employee</div>
           </a>
         </li>
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
-          <a href="{% url 'customer_list' %}" class="menu-link">
+          <a href="{{ request.country_code_prefix }}{% url 'customer_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Customers</div>
           </a>
         </li>
         <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
-          <a href="{% url 'inquiries_list' %}" class="menu-link">
+          <a href="{{ request.country_code_prefix }}{% url 'inquiries_list' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
           </a>
         </li>
@@ -117,7 +142,7 @@
         
         {% if position.name == 'admin' %}
             <li class="menu-item {% if 'employee_list' == request.resolver_match.url_name %}active{% endif %}">
-                <a href="{% url 'employee_list' %}" class="menu-link">
+                <a href="{{ request.country_code_prefix }}{% url 'employee_list' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Employee</div>
                 </a>
             </li>
@@ -125,7 +150,7 @@
 
         {% if position.name == 'team leader' %}
             <li class="menu-item {% if 'points_list' == request.resolver_match.url_name %}active{% endif %}">
-                <a href="{% url 'points_list' %}" class="menu-link">
+                <a href="{{ request.country_code_prefix }}{% url 'points_list' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Points</div>
                 </a>
             </li>
@@ -133,7 +158,7 @@
 
         {% if position.name == 'call center' %}
             <li class="menu-item {% if 'from_points' == request.resolver_match.url_name %}active{% endif %}">
-                <a href="{% url 'from_points' %}" class="menu-link">
+                <a href="{{ request.country_code_prefix }}{% url 'from_points' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Points</div>
                 </a>
             </li>
@@ -143,7 +168,7 @@
         <!--    ########## customer list ########          -->
         {% if position.name == 'admin' or position.name == 'call center' %}
             <li class="menu-item {% if 'customer_list' == request.resolver_match.url_name %}active{% endif %}">
-                <a href="{% url 'customer_list' %}" class="menu-link">
+                <a href="{{ request.country_code_prefix }}{% url 'customer_list' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Without menu">Customers</div>
                 </a>
             </li>
@@ -151,7 +176,7 @@
           {% for permission in user.employee.permissions.all %}
               {% if permission.name == "customer list" %}
                 <li class="menu-item {% if 'customer_list' == request.resolver_match.url_name %}active{% endif %}">
-                  <a href="{% url 'customer_list' %}" class="menu-link">
+                  <a href="{{ request.country_code_prefix }}{% url 'customer_list' %}" class="menu-link">
                       <div class="text-truncate" data-i18n="Without menu">Customers</div>
                   </a>
                 </li>
@@ -162,7 +187,7 @@
         
         {% if position.name == 'call center' or position.name == 'admin' or position.name == 'super provider' %}
             <li class="menu-item {% if 'inquiries_list' == request.resolver_match.url_name %}active{% endif %}">
-                <a href="{% url 'inquiries_list' %}" class="menu-link">
+                <a href="{{ request.country_code_prefix }}{% url 'inquiries_list' %}" class="menu-link">
                   <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
                 </a>
             </li>
@@ -170,7 +195,7 @@
           {% for permission in user.employee.permissions.all %}
               {% if permission.name == "inquiry list" %}
                 <li class="menu-item {% if 'inquiries_list' == request.resolver_match.url_name %}active{% endif %}">
-                  <a href="{% url 'inquiries_list' %}" class="menu-link">
+                  <a href="{{ request.country_code_prefix }}{% url 'inquiries_list' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Without menu">Inquiries</div>
                   </a>
                 </li>
@@ -180,12 +205,12 @@
 
         {% if position.name == 'admin' %}
             <li class="menu-item {% if 'services_list' == request.resolver_match.url_name %}active{% endif %}">
-                <a href="{% url 'services_list' %}" class="menu-link">
+                <a href="{{ request.country_code_prefix }}{% url 'services_list' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Services</div>
                 </a>
             </li>
             <li class="menu-item {% if 'sp_list' == request.resolver_match.url_name %}active{% endif %}">
-                <a href="{% url 'sp_list' %}" class="menu-link">
+                <a href="{{ request.country_code_prefix }}{% url 'sp_list' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Service Providers</div>
                 </a>
             </li>
@@ -206,7 +231,7 @@
 
         {% if position.name == 'admin' %}
           <li class="menu-item {% if 'add_employee' == request.resolver_match.url_name %}active{% endif %}">
-            <a href="{% url 'add_employee' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'add_employee' %}" class="menu-link">
               <div class="text-truncate" data-i18n="Basic Inputs">Add Employee</div>
             </a>
           </li>
@@ -214,7 +239,7 @@
 
         {% if position.name == 'team leader' %}
             <li class="menu-item {% if 'make_point' == request.resolver_match.url_name %}active{% endif %}">
-                <a href="{% url 'make_point' %}" class="menu-link">
+                <a href="{{ request.country_code_prefix }}{% url 'make_point' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Add Points</div>
                 </a>
             </li>
@@ -222,12 +247,12 @@
 
         {% if position.name == 'admin' %}
           <li class="menu-item {% if 'add_service' == request.resolver_match.url_name %}active{% endif %}">
-            <a href="{% url 'add_service' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'add_service' %}" class="menu-link">
               <div class="text-truncate" data-i18n="Basic Inputs">Add Service</div>
             </a>
           </li>
           <li class="menu-item {% if 'add_sp' == request.resolver_match.url_name %}active{% endif %}">
-            <a href="{% url 'add_sp' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'add_sp' %}" class="menu-link">
             <div class="text-truncate" data-i18n="Without menu">Add Service Providers</div>
             </a>
         </li>
@@ -235,7 +260,7 @@
         
         {% if position.name == 'call center' or position.name == 'admin' %}
           <li class="menu-item {% if 'add_customer' == request.resolver_match.url_name %}active{% endif %}">
-            <a href="{% url 'add_customer' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'add_customer' %}" class="menu-link">
               <div class="text-truncate" data-i18n="Basic Inputs">Customer Entery</div>
             </a>
           </li>
@@ -243,7 +268,7 @@
           {% for permission in user.employee.permissions.all %}
               {% if permission.name == "add customer" %}
                 <li class="menu-item {% if 'add_customer' == request.resolver_match.url_name %}active{% endif %}">
-                  <a href="{% url 'add_customer' %}" class="menu-link">
+                  <a href="{{ request.country_code_prefix }}{% url 'add_customer' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Basic Inputs">Customer Entery</div>
                   </a>
                 </li>
@@ -267,12 +292,12 @@
             <ul class="menu-sub">
       
                 <li class="menu-item {% if '/edit_quotation_doc/' in request.path %}active{% endif %}">
-                  <a href="{% url 'edit_quotation_doc' %}" class="menu-link">
+                  <a href="{{ request.country_code_prefix }}{% url 'edit_quotation_doc' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Basic Inputs">Edit Quotations</div>
                   </a>
                 </li>
                 <li class="menu-item {% if '/edit_invoice_doc/' in request.path %}active{% endif %}">
-                  <a href="{% url 'edit_invoice_doc' %}" class="menu-link">
+                  <a href="{{ request.country_code_prefix }}{% url 'edit_invoice_doc' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Basic Inputs">Edit Invoices</div>
                   </a>
                 </li>
@@ -290,7 +315,7 @@
         
           <!-- chat -->
           <li class="menu-item {% if '/chat_page/' in request.path %}active{% endif %}">
-            <a href="{% url 'chat_page' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'chat_page' %}" class="menu-link">
               <i class="menu-icon tf-icons mdi mdi-message-outline"></i>
               <div class="text-truncate" data-i18n="Basic Inputs">Chat</div>
             </a>
@@ -298,7 +323,7 @@
 
           <!-- chat groups -->
           <li class="menu-item {% if '/groups_page/' in request.path %}active{% endif %}">
-            <a href="{% url 'groups_page' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'groups_page' %}" class="menu-link">
               <i class="menu-icon tf-icons mdi mdi-account-group"></i>
 
               <div class="text-truncate" data-i18n="Basic Inputs">Groups</div>
@@ -306,7 +331,7 @@
           </li>
 
           <li class="menu-item {% if '/calendar/' in request.path %}active{% endif %}">
-            <a href="{% url 'calendar_view' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'calendar_view' %}" class="menu-link">
               <i class="menu-icon tf-icons mdi mdi-calendar"></i>
 
               <div class="text-truncate" data-i18n="Basic Inputs">Calendar</div>
@@ -316,7 +341,7 @@
           {% if position.name == 'admin' %}
           <!-- map -->
           <li class="menu-item {% if '/map/' in request.path %}active{% endif %}">
-            <a href="{% url 'map' %}" class="menu-link">
+            <a href="{{ request.country_code_prefix }}{% url 'map' %}" class="menu-link">
               <i class="menu-icon tf-icons mdi mdi-map-outline"></i>
               <div class="text-truncate" data-i18n="Basic Inputs">Map</div>
             </a>

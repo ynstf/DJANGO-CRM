@@ -13,7 +13,7 @@ from ..models import Inquiry, Quotation, QuotationForm, Customer, PhoneNumber, E
 from apps.authentication.models import Employee, Permission, Position
 from apps.dashboard.models import (EmployeeAction, Inquiry, InquiryNotify, InquiryReminder,
     InquiryStatus, IsEmployeeNotified, Language, Nationality, Quotation, Source, Status, Request,
-    SuperProvider)
+    SuperProvider,Country)
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
@@ -1932,6 +1932,17 @@ def render_to_pdf(template_src, context_dict):
     return response
 
 def generate_pdf_view(request, request_id):
+    
+    cCode = request.country_code_prefix.replace("/", "").replace("\\", "")
+    print(cCode)
+
+    try:
+        country = Country.objects.get(abr=cCode)
+    except:
+        country = Country.objects.get(abr="AE")
+
+    
+
     # Path to the image file in STATIC_ROOT
     image_path = os.path.join(settings.STATIC_URL, 'illustration.png')
     font_path = os.path.join(settings.STATIC_ROOT, 'MarkaziText.ttf')
@@ -1979,7 +1990,7 @@ def generate_pdf_view(request, request_id):
     columns_list = service_instance.columns.split(',')
     columns_list.append('Total')
 
-    vat = service_instance.vat
+    vat = country.vat
     total_with_vat = total + (total * vat)
     print('vat')
     print(vat)

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import dashboard,get_messages,make_employee_readmessage,get_message_state,messages_list
+from .views import dashboard,country,get_messages,make_employee_readmessage,get_message_state,messages_list
 
 # importation for documents
 from .views import (generate_pdf,generate_invoice,
@@ -45,7 +45,7 @@ from .views import (make_inq_connecting, make_inq_sendQ, make_inq_sendB,
                     make_inq_complain, make_inq_done)
 
 
-from .all_views.admin import crm_page, crm_pdf_view, generate_statistics_pdf, points_admin, add_rate
+from .all_views.admin import crm_page, crm_pdf_view, generate_statistics_pdf, points_admin, add_rate, add_country_view
 from .all_views.admin import super_provider, super_provider_edit, service_info,service_edit
 from .all_views.chat import chat_page,conversation_view,create_group_view, conversation_group_view,groups_page
 from .all_views.inquiries import map,edit_inquiry,make_action, make_approvment, inq_from_points, add_inq_from_points,cancel_point
@@ -75,12 +75,14 @@ urlpatterns = [
 
     #dashboard
     path("dashboard/",dashboard,name="dashboard"),
+    path("countries/",country,name="countries"),
     path("map/",map,name="map"),
     path("crm_page/",crm_page,name="crm_page"),
     path("crm_pdf/",crm_pdf_view,name="crm_pdf_view"),
 
     # admin
     path('add_employee/', add_employee, name='add_employee'),
+    path('add_country/', add_country_view, name='add_country'),
     path('add_sp/', add_sp, name='add_sp'),
     path('employee_list/', employee_list, name='employee_list'),
     path('sp_list/', sp_list, name='sp_list'),

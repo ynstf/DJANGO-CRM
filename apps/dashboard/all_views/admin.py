@@ -20,7 +20,7 @@ from django.utils.timezone import make_aware
 from xhtml2pdf import pisa
 
 from apps.authentication.models import Employee, Position, Permission
-from apps.dashboard.models import (Booking, Complain, Inquiry, InquiryStatus, InvoiceForm,
+from apps.dashboard.models import (Country, Booking, Complain, Inquiry, InquiryStatus, InvoiceForm,
                                 Quotation, QuotationForm, Service, Source, Status, SuperProvider,
                                 InquiryNotify, Points, MessageNotify)
 from apps.dashboard.models_com import SuperProvider as SuperProviderCom, Service as ServiceCom
@@ -101,8 +101,6 @@ def points_admin(request):
 
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/points_list.html',context)
-
-
 
 
 
@@ -762,7 +760,6 @@ def add_service_view(request):
         remainder_checked = request.POST.get('remainder_check')
         reminder = request.POST.get('service-reminder')
         columns = request.POST.getlist('service-column')
-        serviceVAT = request.POST.get('service-vat')
 
         print(remainder_checked)
         
@@ -776,12 +773,12 @@ def add_service_view(request):
 
         if remainder_checked == "on":
             # Save the Service instance
-            service_instance = Service.objects.create(number=number_id, name=service_name, description=description, vat=serviceVAT, columns=columns_str, have_reminder='True', reminder_time=reminder)
+            service_instance = Service.objects.create(number=number_id, name=service_name, description=description, columns=columns_str, have_reminder='True', reminder_time=reminder)
             service_instance.save()
 
         else:
             # Save the Service instance
-            service_instance = Service.objects.create(number=number_id, name=service_name, description=description, vat=serviceVAT, columns=columns_str, have_reminder='False')
+            service_instance = Service.objects.create(number=number_id, name=service_name, description=description, columns=columns_str, have_reminder='False')
             service_instance.save()
             print(remainder_checked)
 
@@ -801,6 +798,41 @@ def add_service_view(request):
     context = TemplateLayout.init(request, context)
     return render(request, 'admin/add_service.html',context)
 
+
+@login_required(login_url='/')
+@user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())
+def add_country_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        number_prefix = request.POST.get('numberPrefix')
+        abr = request.POST.get('abr')
+        currency = request.POST.get('currency')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        vat = request.POST.get('vat')
+        image_link = request.POST.get('imageLinke')
+        
+        # Create and save the new Country instance
+        Country.objects.create(
+            name=name,
+            numberPrefix=number_prefix,
+            abr=abr,
+            currency=currency,
+            email=email,
+            phone=phone,
+            vat=vat,
+            imageLinke=image_link
+        )
+        
+        return redirect('countries')  # Redirect to a page listing countries, or wherever appropriate
+
+    layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
+    context = {
+        'position': request.user.employee.position,
+        'layout_path': layout_path,
+    }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'admin/countries/add_country.html',context)
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())

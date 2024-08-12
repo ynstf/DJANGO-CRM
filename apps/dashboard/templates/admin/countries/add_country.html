@@ -1,0 +1,139 @@
+{% extends 'layout/master.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Add country{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            <center>
+                <h2>
+                    ADD NEW COUNTRY
+                </h2>
+            </center>
+
+
+            <form method="post" action="{% url 'add_country' %}">
+                {% csrf_token %}
+                <div class="row">
+            
+                    <div class="col-md-6">
+                        <label for="id_name">Name:</label>
+                        <input type="text" id="id_name" name="name" class="form-control" placeholder="Country Name" aria-label="Name">
+                    </div>
+            
+                    <div class="col-md-6">
+                        <label for="id_numberPrefix">Number Prefix:</label>
+                        <input type="text" id="id_numberPrefix" name="numberPrefix" class="form-control" placeholder="Number Prefix" aria-label="Number Prefix">
+                    </div>
+            
+                    <div class="col-md-6">
+                        <label for="id_abr">Abbreviation:</label>
+                        <input type="text" id="id_abr" name="abr" class="form-control" placeholder="Abbreviation" aria-label="Abbreviation">
+                    </div>
+            
+                    <div class="col-md-6">
+                        <label for="id_currency">Currency:</label>
+                        <input type="text" id="id_currency" name="currency" class="form-control" placeholder="Currency" aria-label="Currency">
+                    </div>
+            
+                    <div class="col-md-6">
+                        <label for="id_email">Email:</label>
+                        <input type="email" id="id_email" name="email" class="form-control" placeholder="Email" aria-label="Email">
+                    </div>
+            
+                    <div class="col-md-6">
+                        <label for="id_phone">Phone:</label>
+                        <input type="text" id="id_phone" name="phone" class="form-control" placeholder="Phone" aria-label="Phone">
+                    </div>
+            
+                    <div class="col-md-6">
+                        <label for="id_vat">VAT (%):</label>
+                        <input type="number" id="id_vat" name="vat" class="form-control" placeholder="VAT" aria-label="VAT">
+                    </div>
+            
+                    <div class="col-md-12">
+                        <label for="id_imageLinke">Image Link:</label>
+                        <input type="text" id="id_imageLinke" name="imageLinke" class="form-control" placeholder="Image Link" aria-label="Image Link">
+                    </div>
+            
+                    <!-- Add other fields as needed -->
+            
+                    <div class="col-md-12 mt-3">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+            
+                </div>
+            </form>
+            
+
+
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}
+

@@ -7,7 +7,10 @@ urlpatterns = [
     # Auth urls
     path("", include("apps.authentication.urls")),
 
+    # Dash urls
     path("", include("apps.dashboard.urls")),
+    # Route with dynamic country code
+    #path("<str:country_code>/", include("apps.dashboard.urls")),
 
     # layouts urls
     path("", include("apps.layouts.urls")),

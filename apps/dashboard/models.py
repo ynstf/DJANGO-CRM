@@ -34,7 +34,7 @@ class Nationality(models.Model):
 class Customer(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
     first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50 ,blank=True, null=True)
     gender = models.CharField(max_length=6, choices=[('male', 'Male'), ('female', 'Female')], blank=True, null=True)
     nationality = models.ForeignKey(Nationality, on_delete=models.SET_NULL, blank=True, null=True)  # Link to the Nationality model
     register = models.DateTimeField(auto_now_add=True)
@@ -150,6 +150,22 @@ class IsEmployeeReadMessage(models.Model):
 
     def __str__(self):
         return f'employee :{self.employee}'
+
+
+class Country(models.Model):
+    name = models.CharField(max_length=50)
+    numberPrefix = models.CharField(max_length=5)
+    abr = models.CharField(max_length=5)
+    currency = models.CharField(max_length=5)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    vat = models.FloatField()
+    imageLinke = models.TextField(blank=True, null=True,default="https://via.placeholder.com/250x150")
+    # Add other fields as needed
+
+    def __str__(self):
+        return f'employee :{self.name}'
+
 
 
 class Points(models.Model):

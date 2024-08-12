@@ -1,14 +1,14 @@
-import django.urls
 from web_project import TemplateLayout
 from django.contrib.auth.decorators import login_required
 import django.shortcuts
-from apps.dashboard.models import InquiryNotify, EmployeeAction, MessageNotify
+from apps.dashboard.models import InquiryNotify, EmployeeAction, MessageNotify, Country
 from django.shortcuts import render, redirect
+from django.urls import reverse
 
 
 
 
-
+"""
 @login_required(login_url='/')
 def dashboard(request):
     notifications = InquiryNotify.objects.filter(employee=request.user.employee)
@@ -19,7 +19,8 @@ def dashboard(request):
     actions = EmployeeAction.objects.filter(from_employee=request.user.employee).order_by('-update')
 
     if request.user.employee.position.name == "admin":
-        return redirect("crm_page")
+        #return redirect("crm_page")
+        return redirect(f"{request.country_code_prefix}{reverse('crm_page')}")
 
     # Add the employee's position to the context
     context = {'position': request.user.employee.position,
@@ -31,6 +32,56 @@ def dashboard(request):
             }
     context = TemplateLayout.init(request, context)
     return render(request, 'dashboard.html',context)
+
+"""
+
+@login_required(login_url='/')
+def dashboard(request):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    actions = EmployeeAction.objects.filter(from_employee=request.user.employee).order_by('-update')
+    print(f"Country Code Prefix in View: {request.country_code_prefix}")
+    if request.user.employee.position.name == "admin":
+        print(f"{request.country_code_prefix}/crm_page")
+        return redirect(f"{request.country_code_prefix}/crm_page")
+
+    # Add the employee's position to the context
+    context = {'position': request.user.employee.position,
+               'notifications': notifications,
+               'notifications_counter': notifications_counter,
+               'actions': actions,
+               'messages': messages,
+               'messages_counter': messages_counter}
+    
+    context = TemplateLayout.init(request, context)
+    return render(request, 'dashboard.html', context)
+
+
+
+@login_required(login_url='/')
+def country(request):
+    notifications = InquiryNotify.objects.filter(employee=request.user.employee)
+    notifications_counter = notifications.count()
+    messages = MessageNotify.objects.filter(employee=request.user.employee)
+    messages_counter = messages.count()
+
+    countries = Country.objects.all()
+
+
+
+    # Add the employee's position to the context
+    context = {'position': request.user.employee.position,
+            'notifications':notifications,
+            'notifications_counter':notifications_counter,
+            'messages':messages,
+            'messages_counter':messages_counter,
+            'countries':countries,
+            }
+    context = TemplateLayout.init(request, context)
+    return render(request, 'menu_c.html',context)
 
 ################# admin ################
 from .all_views.inquiries import (messages_view,get_message_state_view,

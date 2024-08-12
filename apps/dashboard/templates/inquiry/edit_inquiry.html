@@ -168,7 +168,7 @@
                         <select id="owner" class="form-control" disabled >
                             <option value="{{handler.id}}">{{handler}}</option>
                         </select>
-                        {% if user.employee == inquiry.owner and user.employee != handler %}
+                        {% if user.employee == inquiry.owner and user.employee != handler or user.employee.position.name == "call center" %}
                             <button type="button" class='btn btn-danger btn-sm' onclick="deleteOwner('{{handler.id}}')">delete</button>
                         {% endif %}
                     </div>

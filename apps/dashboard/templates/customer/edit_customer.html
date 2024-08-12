@@ -370,28 +370,113 @@
                                             </select>
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="id_inquiry-services"> Services : </label>
-                                            <select name="inquiry-services" class="form-control">
-                                                
 
-
-                                                <!--{% for srv in Services %}
-                                                {% for selected_service in inquiry.services.all %}
-                                                    {% if srv.id == selected_service.id %}
-                                                        <option value="{{ selected_service.id }}" selected>{{ selected_service }}</option>
-                                                    {% else %}
-                                                        <option value="{{ srv.id }}">{{ srv }}</option>
-                                                    {% endif %}
-                                                        {% endfor %}
-                                                {% endfor %}-->
-
-
-                                                        <option value="{{ inquiry.services.id }}" selected>{{ inquiry.services }}</option>
-                                                        {% for service in Services %}
-                                                            <option value="{{ service.id }}">{{ service }}</option>
-                                                        {% endfor %}
-
+                                            <label for="superProvider">Select Super Provider:</label>
+                                            <select id="superProvider_{{ inquiry.id }}" class="form-control" name="inquiry-superprovider" required>
+                                                <!-- Populate dropdown menu with super providers -->
+                                                <option value="{{ inquiry.sp.id }}" selected>{{ inquiry.sp }}</option>
+                                                {% for superProvider in all_sp %}
+                                                    <option value="{{ superProvider.id }}">{{ superProvider.name }}</option>
+                                                {% endfor %}
                                             </select>
+
+                                            <script>
+                                                $(document).ready(function() {
+
+                                                $('#superProvider_{{ inquiry.id }}').change(function() {
+                                                    var superProviderId = $(this).val();
+                                                    console.log(superProviderId)
+                                                    $.ajax({
+                                                        type: 'GET',
+                                                        url: '/get_services_by_sp/',
+                                                        data: {
+                                                            'super_provider_id': superProviderId
+                                                        },
+                                                        dataType: 'json',
+                                                        success: function(response) {
+                                                            $('#serviceList_{{ inquiry.id }}').empty();
+                                                            if (response.services && response.services.length > 0) {
+                                                                var selectElement = $('<select>', {
+                                                                    id: 'inquiry-services',
+                                                                    name: 'inquiry-services',
+                                                                    required: true,
+                                                                    class:"form-control"
+                                                                });
+                                                                $.each(response.services, function(index, serviceName) {
+                                                                    console.log(serviceName)
+                                                                    var option = $('<option>', {
+                                                                        value: serviceName.name,
+                                                                        text: serviceName.id + " - " + serviceName.name
+                                                                    });
+                                                                    selectElement.append(option);
+                                                                });
+                                                                $('#serviceList_{{ inquiry.id }}').append(selectElement);
+                                                            } else {
+                                                                $('#serviceList_{{ inquiry.id }}').text('No services available');
+                                                            }
+                                                        },
+                                                        error: function(xhr, status, error) {
+                                                            console.error('Error:', error);
+                                                        }
+                                                    });
+                                                });
+
+
+                                                $('#superProvider_{{ inquiry.id }}').change(function() {
+                                                    var superProviderId = $(this).val();
+                                                    console.log(superProviderId)
+                                                    $.ajax({
+                                                        type: 'GET',
+                                                        url: '/get_employees_by_sp/',
+                                                        data: {
+                                                            'super_provider_id': superProviderId
+                                                        },
+                                                        dataType: 'json',
+                                                        success: function(response) {
+                                                            $('#employeeList_{{ inquiry.id }}').empty();
+                                                            if (response.employees && response.employees.length > 0) {
+                                                                var selectElement = $('<select>', {
+                                                                    id: 'inquiry-employees',
+                                                                    name: 'inquiry-employees_{{ inquiry.id }}',
+                                                                    required: true,
+                                                                    class:"form-control",
+                                                                    multiple: "multiple" // This attribute allows multiple selections
+                                                                });
+                                                                $.each(response.employees, function(index, employeeName) {
+                                                                    console.log(employeeName)
+                                                                    var option = $('<option>', {
+                                                                        value: employeeName.id,
+                                                                        text: employeeName.id + " - " + employeeName.name
+                                                                    });
+                                                                    selectElement.append(option);
+                                                                });
+                                                                $('#employeeList_{{ inquiry.id }}').append(selectElement);
+                                                            } else {
+                                                                $('#employeeList_{{ inquiry.id }}').text('No employees available');
+                                                            }
+                                                        },
+                                                        error: function(xhr, status, error) {
+                                                            console.error('Error:', error);
+                                                        }
+                                                    });
+                                                });
+
+
+                                                $('#superProvider_{{ inquiry.id }}').change();
+                                                });
+                                            </script>
+
+                                            <label for="serviceList">Services:</label>
+                                            <div id="serviceList_{{ inquiry.id }}">
+                                                <!-- Services will be displayed here -->
+                                            </div>
+
+                                            <label for="employeeList">Employees owner:</label>
+                                            <div id="employeeList_{{ inquiry.id }}">
+                                                <!-- Employees will be displayed here -->
+                                            </div>
+
+                                            
                                         </div>
                                         <div class="col-md-4">
                                             <label for="id_inquiry-description"> Description : </label>

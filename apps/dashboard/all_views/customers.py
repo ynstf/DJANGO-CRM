@@ -1,3 +1,4 @@
+import apps.dashboard.models_com
 import django.urls
 from django.urls import reverse
 from web_project import TemplateLayout
@@ -8,7 +9,7 @@ from apps.dashboard.models import Address, Customer, Inquiry, Language, Quotatio
 from ..forms import CustomerForm, AddressForm, InquiryForm,CustomerFormEdit
 from apps.dashboard.models import PhoneNumber, Email, Landline, WhatsApp, Emirate, Request
 from ..forms import PhoneNumberForm, EmailForm, LandlineForm, WhatsAppForm
-from ..models import Customer, Nationality, InquiryNotify, Status, InquiryStatus, IsEmployeeNotified, InquiryReminder
+from ..models import Country,Customer, Nationality, InquiryNotify, Status, InquiryStatus, IsEmployeeNotified, InquiryReminder
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ..models import Email,PhoneNumber,WhatsApp,Landline
@@ -196,6 +197,7 @@ def customer_list_view(request):
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['call_center', 'admin']).exists() or (Permission.objects.get(name="add customer") in u.employee.permissions.all()))
 def add_customer_view(request):
+    
     if request.method == 'POST':
         #customer fields
         customer_form = CustomerForm(request.POST, prefix='customer')
@@ -220,8 +222,6 @@ def add_customer_view(request):
         inq_date = request.POST.getlist('inquiry-date_inq')
         inq_source = request.POST.getlist('customer-source')
         inq_service = request.POST.getlist('inquiry-services')
-        #inq_employees = request.POST.getlist('inquiry-employees')
-        team_leader = request.POST.getlist('inquiry-team_leader')
         sp = request.POST.getlist('inquiry-superprovider')
 
         remainder_checked = request.POST.getlist('remainder_check')
@@ -238,7 +238,7 @@ def add_customer_view(request):
 
         user_already_exist = False
         common_element = set(phone_form) & set(list(PhoneNumber.objects.values_list('number',flat=True)))
-        if merge and common_element and '+971' not in set(phone_form) :
+        if common_element and '+971' not in set(phone_form) :
             phone = list(common_element)[0]
             print('already exist :',phone)
             customer = PhoneNumber.objects.get(number = phone).customer
@@ -503,6 +503,18 @@ def add_customer_view(request):
     Emirates = Emirate.objects.all()
 
     all_sp = SuperProvider.objects.all()
+
+    cCode = request.country_code_prefix.replace("/", "").replace("\\", "")
+    print(cCode)
+
+    try:
+        country = Country.objects.get(abr=cCode)
+    except:
+        country = Country.objects.get(abr="AE")
+
+    numberPrefix = country.numberPrefix
+
+
     # Set the layout path even when authentication fails
     layout_path = TemplateHelper.set_layout("layout_blank.html", context={})
     context = {'position': request.user.employee.position,
@@ -520,6 +532,7 @@ def add_customer_view(request):
                 'all_sp':all_sp,
                 'team_leaders':Employee.objects.filter(position=Position.objects.get(name='team leader')),
 
+                'numberPrefix':numberPrefix,
                 }
     
     context = TemplateLayout.init(request, context)
@@ -606,6 +619,7 @@ def edit_customer_view(request, id):
         inq_source = request.POST.getlist('customer-source')
         inq_service = request.POST.getlist('inquiry-services')
         inq_desc = request.POST.getlist('inquiry-description')
+        inq_sp = request.POST.getlist('inquiry-superprovider')
 
         
 
@@ -742,9 +756,6 @@ def edit_customer_view(request, id):
                 print("q: ",q)
                 if s[f"{i}"]>0:
                     
-
-
-                    
                     print(adress_name[i-1])
                     address = addresses[i-1]
                     services_set = Service.objects.get(name=inq_service[q])
@@ -752,38 +763,46 @@ def edit_customer_view(request, id):
 
                     print(inq_id[q])
                     if inq_id[q]!="new":
+                        inq_employees = request.POST.getlist(f'inquiry-employees_{inq_id[q]}')
                         inquiry = Inquiry.objects.get(id=inq_id[q])
 
                         inquiry.customer = customer
                         inquiry.address = address
                         inquiry.source = inq_src
                         inquiry.description = inq_desc[q]
+                        current_sp = SuperProvider.objects.get(id=inq_sp[q])
+                        inquiry.sp = current_sp
                         inquiry.services = services_set
 
                         inquiry.save()
+
+                        
 
                         new = Status.objects.get(name = "new")
                         inq_state = InquiryStatus.objects.get(inquiry = inquiry)
                         #inq_state.status = new
 
 
-                        all_employees = Employee.objects.filter(sp_service=services_set)
-                        for employee in all_employees:
+                        for id_employee in inq_employees:
+                            owner = Employee.objects.get(id=id_employee)
+                            inquiry.handler.add(owner)
+                            
+
                             notification = InquiryNotify(
-                                employee = employee,
+                                employee = owner,
                                 inquiry = inquiry,
-                                service = services_set,
-                                action = "updated"
+                                sp = current_sp,
+                                action = "new"
                             )
                             notification.save()
 
                             isnotify = IsEmployeeNotified(
-                                employee = employee,
+                                employee = owner,
                                 notified = False
                             )
                             isnotify.save()
+                        inquiry.save()
                         
-
                         q+=1
                     else:
                         inquiry = Inquiry(
@@ -887,6 +906,7 @@ def edit_customer_view(request, id):
                 {'type':"Company",'id':'company'}]
     Emirates = Emirate.objects.all()
     inquiries = Inquiry.objects.all()
+    all_sp = SuperProvider.objects.all()
 
     #counters = {"""i want to include my counters of addresses and inquiries eg:{"1":1,"2":2} that mean i have the first address contain one inquiry and the second contain 2 inquiries that counter i want to send it to the front end to start count from it i dont start from zero like in creation no, i want to intiat my variables based on this counter so i can update my info end retrive the new counter of my new form"""}
     # Get the initial counters for addresses and inquiries
@@ -915,7 +935,8 @@ def edit_customer_view(request, id):
         'landlines':landlines,
         'emails':emails,
         'addresses':addresses,
-        'inquiries':inquiries
+        'inquiries':inquiries,
+        'all_sp':all_sp,
     }
     context = TemplateLayout.init(request, context)
     return render(request, "customer/edit_customer.html", context)

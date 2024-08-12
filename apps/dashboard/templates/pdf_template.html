@@ -6,7 +6,7 @@
     <title>Bilingual PDF</title>
     <style>
         
-        @font-face {
+        font-face {
             font-family: 'MarkaziText';
             src: url('{{ font_name }}');
         }
@@ -131,7 +131,7 @@
    
     <ul class="rtl">
         <li><h3>Amount without VAT : {{ total }} AED</h3></li>
-        <li><h3>VAT : {{ vat }} AED</h3></li>
+        <li><h3>VAT : {{ vat }} %</h3></li>
         <li><h3>Total amount: {{ total_with_vat }} AED</h3></li>
     </ul>
    

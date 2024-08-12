@@ -71,7 +71,7 @@
                         
                             <input type="hidden" id="merge-option-selected" name="merge_option_selected" value="">
                             <label for="id_customer-phone_numbers"> Phone Number: </label>
-                            <input type="text" id="id_customer-phone_numbers" value="+971" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
+                            <input type="text" id="id_customer-phone_numbers" value="{{numberPrefix}}" name="customer-phone_numbers" class="form-control" placeholder="Phone Numbers..." aria-label="Phone Numbers" required>
                         </div>
                         
                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -296,7 +296,7 @@
                         
                         <div class="col-md-4">
                             <label for="id_customer-last_name" > Last name : </label>
-                            <input type="text" id="id_customer-last_name" name="customer-last_name" class="form-control" placeholder="Last name..." aria-label="First name" required>
+                            <input type="text" id="id_customer-last_name" name="customer-last_name" class="form-control" placeholder="Last name..." aria-label="First name">
                         </div>
 
                         <div class="col-md-4">
@@ -397,7 +397,7 @@
                         <!-- add WhatsApp forms -->
                         <div class="col-md-4">
                             <label for="id_customer-whats_apps">WhatsApp :</label>
-                            <input type="text" id="id_customer-whats_apps" value='+971' name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
+                            <input type="text" id="id_customer-whats_apps" value='{{numberPrefix}}' name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
                         </div>
                         <div id="additional-whatsapps"></div>
                         <button type="button" class="btn btn-primary btn-sm" onclick="addNewWhatsapp()">Add New WhatsApp</button>

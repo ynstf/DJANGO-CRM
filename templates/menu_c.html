@@ -1,0 +1,108 @@
+{% extends 'layout/master.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Countries{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            <div class="container mt-5">
+                <div class="row">
+
+                    <style>
+                        .card-img-top {
+                            width: 100%; /* Make the image take the full width of the card */
+                            height: 200px; /* Set a fixed height for all images */
+                            object-fit: cover; /* Ensure the image covers the area without distortion */
+                        }
+
+                    </style>
+            
+                    {% for country in countries %}
+                    <div class="col-md-4 mb-4"> <!-- Added mb-4 for spacing between rows -->
+                        <div class="card h-100"> <!-- Added h-100 for equal height cards -->
+                            <img src="{{country.imageLinke}}" class="card-img-top img-fluid" alt="{{country.name}}">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{country.name}}</h5>
+                                <a href="/{{country.abr}}{% url 'dashboard' %}" class="btn btn-primary">Enter</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+            
+                </div>
+            </div>
+            
+
+
+
+
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}
+
