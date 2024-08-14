@@ -398,6 +398,35 @@
                         <div class="col-md-4">
                             <label for="id_customer-whats_apps">WhatsApp :</label>
                             <input type="text" id="id_customer-whats_apps" value='{{numberPrefix}}' name="customer-whats_apps" class="form-control" placeholder="WhatsApp..." aria-label="WhatsApp">
+                            <p>
+                                <input type="checkbox" id="same-phone-number" name="same-phone-number">
+                                <label for="same-phone-number">Same phone number?</label>
+                            </p>
+                            <script>
+                                // Get the elements
+                                var phoneNumberInput = document.getElementById('id_customer-phone_numbers');
+                                var whatsAppInput = document.getElementById('id_customer-whats_apps');
+                                var samePhoneNumberCheckbox = document.getElementById('same-phone-number');
+                            
+                                // Function to update WhatsApp input
+                                function updateWhatsApp() {
+                                    if (samePhoneNumberCheckbox.checked) {
+                                        whatsAppInput.value = phoneNumberInput.value;
+                                    } else {
+                                        whatsAppInput.value = ''; // Clear the WhatsApp input if unchecked
+                                    }
+                                }
+                            
+                                // Event listener for changes in the phone number input
+                                phoneNumberInput.addEventListener('input', function() {
+                                    if (samePhoneNumberCheckbox.checked) {
+                                        whatsAppInput.value = phoneNumberInput.value;
+                                    }
+                                });
+                            
+                                // Event listener for the checkbox
+                                samePhoneNumberCheckbox.addEventListener('change', updateWhatsApp);
+                            </script>
                         </div>
                         <div id="additional-whatsapps"></div>
                         <button type="button" class="btn btn-primary btn-sm" onclick="addNewWhatsapp()">Add New WhatsApp</button>

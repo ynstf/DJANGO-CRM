@@ -174,17 +174,9 @@
                     </div>
             {% endfor %}
 
-            <!-- <div class="col-md-4">
-                <label for="owner">Owner :</label>
-                <select name="inq-owner" id="owner" class="form-control">
-                    <option value="">Choose new owner</option>
-                    {% for sp in sps %}
-                        <option value="{{sp.id}}">{{sp}}</option>
-                    {% endfor %}
-                </select>
-            </div> -->
 
-            <div id="additional-owner">
+
+            <!-- <div id="additional-owner">
             </div>
             <br>
             <button type="button" class="btn btn-primary btn-sm" onclick="addNewOwner()">Add New owner</button>
@@ -243,7 +235,91 @@
             
                     landlineCounter++;
                 }
-            </script>
+            </script> -->
+
+
+            <!-- Container for additional owners -->
+          <div id="additional-owner"></div>
+          <br>
+          <button type="button" class="btn btn-primary btn-sm" onclick="addNewOwner()">Add New Owner</button>
+          <script>
+              var landlineCounter = 2;
+
+              // Function to dynamically add new owner input
+              function addNewOwner() {
+                  var container = document.createElement('div');
+                  container.className = 'col-md-4';
+
+                  var label = document.createElement('label');
+                  label.setAttribute('for', 'owner-' + landlineCounter);
+                  label.textContent = 'Owner ' + landlineCounter + ':';
+
+                  var select = document.createElement('select');
+                  select.id = 'owner-' + landlineCounter;
+                  select.name = 'inq-owner';
+                  select.className = 'form-control';
+
+                  // Default option
+                  var option = document.createElement('option');
+                  option.value = '';
+                  option.innerText = 'Choose new owner';
+                  select.appendChild(option);
+
+                  container.appendChild(label);
+                  container.appendChild(select);
+
+                  var button = document.createElement('button');
+                  button.type = 'button';
+                  button.className = 'btn btn-danger btn-sm';
+                  button.textContent = 'Remove';
+                  button.onclick = function () {
+                      container.remove();
+                  };
+
+                  container.appendChild(button);
+                  document.getElementById('additional-owner').appendChild(container);
+
+                  landlineCounter++;
+              }
+
+              // Function to update owners list based on selected Super Provider
+              $('#superProvider').change(function() {
+                  var superProviderId = $(this).val();
+                  $.ajax({
+                      type: 'GET',
+                      url: '/get_employees_by_sp/',
+                      data: {
+                          'super_provider_id': superProviderId
+                      },
+                      dataType: 'json',
+                      success: function(response) {
+                          var owners = response.employees || [];
+                          $('#additional-owner select').each(function() {
+                              $(this).empty(); // Clear previous options
+                              var defaultOption = $('<option>', {
+                                  value: '',
+                                  text: 'Choose new owner'
+                              });
+                              $(this).append(defaultOption);
+                              if (owners.length > 0) {
+                                  $.each(owners, function(index, owner) {
+                                      var option = $('<option>', {
+                                          value: owner.id,
+                                          text: owner.name
+                                      });
+                                      $(this).append(option);
+                                  }.bind(this));
+                              } else {
+                                  $(this).append('<option>No owners available</option>');
+                              }
+                          });
+                      },
+                      error: function(xhr, status, error) {
+                          console.error('Error:', error);
+                      }
+                  });
+              });
+          </script>
 
             <br><br>
 
