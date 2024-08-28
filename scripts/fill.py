@@ -14,7 +14,7 @@ def run():
 
     Services = [{'name':"electric",'column':'details,price,quantity'}, {'name':"climatisation",'column':'details,price,quantity'}, {'name':"plumber",'column':'details,price,quantity'}]
 
-    Positions = ['admin', 'call center', 'super provider', 'team leader']
+    Positions = ['admin', 'call center', 'super provider', 'team leader','accountant','financial']
 
     Permissions = ["extract quotations", "customer list", "see customer info", "edit customer", "add customer", "inquiry list", "inquiry info", "make quotation", "edit quotation"]
 

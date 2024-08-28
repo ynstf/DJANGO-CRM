@@ -1529,6 +1529,7 @@ def make_quotation_view(request, id):
             'columns_list':columns_list,
             'messages':messages,
             'messages_counter':messages_counter,
+            'email':messages_counter,
             }
     context = TemplateLayout.init(request, context)
     return render(request, "inquiry/make_quotation.html", context)
@@ -1963,7 +1964,10 @@ def generate_pdf_view(request, request_id):
 
     customer = Customer.objects.get(id=inquiry.customer.id)
     phone = PhoneNumber.objects.filter(customer=customer)[0]
-    email = Email.objects.filter(customer=customer)[0]
+    try :
+        email = Email.objects.filter(customer=customer)[0]
+    except:
+        email = ""
     address = inquiry.address.address_name
 
     total = 0
@@ -2007,6 +2011,7 @@ def generate_pdf_view(request, request_id):
     # Make sure the path is converted to a URL path
     context = {
         'inquiry': inquiry,
+        'spemail': sp_quot.email,
         'quotations': quotations,
         'date':date,
         'service':sp_quot,

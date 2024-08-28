@@ -1,0 +1,846 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}Invoices List{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+        <div class="container">
+            <center><h2>Invoices List</h2></center>
+            <br>
+            <!-- Container for search rows -->
+            <div id="search-container">
+                <!-- Original search row -->
+                <div class="search-row">
+                    <!-- Display dynamic search form with position dropdown -->
+                    <form method="get" action="{% url 'invoices_list' %}">
+                        <div class="mysearsh row g-3">
+                            <div class="col-md-2">
+                                <label for="search_value">invoices :</label>
+                                <select name="3m" id="" class="form-control">
+                                    
+                                    <option value="" selected>select period</option>
+                                    <option value="3">last 3 month</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="search_value">invoices this month :</label>
+                                <select name="this_month" id="" class="form-control">
+                                    <option value="" selected>select sp</option>
+                                    {% for sp in sps %}
+                                        <option value="{{sp.id}}">{{sp.name}}</option>
+                                    {% endfor %}
+                                    {% if user.employee.position.name == 'financial' %}
+                                        <option value="all">all</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="search_value">invoices last month :</label>
+                                <select name="last_month" id="" class="form-control">
+                                    <option value="" selected>select sp</option>
+                                    {% for sp in sps %}
+                                        <option value="{{sp.id}}">{{sp.name}}</option>
+                                    {% endfor %}
+                                    {% if user.employee.position.name == 'financial' %}
+                                        <option value="all">all</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <br>
+                        </div>
+                        <div>
+                            <br>
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% if user.employee.position.name == 'financial' %}
+            <form id="search-form">
+                <!-- Other form fields -->
+                <input type="hidden" name="3m" value="{{ request.GET.3m }}">
+                <input type="hidden" name="last_month" value="{{ request.GET.last_month }}">
+                <input type="hidden" name="this_month" value="{{ request.GET.this_month }}">
+                <br><button type="button" class="btn btn-success" onclick="generatePDF()">Generate PDF</button>
+                
+            </form>
+            {% endif %}
+            
+            <script>
+                function generatePDF() {
+                    const form = document.getElementById('search-form');
+                    const params = new URLSearchParams(new FormData(form)).toString();
+                    window.location.href = `{% url 'invioces_report' %}?${params}`;
+                }
+            </script>
+        
+            <div id="update">
+
+                <hr>
+                <h4 style="text-align: center;">we found {{ search_counter }} result</h4>
+                <hr>
+
+                <!-- Table to display customer information -->
+                <style>
+                    /* Define the width of the th elements */
+                    th {
+                        white-space: nowrap; /* Prevent line breaks */
+                        overflow: hidden; /* Hide overflow content */
+                        text-overflow: ellipsis; /* Add ellipsis for overflow text */
+                    }
+                    .line {
+                        white-space: nowrap; /* Prevent line breaks */
+                        overflow: hidden; /* Hide overflow content */
+                        text-overflow: ellipsis; /* Add ellipsis for overflow text */
+                        font-size: 12px;
+                    }
+                </style>
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            {% if user.employee.position.name != "super provider" or "ids" in cols %}
+                                <th >
+                                    <strong id="inquiry_id_sort" style="cursor: pointer;">inquiries id <span>&#8595;</span></strong>
+                                    <br>
+                                    <strong id="customer_id_sort" style="cursor: pointer;" >Customer id <span>&#8595;</span></strong>
+                                
+                                    <script>
+                                        // Get the inquiry_id_sort element
+                                        var inquiryIdSort = document.getElementById("inquiry_id_sort");
+                                    
+                                        // Read the current sort order from the query parameters in the URL
+                                        var urlParams = new URLSearchParams(window.location.search);
+                                        var currentSortOrder0 = urlParams.get('inq_id');
+                                    
+                                        // Set the initial arrow icon based on the current sort order
+                                        var arrowIcon = inquiryIdSort.querySelector("span");
+                                        arrowIcon.innerHTML = currentSortOrder0 === "asc" ? "&#8593;" : "&#8595;";
+                                    
+                                        // Add a click event listener to the element
+                                        inquiryIdSort.addEventListener("click", function() {
+                                            // Toggle the sort order
+                                            var newSortOrder = currentSortOrder0 === "asc" ? "desc" : "asc";
+                                    
+                                            // Update the link href with the new sort field and sort order
+                                            inquiryIdSort.href = '{{ inquiries_list }}' + "?sort_field=inq_id&inq_id=" + newSortOrder;
+                                            
+                                            // Redirect to the new URL with the sort field and sort order
+                                            window.location.href = "?sort_field=inq_id&inq_id=" + newSortOrder;
+                                        });
+                                    </script>
+                                    <script>
+                                        // Get the inquiry_id_sort element
+                                        var inquiryIdSort = document.getElementById("customer_id_sort");
+                                    
+                                        // Read the current sort order from the query parameters in the URL
+                                        var urlParams = new URLSearchParams(window.location.search);
+                                        var currentSortOrder = urlParams.get('customer_id');
+                                    
+                                        // Set the initial arrow icon based on the current sort order
+                                        var arrowIcon = inquiryIdSort.querySelector("span");
+                                        arrowIcon.innerHTML = currentSortOrder === "asc" ? "&#8593;" : "&#8595;";
+                                    
+                                        // Add a click event listener to the element
+                                        inquiryIdSort.addEventListener("click", function() {
+                                            // Toggle the sort order
+                                            var newSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
+                                    
+                                            // Update the link href with the new sort field and sort order
+                                            inquiryIdSort.href = '{{ inquiries_list }}' + "?sort_field=customer_id&customer_id=" + newSortOrder;
+                                            
+                                            // Redirect to the new URL with the sort field and sort order
+                                            window.location.href = "?sort_field=customer_id&customer_id=" + newSortOrder;
+                                        });
+                                    </script>
+                                </th>
+                            {% endif %}
+                            
+                            {% if user.employee.position.name != "super provider" or "dates" in cols %}
+                                <th >
+                                    <strong id="creation_sort" style="cursor: pointer;" >inquiry date <span>&#8595;</span></strong>
+                                    <br>
+                                    <strong id="update_sort" style="cursor: pointer;" >Update date <span>&#8595;</span></strong>
+
+                                    <script>
+                                        // Get the inquiry_id_sort element
+                                        var creationSort = document.getElementById("creation_sort");
+                                    
+                                        // Read the current sort order from the query parameters in the URL
+                                        var urlParams = new URLSearchParams(window.location.search);
+                                        var currentSortOrder1 = urlParams.get('creation');
+                                    
+                                        // Set the initial arrow icon based on the current sort order
+                                        var arrowIcon = creationSort.querySelector("span");
+                                        arrowIcon.innerHTML = currentSortOrder1 === "asc" ? "&#8593;" : "&#8595;";
+                                    
+                                        // Add a click event listener to the element
+                                        creationSort.addEventListener("click", function() {
+                                            // Toggle the sort order
+                                            var newSortOrder = currentSortOrder1 === "asc" ? "desc" : "asc";
+                                    
+                                            // Update the link href with the new sort field and sort order
+                                            creationSort.href = '{{ inquiries_list }}' + "?sort_field=creation&creation=" + newSortOrder;
+                                            
+                                            // Redirect to the new URL with the sort field and sort order
+                                            window.location.href = "?sort_field=creation&creation=" + newSortOrder;
+                                        });
+                                    </script>
+                                    <script>
+                                        // Get the inquiry_id_sort element
+                                        var updateIdSort = document.getElementById("update_sort");
+                                    
+                                        // Read the current sort order from the query parameters in the URL
+                                        var urlParams = new URLSearchParams(window.location.search);
+                                        var currentSortOrder2 = urlParams.get('update');
+                                    
+                                        // Set the initial arrow icon based on the current sort order
+                                        var arrowIcon = updateIdSort.querySelector("span");
+                                        arrowIcon.innerHTML = currentSortOrder2 === "asc" ? "&#8593;" : "&#8595;";
+                                    
+                                        // Add a click event listener to the element
+                                        updateIdSort.addEventListener("click", function() {
+                                            // Toggle the sort order
+                                            var newSortOrder = currentSortOrder2 === "asc" ? "desc" : "asc";
+                                    
+                                            // Update the link href with the new sort field and sort order
+                                            updateIdSort.href = '{{ inquiries_list }}' + "?sort_field=update&update=" + newSortOrder;
+                                            
+                                            // Redirect to the new URL with the sort field and sort order
+                                            window.location.href = "?sort_field=update&update=" + newSortOrder;
+                                        });
+                                    </script>
+                                </th>
+                            {% endif %}
+
+                            {% if user.employee.position.name == "admin" %}
+                            <th>Delai</th>
+                            {% endif %}
+                            
+
+                            {% if user.employee.position.name == 'admin' %}
+                                <th ><strong>Updated with </strong></th>
+                            {% endif %}
+
+                            {% if user.employee.position.name != "super provider" or "customer" in cols %}
+                                <th>
+                                    <strong id="customer_sort" style="cursor: pointer;" >Customer & Address <span>&#8595;</span></strong>
+                                    <script>
+                                        // Get the inquiry_id_sort element
+                                        var customerSort = document.getElementById("customer_sort");
+                                    
+                                        // Read the current sort order from the query parameters in the URL
+                                        var urlParams = new URLSearchParams(window.location.search);
+                                        var currentSortOrdercustomer = urlParams.get('customer');
+                                    
+                                        // Set the initial arrow icon based on the current sort order
+                                        var arrowIcon = customerSort.querySelector("span");
+                                        arrowIcon.innerHTML = currentSortOrdercustomer === "asc" ? "&#8593;" : "&#8595;";
+                                    
+                                        // Add a click event listener to the element
+                                        customerSort.addEventListener("click", function() {
+                                            // Toggle the sort order
+                                            var newSortOrder = currentSortOrdercustomer === "asc" ? "desc" : "asc";
+                                    
+                                            // Update the link href with the new sort field and sort order
+                                            customerSort.href = '{{ inquiries_list }}' + "?sort_field=customer&customer=" + newSortOrder;
+                                            
+                                            // Redirect to the new URL with the sort field and sort order
+                                            window.location.href = "?sort_field=customer&customer=" + newSortOrder;
+                                        });
+                                    </script>
+                                </th>
+                            {% endif %}
+
+                            <th >
+                                <strong id="service_sort" style="cursor: pointer;" >services <span>&#8595;</span></strong><br>
+                                <script>
+                                    // Get the inquiry_id_sort element
+                                    var serviceSort = document.getElementById("service_sort");
+                                
+                                    // Read the current sort order from the query parameters in the URL
+                                    var urlParams = new URLSearchParams(window.location.search);
+                                    var currentSortOrderservice = urlParams.get('service_sort');
+                                
+                                    // Set the initial arrow icon based on the current sort order
+                                    var arrowIcon = serviceSort.querySelector("span");
+                                    arrowIcon.innerHTML = currentSortOrderservice === "asc" ? "&#8593;" : "&#8595;";
+                                
+                                    // Add a click event listener to the element
+                                    serviceSort.addEventListener("click", function() {
+                                        // Toggle the sort order
+                                        var newSortOrder = currentSortOrderservice === "asc" ? "desc" : "asc";
+                                
+                                        // Update the link href with the new sort field and sort order
+                                        serviceSort.href = '{{ inquiries_list }}' + "?sort_field=service_sort&service_sort=" + newSortOrder;
+                                        
+                                        // Redirect to the new URL with the sort field and sort order
+                                        window.location.href = "?sort_field=service_sort&service_sort=" + newSortOrder;
+                                    });
+                                </script>
+
+                                {% if user.employee.position.name != "super provider" or "source" in cols %}
+                                    <strong id="source_sort" style="cursor: pointer;" >source <span>&#8595;</span></strong><br>
+                                    <script>
+                                        // Get the inquiry_id_sort element
+                                        var sourceSort = document.getElementById("source_sort");
+                                    
+                                        // Read the current sort order from the query parameters in the URL
+                                        var urlParams = new URLSearchParams(window.location.search);
+                                        var currentSortOrdersource = urlParams.get('source_sort');
+                                    
+                                        // Set the initial arrow icon based on the current sort order
+                                        var arrowIcon = sourceSort.querySelector("span");
+                                        arrowIcon.innerHTML = currentSortOrdersource === "asc" ? "&#8593;" : "&#8595;";
+                                    
+                                        // Add a click event listener to the element
+                                        sourceSort.addEventListener("click", function() {
+                                            // Toggle the sort order
+                                            var newSortOrder = currentSortOrdersource === "asc" ? "desc" : "asc";
+                                    
+                                            // Update the link href with the new sort field and sort order
+                                            sourceSort.href = '{{ inquiries_list }}' + "?sort_field=source_sort&source_sort=" + newSortOrder;
+                                            
+                                            // Redirect to the new URL with the sort field and sort order
+                                            window.location.href = "?sort_field=source_sort&source_sort=" + newSortOrder;
+                                        });
+                                    </script>
+                                {% endif %}
+
+                                <strong id="state_sort" style="cursor: pointer;" >state <span>&#8595;</span></strong>
+                                <script>
+                                    // Get the inquiry_id_sort element
+                                    var stateSort = document.getElementById("state_sort");
+                                
+                                    // Read the current sort order from the query parameters in the URL
+                                    var urlParams = new URLSearchParams(window.location.search);
+                                    var currentSortOrderstate = urlParams.get('state_sort');
+                                
+                                    // Set the initial arrow icon based on the current sort order
+                                    var arrowIcon = stateSort.querySelector("span");
+                                    arrowIcon.innerHTML = currentSortOrderstate === "asc" ? "&#8593;" : "&#8595;";
+                                
+                                    // Add a click event listener to the element
+                                    stateSort.addEventListener("click", function() {
+                                        // Toggle the sort order
+                                        var newSortOrder = currentSortOrderstate === "asc" ? "desc" : "asc";
+                                
+                                        // Update the link href with the new sort field and sort order
+                                        stateSort.href = '{{ inquiries_list }}' + "?sort_field=state_sort&state_sort=" + newSortOrder;
+                                        
+                                        // Redirect to the new URL with the sort field and sort order
+                                        window.location.href = "?sort_field=state_sort&state_sort=" + newSortOrder;
+                                    });
+                                </script>
+                            </th>
+                            <th>
+                                <strong style="cursor: pointer;" >Quotations </strong><br>
+                                
+                            </th>
+                            {% if user.employee.position.name != "super provider" or "sp" in cols %}
+                                <th>
+                                    <strong id="sp_sort" style="cursor: pointer;">Service Provider <span>&#8595;</span></strong>
+                                    <script>
+                                        // Get the inquiry_id_sort element
+                                        var spSort = document.getElementById("sp_sort");
+                                        
+                                        // Read the current sort order from the query parameters in the URL
+                                        var urlParams = new URLSearchParams(window.location.search);
+                                        var currentSortOrdersp = urlParams.get('sp_sort');
+                                        
+                                        // Set the initial arrow icon based on the current sort order
+                                        var arrowIcon = spSort.querySelector("span");
+                                        arrowIcon.innerHTML = currentSortOrdersp === "asc" ? "&#8593;" : "&#8595;";
+                                        
+                                        // Add a click event listener to the element
+                                        spSort.addEventListener("click", function() {
+                                            // Toggle the sort order
+                                            var newSortOrder = currentSortOrdersp === "asc" ? "desc" : "asc";
+                                        
+                                            // Update the link href with the new sort field and sort order
+                                            spSort.href = '{{ inquiries_list }}' + "?sort_field=sp_sort&sp_sort=" + newSortOrder;
+                                            
+                                            // Redirect to the new URL with the sort field and sort order
+                                            window.location.href = "?sort_field=sp_sort&sp_sort=" + newSortOrder;
+                                        });
+                                    </script>
+                                </th>
+                            {% endif %}
+                            
+                            {% if user.employee.position.name != "super provider" or "have_media" in cols %}
+                                <th style="cursor: pointer;" ><strong>have media </strong></th>
+                            {% endif %}
+
+                            {% if user.employee.position.name != "super provider" or "canceling_causes" in cols %}
+                                <th style="cursor: pointer;" ><strong>canceling causes </strong></th>
+                            {% endif %}
+
+
+                            {% if user.employee.position.name != "super provider" or "total_price" in cols %}
+                                <th ><strong style="cursor: pointer;" >total price </strong></th>
+                            {% endif %}
+
+                            {% if user.employee.position.name != "super provider" or "percentage" in cols %}
+                                <th style="cursor: pointer;"><strong>percentage </strong></th>
+                            {% endif %}
+
+                            {% if user.employee.position.name != "super provider" or "map" in cols %}
+                                <th style="cursor: pointer;"><strong>Map</strong></th>
+                            {% endif %}
+
+                            {% if user.employee.position.name == "admin" %}
+                            <th>Delete</th>
+                            {% endif %}
+
+                            {% if user.employee.position.name == "admin" %}
+                            <th>time history</th>
+                            {% endif %}
+
+
+
+
+                            <!-- Add other columns as needed -->
+                        </tr>
+                    </thead>
+
+
+                    <script>
+                        var ascending = true; // Flag to track sorting order
+                        
+                        function sortTable(columnIndex) {
+                            var table, rows, switching, i, x, y, shouldSwitch;
+                            table = document.querySelector('.table'); // Assuming your table has the 'table' class
+                            switching = true;
+                            
+                            while (switching) {
+                                switching = false;
+                                rows = table.rows;
+                                
+                                for (i = 1; i < (rows.length - 1); i++) {
+                                    shouldSwitch = false;
+                                    
+                                    x = rows[i].getElementsByTagName("td")[columnIndex];
+                                    y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+                                    
+                                    if (ascending) {
+                                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                            shouldSwitch = true;
+                                            break;
+                                        }
+                                    } else {
+                                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                            shouldSwitch = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (shouldSwitch) {
+                                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                                    switching = true;
+                                }
+                            }
+                            
+                            // Toggle sorting order for next click
+                            ascending = !ascending;
+                        }
+                    </script>
+
+
+                    <tbody>
+                        {% for inquiry in inquiries %}
+                            <tr>
+                                {% if user.employee.position.name != "super provider" or "ids" in cols %}
+                                    {% if inquiry.state.status.name == "new" %}
+                                        <td style="background-color:  #abd08e ; color: black;">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "connecting" %}
+                                        <td style="background-color:  #ffd4ba ; color: black;">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "send Q" %}
+                                        <td style="background-color: #afc1ef; color: black;">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "send B" %}
+                                        <td style="background-color: #afc1ef; color: black;">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "pending" %}
+                                        <td style="background-color: #f4af85; color: black;">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "underproccess" %}
+                                        <td style="background-color: #ffe699; color: black;">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "cancel" %}
+                                        <td style="background-color: #cfcfcf; color: rgb(224, 20, 20);">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "complain" %}
+                                        <td style="background-color: #ff4646; color: rgb(0, 0, 0);">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% elif inquiry.state.status.name == "done" %}
+                                        <td style="background-color: #ffffff; color: rgb(0, 0, 0);">
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% else %}
+                                        <td>
+                                            <div class="line">Inquiry ID : {{ inquiry.info.id }}</div>
+                                            <div class="line">customer ID : {{ inquiry.info.customer.id }}</div>
+                                        </td>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if user.employee.position.name != "super provider" or "dates" in cols %}
+                                    <td style="width: 200px;">
+                                        <div class="line">Created : {{ inquiry.info.date_inq }}</div>
+                                        <div class="line">Updated : {{ inquiry.state.update }}</div>
+                                    </td>
+                                {% endif %}
+
+                                {% if user.employee.position.name == "admin" %}
+                                <td>{{ inquiry.delai }}</td>
+                                {% endif %}
+                                
+
+                                {% if user.employee.position.name == 'admin' %}
+                                    <td>{{ inquiry.action.from_employee }}</td>
+                                {% endif %}
+
+                                {% if user.employee.position.name != "super provider" or "customer" in cols %}
+                                    <td>
+                                        
+                                        {% if user.employee.position.name == 'call center' or user.employee.position.name == 'super provider' or user.employee.position.name == 'admin' %}
+                                            <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
+                                        {% else %}
+                                            {{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}
+                                        {% endif %}
+
+                                        {% if user.employee.permissions.all %}
+                                            {% for permission in user.employee.permissions.all %}
+                                                {% if permission.name == "inquiry info" %}
+                                                    <a href="{% url 'inquiry_info' inquiry.info.id %}">{{ inquiry.info.customer.first_name }} - {{ inquiry.info.address.address_name }}</a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                                
+                                <td>
+                                    <div class="line">Service : {{ inquiry.info.services }}</div>
+                                    {% if user.employee.position.name != "super provider" or "source" in cols %}
+                                        <div class="line">Source : {{ inquiry.info.source }}</div> 
+                                    {% endif %}
+                                    <div class="line">Status : {{ inquiry.state.status }}</div>
+                                </td>
+
+                                <td>
+                                    {% if inquiry.requests.last.aproved %}
+                                        <a class="btn btn-primary" href="{% url 'generate_pdf' inquiry.requests.last.id %}" target="_blank">Quotation PDF</a> 
+                                    {% else %}
+                                        <p>you dont any Approved Quotaion</p>
+                                    {% endif %}
+                                </td>
+
+                                {% if user.employee.position.name != "super provider" or "sp" in cols %}
+                                    <td>
+                                        <div class="line">{{ inquiry.info.sp }}</div>
+                                    </td>
+                                {% endif %}
+                                
+                                {% if user.employee.position.name != "super provider" or "have_media" in cols %}
+                                    {% if inquiry.info.cloudinary_urls %} 
+                                        <td style="color: #66c31f;"> Yes <div id="mediacount-{{inquiry.info.id}}"></div> </td>
+                                        <script>
+                                            var cloudinaryUrls = "{{ inquiry.info.cloudinary_urls }}"; // Get the URLs
+                                            var urlsArray = cloudinaryUrls.split(',**,'); // Split by the delimiter
+                                            var numberOfUrls = urlsArray.length; // Count the number of URLs
+                                            console.log('count: '+numberOfUrls)
+                                            document.getElementById("mediacount-{{inquiry.info.id}}").innerText = numberOfUrls; // Update the cell with the count
+                                        </script>
+                                    {% else %} 
+                                        <td style="color: #dc2215;"> No </td>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if user.employee.position.name != "super provider" or "canceling_causes" in cols %}
+                                    <td>{% if inquiry.state.canceling_causes %}{{ inquiry.state.canceling_causes }}{% else %} not canceled {% endif %}</td>
+                                {% endif %}
+
+                                {% if inquiry.state.status.name == "underproccess" %}
+
+
+
+                                    {% if user.employee.position.name != "super provider" or "total_price" in cols %}
+                                        <td>{{ inquiry.totale }}</td>
+                                    {% endif %}
+
+                                    {% if user.employee.position.name != "super provider" or "percentage" in cols %}
+                                        <td id="percentage-{{inquiry.info.id}}"></td>
+                                    {% endif %}
+                                {% else %}
+
+
+                                    {% if user.employee.position.name != "super provider" or "total_price" in cols %}
+                                    <td> Null </td>
+                                    {% endif %}
+
+                                    {% if user.employee.position.name != "super provider" or "percentage" in cols %}
+                                    <td> Null </td>
+                                    {% endif %}
+                                {% endif %}
+
+                                <script>
+                                    if (parseInt("{{ inquiry.totale }}") != 0) {
+                                        // Calculate the percentage
+                                        var percentage = (parseInt("{{inquiry.advence.price}}") / parseInt("{{ inquiry.totale }}") ) * 100;
+
+                                        console.log(percentage)
+                                        // Update the content of the <td> element with id "percentage"
+                                        var advencePrice = {{ inquiry.advence.price }};
+                                        var formattedPercentage = '(' + advencePrice + ')' + '<br>' + percentage.toFixed(2) + "%";
+                                        document.getElementById("percentage-{{inquiry.info.id}}").innerHTML  = formattedPercentage;
+
+                                    } else {
+                                        document.getElementById("percentage-{{inquiry.info.id}}").textContent = 'None';
+
+                                    }
+
+                                </script>
+
+                                {% if user.employee.position.name != "super provider" or "map" in cols %}
+                                    <td> <a href="{{ inquiry.info.address.location_url }}" target="_blank">{{ inquiry.info.address.location }}</a></td>
+                                {% endif %}
+
+                                {% if user.employee.position.name == "admin" %}
+                                <td><a href="{% url 'delete_inq' inquiry.info.id %}" class="btn btn-danger btn-sm">Delete</a></td>
+                                {% endif %}
+
+                                {% if user.employee.position.name == "admin" %}
+                                <td>
+                                    <div class="container">
+                                        <button id="showPopupButton-{{inquiry.info.id}}" class="btn btn-primary">Show Info</button>
+                                    
+                                        <!-- Popup Modal -->
+                                        <div class="modal fade" id="infoModal-{{inquiry.info.id}}" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel-{{inquiry.info.id}}" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="infoModalLabel-{{inquiry.info.id}}">Information of Delay</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>new to connecting</th>
+                                                                    <th>connecting to send Quotation</th>
+                                                                    <!-- Add more columns as needed -->
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{inquiry.new_connect}}</td>
+                                                                    <td>{{inquiry.connect_sendqDelay}}</td>
+                                                                    <!-- Add more data as needed -->
+                                                                </tr>
+                                                            </tbody>
+                                                            
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>send Quotation to Underproccess</th>
+                                                                    <th>Underproccess to send Bill</th>
+                                                                    <!-- Add more columns as needed -->
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{inquiry.sendqDelay_underproccessDelay}}</td>
+                                                                    <td>{{inquiry.underproccessDelay_sendbDelay}}</td>
+                                                                    <!-- Add more data as needed -->
+                                                                </tr>
+                                                            </tbody>
+
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>send Quotation to Pending</th>
+                                                                    <th>connect to Underproccess</th>
+                                                                    <!-- Add more columns as needed -->
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{inquiry.sendqDelay_pendingDelay}}</td>
+                                                                    <td>{{inquiry.connect_underproccessDelay}}</td>
+                                                                    <!-- Add more data as needed -->
+                                                                </tr>
+                                                            </tbody>
+
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>send Bill to Done</th>
+                                                                    <!-- Add more columns as needed -->
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{inquiry.sendbDelay_doneDelay}}</td>
+                                                                    <!-- Add more data as needed -->
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- jQuery and Bootstrap JS -->
+                                    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+                                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                                    <script>
+
+                                        
+                                        function enableRefresh() {
+                                            refreshingEnabled = true;
+                                        }
+                                        
+                                        function disableRefresh() {
+                                            refreshingEnabled = false;
+                                        }
+                                        
+                                        $(document).ready(function() {
+                                            // Start the auto-refresh when the page loads
+                                            
+                                            
+                                            // Show modal and stop auto-refresh
+                                            $('#showPopupButton-{{inquiry.info.id}}').click(function() {
+                                                $('#infoModal-{{inquiry.info.id}}').modal('show');
+                                                disableRefresh();
+                                            });
+                                            
+                                            // Restart auto-refresh when the modal is hidden
+                                            $('#infoModal-{{inquiry.info.id}}').on('hidden.bs.modal', function () {
+                                                enableRefresh();
+                                                console.log('Refreshing enabled');
+                                            });
+                                            // Handle refresh on modal close (e.g., by clicking the Close button)
+                                            $('#infoModal-{{inquiry.info.id}}').on('click', '[data-dismiss="modal"]', function () {
+                                                enableRefresh();
+                                                console.log('Refreshing enabled from modal close button');
+                                            });
+                                        });
+                                    </script>
+                                </td>
+                                {% endif %}
+                                
+                                
+                                <!-- Add other columns as needed -->
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h4>
+                    <!-- Add this block above or below your table -->
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if inquiries_with_pages.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ inquiries_with_pages.previous_page_number }}">previous</a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ inquiries_with_pages.number }} of {{ inquiries_with_pages.paginator.num_pages }}.
+                            </span>
+
+                            {% if inquiries_with_pages.has_next %}
+                                <a href="?page={{ inquiries_with_pages.next_page_number }}">next</a>
+                                <a href="?page={{ inquiries_with_pages.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </h4>
+            </div>
+        </div>
+        
+
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

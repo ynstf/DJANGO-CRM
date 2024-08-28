@@ -151,7 +151,6 @@ class IsEmployeeReadMessage(models.Model):
     def __str__(self):
         return f'employee :{self.employee}'
 
-
 class Country(models.Model):
     name = models.CharField(max_length=50)
     numberPrefix = models.CharField(max_length=5)
@@ -165,8 +164,6 @@ class Country(models.Model):
 
     def __str__(self):
         return f'employee :{self.name}'
-
-
 
 class Points(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, blank=True, null=True)
@@ -362,6 +359,24 @@ class Invoice(models.Model):
     # Add other fields as needed
     def __str__(self):
         return f'{self.customer} - {self.inquiry}'
+
+class InvoiceToSP(models.Model):
+    sp = models.ForeignKey(SuperProvider, on_delete=models.SET_NULL, blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
+    total = models.FloatField(blank=True, null=True)
+    totalwithoutvat = models.FloatField(blank=True, null=True)
+    vat = models.FloatField(blank=True, null=True)
+    totalwithvat = models.FloatField(blank=True, null=True)
+    Marketing_price = models.FloatField(blank=True, null=True)
+    email = models.CharField(max_length=30, blank=True, null=True)
+    invoices_pdf_url = models.TextField(blank=True, null=True)
+    marketing_pdf_url = models.TextField(blank=True, null=True)
+
+
+    # Add other fields as needed
+    def __str__(self):
+        return f'{self.sp} - {self.date}'
+
 
 class Advence(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)

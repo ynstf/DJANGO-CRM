@@ -40,6 +40,9 @@ provider_group, created = Group.objects.get_or_create(name='provider')
 admin_group, created = Group.objects.get_or_create(name='admin')
 team_leader_group, created = Group.objects.get_or_create(name='team_leader')
 
+accountant_group, created = Group.objects.get_or_create(name='accountant')
+financial_group, created = Group.objects.get_or_create(name='financial')
+
 @receiver(post_save, sender=Employee)
 def assign_group(sender, instance, created, **kwargs):
     # Assign user to group based on position
@@ -52,4 +55,9 @@ def assign_group(sender, instance, created, **kwargs):
             instance.user.groups.add(admin_group)
         elif instance.position.name == 'team leader':
             instance.user.groups.add(team_leader_group)
+
+        elif instance.position.name == 'accountant':
+            instance.user.groups.add(accountant_group)
+        elif instance.position.name == 'financial':
+            instance.user.groups.add(financial_group)
 

@@ -85,7 +85,7 @@
 
         <!-- Tabels -->
 
-    <li class="menu-item {% if 'title' == 'employee list' or '/from_points/' in request.path or '/points_list/' in request.path or '/employee_list/' in request.path or '/customer_list/' in request.path or '/inquiries_list' in request.path or '/services_list/' in request.path or '/sp_list/' in request.path %}active open{% endif %}">
+    <li class="menu-item {% if 'title' == 'employee list' or '/invioces_to_sp_table/' in '/from_points/' or  '/from_points/' in request.path or '/points_list/' in request.path or '/employee_list/' in request.path or '/customer_list/' in request.path or '/inquiries_list' in request.path or '/services_list/' in request.path or '/sp_list/' in request.path or '/invoices_list/' in request.path %}active open{% endif %}">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons mdi mdi-table"></i>
         <div class="text-truncate" data-i18n="Tables">Tables</div>
@@ -144,6 +144,22 @@
             <li class="menu-item {% if 'employee_list' == request.resolver_match.url_name %}active{% endif %}">
                 <a href="{{ request.country_code_prefix }}{% url 'employee_list' %}" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Employee</div>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if position.name == 'financial' %}
+            <li class="menu-item {% if 'invioces_to_sp_table' == request.resolver_match.url_name %}active{% endif %}">
+                <a href="{{ request.country_code_prefix }}{% url 'invioces_to_sp_table' %}" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Invoice to SP Table</div>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if position.name == 'accountant' or position.name == 'financial' %}
+            <li class="menu-item {% if 'invoices_list' == request.resolver_match.url_name %}active{% endif %}">
+                <a href="{{ request.country_code_prefix }}{% url 'invoices_list' %}" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Invoices</div>
                 </a>
             </li>
         {% endif %}
@@ -222,12 +238,20 @@
 
 
     <!-- Form -->
-    <li class="menu-item {% if '/make_point/' in request.path or '/add_employee/' in request.path or '/add_service/' in request.path or '/add_sp/' in request.path or '/add_customers/' in request.path %}active open{% endif %}">
+    <li class="menu-item {% if '/make_point/' in request.path or '/invioces_to_sp_form/' in request.path or '/add_employee/' in request.path or '/add_service/' in request.path or '/add_sp/' in request.path or '/add_customers/' in request.path %}active open{% endif %}">
       <a href="javascript:void(0)" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons mdi mdi-form-select"></i>
         <div class="text-truncate" data-i18n="Form Elements">Form Elements</div>
       </a>
       <ul class="menu-sub">
+
+      {% if position.name == 'financial' %}
+          <li class="menu-item {% if 'invioces_to_sp_form' == request.resolver_match.url_name %}active{% endif %}">
+              <a href="{{ request.country_code_prefix }}{% url 'invioces_to_sp_form' %}" class="menu-link">
+              <div class="text-truncate" data-i18n="Without menu">Invoice to SP</div>
+              </a>
+          </li>
+      {% endif %}
 
         {% if position.name == 'admin' %}
           <li class="menu-item {% if 'add_employee' == request.resolver_match.url_name %}active{% endif %}">

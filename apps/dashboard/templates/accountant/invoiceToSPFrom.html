@@ -1,0 +1,175 @@
+{% extends 'layout/master.html' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar {{ is_menu|yesno:',layout-without-menu' }}">
+<div class="layout-container">
+
+    {% if is_menu %}
+    <!-- Menu: Start -->
+    {% include "parts/vertical_menu.html" %}
+    <!-- Menu: End -->
+    {% endif %}
+
+    <!-- Layout page: Start -->
+    <div class="layout-page">
+
+
+    {% if is_navbar %}
+    <!-- Navbar: Start -->
+    {% include "parts/navbar.html" %}
+    <!-- Navbar: End -->
+    {% endif %}
+
+<!-- ######################################################################### -->
+    <!-- Content wrapper: Start -->
+    <div class="content-wrapper">
+
+        <div class="container">
+
+            <br>
+            <center><h2>Add Invoice To SP</h2></center>
+            <br>
+        
+            <form method="post" id="serviceForm" enctype="multipart/form-data">
+                {% csrf_token %}
+        
+                <h3>To sp</h3>
+
+                <div class="col-md-4">
+                    <label for="id_service-name">Date :</label>
+                    <input type="date" id="id_service-name" name="date" class="form-control" placeholder="name..." aria-label="name" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_service-name">SP :</label>
+
+                    <select name="sp" id="" class="form-control">
+                        {% for sp in sps %}
+                        <option value="{{sp.id}}">{{ sp.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <hr>
+
+                <div class="col-md-4">
+                    <label for="id_total">Total :</label>
+                    <input type="number" id="id_total" name="total" class="form-control" onchange="five()" >
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_pricingMarketing">pricing marketing : ({{ marketingPer }}%)</label>
+                    <input type="number" id="id_pricingMarketing" name="pricingMarketing" class="form-control" readonly>
+                </div>
+
+
+                <hr>
+                <div class="col-md-4">
+                    <label for="totnovat">Total Without Vat</label>
+                    <input type="number" id="totnovat" name="" class="form-control" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="vat">Vat %</label>
+                    <input type="number" id="vat" name="" value="{{vat}}" class="form-control" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="totvat">Total With Vat</label>
+                    <input type="number" id="totvat" name="" class="form-control" readonly>
+                </div>
+
+                <script>
+                    function five(){
+
+
+                        var total = document.getElementById("id_total");
+                        var fivefield = document.getElementById("id_pricingMarketing");
+                        var five = total.value * 0.05;
+                        fivefield.value = five;
+
+                        var totnovat = document.getElementById("totnovat");
+                        totnovat.value = total.value - (total.value * 0.05);
+
+                        var vat = document.getElementById("vat").value;
+                        var totvat = document.getElementById("totvat");
+
+                        totvat.value = totnovat.value - (totnovat.value * (vat / 100));
+
+                        console.log(vat);
+                    }
+                </script>
+                
+                <hr>
+
+                <div class="col-md-4">
+                    <label for="invoices_pdf">file invoices pdf :</label>
+                    <input type="file" id="invoices_pdf" name="invoices_pdf" class="form-control" >
+                </div>
+
+                <div class="col-md-4">
+                    <label for="marketing_pdf">file invoices marketing:</label>
+                    <input type="file" id="marketing_pdf" name="marketing_pdf" class="form-control" >
+                </div>
+                
+                <div class="col-md-4">
+                    <label for="mail">Email :</label>
+                    <input type="email" id="mail" name="email" class="form-control" >
+                </div>
+                
+
+
+                <br><br>
+                
+
+                <!-- Add more fields as needed -->
+        
+                <br><br>
+                <button class="btn btn-success" type="submit">Add invoice to sp</button>
+            </form>
+
+        </div>
+        
+
+<!-- ######################################################################### -->
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{{container_class}} d-flex align-items-stretch flex-grow-1 p-0">
+        {% else %}
+        <div class="{{container_class}} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+
+            {% endblock content %}
+
+        </div>
+        <!-- / Content: End -->
+
+        <!--{% if is_footer %}
+            Footer: Start 
+        {% include "parts/footer.html" %}
+            Footer: End 
+        {% endif %}-->
+
+        <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+    </div>
+
+
+    <!-- / Layout page: End -->
+    </div>
+
+    {% if is_menu %}
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    {% endif %}
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- Layout wrapper: End -->
+{% endblock layout %}

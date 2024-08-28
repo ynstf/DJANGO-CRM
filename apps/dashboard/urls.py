@@ -53,6 +53,8 @@ from .all_views.infos import (check_phone_number, delete_owner_from_inquiry,
                             delete_quotation, delete_customer,delete_inq, check_point_number)
 from .all_views.calendar import calendar_view, reminder_day_view
 from .all_views.team import points_list_view, point_view, make_point_view
+from .all_views.accountant import invoices_list_view, invioces_report_view,invioces_to_sp_form, invioces_to_sp_table
+
 urlpatterns = [
 
 
@@ -60,6 +62,13 @@ urlpatterns = [
     path("points_list/",points_list_view,name="points_list"),
     path("point/<int:id>",point_view,name="point"),
     path("make_point/",make_point_view,name="make_point"),
+
+
+    #accountant
+    path("invoices_list/",invoices_list_view,name="invoices_list"),
+    path("invioces_report/",invioces_report_view,name="invioces_report"),
+    path("invioces_to_sp_form/",invioces_to_sp_form,name="invioces_to_sp_form"),
+    path("invioces_to_sp_table/",invioces_to_sp_table,name="invioces_to_sp_table"),
 
 
     #chat

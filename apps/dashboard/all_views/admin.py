@@ -29,9 +29,6 @@ from web_project.template_helpers.theme import TemplateHelper
 
 
 
-    
-
-
 
 @login_required(login_url='/')
 @user_passes_test(lambda u: u.groups.filter(name__in=['admin']).exists())

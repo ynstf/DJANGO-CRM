@@ -1,0 +1,108 @@
+<center>
+    <h1>
+        {{title}}
+    </h1>
+</center>
+
+<style>
+        
+    font-face {
+        font-family: 'MarkaziText';
+        src: url('{{ font_name }}');
+    }
+    
+    body {
+        font-family: 'MarkaziText', sans-serif;
+        font-size: 14px; /* Base font size */
+    }
+
+    .rtl {
+        direction: rtl;
+        text-align: left;
+    }
+    .ltr {
+        direction: ltr;
+        text-align: right;
+    }
+    ul.rtl li h3 {
+        font-size: 2em; /* Makes these headings even larger */
+    }
+    table {
+        width: 100%;
+    }
+    td {
+        vertical-align: top;
+    }
+    #services-info {
+        text-align: right;
+    }
+    #logo {
+        text-align: center;
+    }
+    #company-info {
+        text-align: left;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .th, .td {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 8px;
+    }
+    .th {
+        background-color: #f2f2f2;
+    }
+    li {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+    }
+    li p {
+        margin: 0;
+    }
+</style>
+
+<table class="table">
+    <thead>
+        <tr class="tr">
+            <th class="th">Inq ID</th>
+            <th class="th">Booking ID</th>
+            <th class="th">Date</th>
+            <th class="th">ID service</th>
+            <th class="th">SN</th>
+            <th class="th">Total (with vat)</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for inquiry in inquiries%}
+        <tr class="tr">
+                <td class="td">{{inquiry.info.id }}</td>
+                <td class="td">{{inquiry.booking.id }}</td>
+                <td class="td">{{ inquiry.info.date_inq }}</td>
+                <td class="td">ID {{ inquiry.info.services.number}}({{ inquiry.info.services }})</td>
+                <td class="td">{{ inquiry.reference }}</td>
+                <td class="td">{{ inquiry.total_with_vat }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+
+</table>
+<table>
+
+    <thead>
+        <tr class="tr">
+            <th class="th">Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr class="tr">
+                <td class="td"> {{total}} </td>
+        </tr>
+    </tbody>
+</table>
