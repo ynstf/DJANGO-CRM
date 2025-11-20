@@ -508,11 +508,13 @@ def add_customer_view(request):
     print(cCode)
 
     try:
-        country = Country.objects.get(abr=cCode)
+        #country = Country.objects.get(abr=cCode)
+        print("a")
     except:
-        country = Country.objects.get(abr="AE")
+        #country = Country.objects.get(abr="AE")
+        print("b")
 
-    numberPrefix = country.numberPrefix
+    #numberPrefix = country.numberPrefix
 
 
     # Set the layout path even when authentication fails
@@ -532,7 +534,7 @@ def add_customer_view(request):
                 'all_sp':all_sp,
                 'team_leaders':Employee.objects.filter(position=Position.objects.get(name='team leader')),
 
-                'numberPrefix':numberPrefix,
+                # 'numberPrefix':numberPrefix,
                 }
     
     context = TemplateLayout.init(request, context)
